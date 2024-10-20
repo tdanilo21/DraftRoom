@@ -6,8 +6,14 @@ import java.awt.*;
 public class MainFrame extends JFrame {
     //buduca polja za sve komponente view-a na glavnom prozoru
 
-    public MainFrame(){
+    private static MainFrame instance = null;
+    private MainFrame(){
         initialize();
+    }
+
+    public static MainFrame getInstance(){
+        if(instance == null) instance = new MainFrame();
+        return instance;
     }
 
     private void initialize(){
