@@ -1,15 +1,13 @@
 package raf.draft.dsw.gui.swing;
 
-import raf.draft.dsw.controller.ExitAction;
+import raf.draft.dsw.controller.actions.ActionManager;
 
 import javax.swing.*;
 
 public class MyToolBar extends JToolBar {
-    public MyToolBar(){
+    public MyToolBar(ActionManager actionManager){
         super(HORIZONTAL);
         setFloatable(false);
-
-        ExitAction ea = new ExitAction();
-        add(ea);
+        add(actionManager.getExitAction());
     }
 }
