@@ -1,10 +1,11 @@
 package raf.draft.dsw.gui.swing;
 
+import raf.draft.dsw.controller.actions.ActionManager;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
-    //buduca polja za sve komponente view-a na glavnom prozoru
 
     private static MainFrame instance = null;
     private MainFrame(){
@@ -26,10 +27,12 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("DraftRoom");
 
-        MyMenuBar menu = new MyMenuBar();
+        ActionManager actionManager = new ActionManager();
+
+        MyMenuBar menu = new MyMenuBar(actionManager);
         setJMenuBar(menu);
 
-        MyToolBar toolBar = new MyToolBar();
+        MyToolBar toolBar = new MyToolBar(actionManager);
         add(toolBar, BorderLayout.NORTH);
     }
 }
