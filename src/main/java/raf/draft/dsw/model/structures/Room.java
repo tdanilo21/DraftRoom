@@ -1,10 +1,15 @@
 package raf.draft.dsw.model.structures;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import raf.draft.dsw.model.nodes.DraftNodeLeaf;
+import lombok.Setter;
+import raf.draft.dsw.model.nodes.DraftNode;
 
-@Getter @AllArgsConstructor
-public class Room extends DraftNodeLeaf {
+@Getter @Setter
+public class Room extends DraftNode {
     private String name;
+
+    public Room(String name, DraftNode parent){
+        super(parent);
+        this.name = name;
+    }
 }

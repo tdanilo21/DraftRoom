@@ -26,7 +26,7 @@ public class DraftTreeNode extends DefaultMutableTreeNode {
 
     public void insert(MutableTreeNode newChild, int childIndex){
         if (!(newChild instanceof DraftTreeNode)){
-            System.err.println("Tree node must be of type DraftTreeNode");
+            System.err.println("Child node must be of type DraftTreeNode");
             return;
         }
         try{

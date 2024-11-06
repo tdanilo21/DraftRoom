@@ -9,7 +9,7 @@ import javax.swing.*;
 
 public class DraftRepository extends JTree {
 
-        public DraftRepository(DraftTreeNode root){
-            super(root);
+        public DraftRepository(){
+            super(new DraftTreeNode(new ProjectExplorer()));
         }
 }

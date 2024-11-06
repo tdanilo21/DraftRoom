@@ -3,13 +3,18 @@ package raf.draft.dsw.model.nodes;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Vector;
 
-@Getter @NoArgsConstructor
+@Getter
 public abstract class DraftNodeComposite extends DraftNode{
-    private List<DraftNode> childs;
+    private Vector<DraftNode> childs;
+
+    public DraftNodeComposite(DraftNode parent) {
+        super(parent);
+    }
 
     public void addChild(DraftNode node){
+        if (childs == null) childs = new Vector<DraftNode>();
         childs.add(node);
     }
 }
