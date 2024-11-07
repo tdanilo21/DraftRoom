@@ -1,12 +1,11 @@
 package raf.draft.dsw.gui.swing;
 
 import raf.draft.dsw.controller.actions.ActionManager;
-import raf.draft.dsw.model.structures.Building;
-import raf.draft.dsw.model.structures.Project;
-import raf.draft.dsw.model.structures.ProjectExplorer;
-import raf.draft.dsw.model.structures.Room;
+import raf.draft.dsw.controller.observer.Publisher;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
@@ -21,6 +20,10 @@ public class MainFrame extends JFrame {
         return instance;
     }
 
+    private ActionManager actionManager;
+    private Publisher<DraftTreeNode> selectedNodePublisher;
+
+
     private void initialize(){
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension screenSize = kit.getScreenSize();
@@ -31,7 +34,10 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("DraftRoom");
 
-        ActionManager actionManager = new ActionManager();
+        actionManager = new ActionManager();
+        selectedNodePublisher = new Publisher<>();
+        selectedNodePublisher.addSubscriber(actionManager.getCreateNodeAction());
+        selectedNodePublisher.addSubscriber(actionManager.getDeleteNodeAction());
 
         MyMenuBar menu = new MyMenuBar(actionManager);
         setJMenuBar(menu);
@@ -40,6 +46,12 @@ public class MainFrame extends JFrame {
         add(toolBar, BorderLayout.NORTH);
 
         DraftRepository repo = new DraftRepository();
+        repo.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent e) {
+                selectedNodePublisher.update((DraftTreeNode)repo.getLastSelectedPathComponent());
+            }
+        });
         add(repo, BorderLayout.WEST);
     }
 }

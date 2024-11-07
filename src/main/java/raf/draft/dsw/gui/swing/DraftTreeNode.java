@@ -1,13 +1,16 @@
 package raf.draft.dsw.gui.swing;
 
+import lombok.Getter;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
 import raf.draft.dsw.model.structures.*;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.MutableTreeNode;
-
+@Getter
 public class DraftTreeNode extends DefaultMutableTreeNode {
+
     private DraftNode node;
 
     public DraftTreeNode(DraftNode node){
