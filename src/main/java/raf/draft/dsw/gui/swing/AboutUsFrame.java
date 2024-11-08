@@ -15,18 +15,21 @@ public class AboutUsFrame extends JFrame {
         if(ImageURL != null)
         {
             Image img = new ImageIcon(ImageURL).getImage();
-            img = img.getScaledInstance(100, 200, Image.SCALE_DEFAULT);
+            img = img.getScaledInstance(225, 300, Image.SCALE_DEFAULT);
             imageIcon = new ImageIcon(img);
         }
         else
         {
             System.err.println(STR."File \{path} not found");
         }
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(new BorderLayout(5,20));
         JLabel textLabel = new JLabel(text);
-        panel.add(textLabel);
+        textLabel.setFont(new Font("SanSerif", Font.PLAIN, 18));
+        textLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        panel.add(textLabel, BorderLayout.SOUTH);
         JLabel imgLabel = new JLabel(imageIcon);
-        panel.add(imgLabel);
+        panel.add(imgLabel, BorderLayout.CENTER);
+
         return panel;
     }
 
@@ -38,8 +41,16 @@ public class AboutUsFrame extends JFrame {
         setSize(screenWidth / 2, screenHeight / 2);
         setLocationRelativeTo(null);
         setTitle("AboutUs");
-        setLayout(new FlowLayout());
-        add(createProfile("Iva Videnov RN 15/23","/images/Avatar.png"));
-        add(createProfile("Danilo Trninić RN 19/23","/images/Avatar.png"));
+
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 80, 5));
+        panel.add(createProfile("Iva Videnov RN 15/23","/images/Avatar.png"));
+        panel.add(createProfile("Danilo Trninić RN 19/23","/images/danilo.png"));
+
+        Box box = new Box(BoxLayout.Y_AXIS);
+        box.add(Box.createVerticalGlue());
+        box.add(panel);
+        box.add(Box.createVerticalGlue());
+
+        add(box);
     }
 }

@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 
 public class AboutUsAction extends AbstractRoomAction{
     public AboutUsAction(){
-        putValue(SMALL_ICON, loadIcon("/images/exit.png"));
+        putValue(SMALL_ICON, loadIcon("/images/info.png"));
         putValue(NAME, "About us");
         putValue(SHORT_DESCRIPTION, "About us");
     }
