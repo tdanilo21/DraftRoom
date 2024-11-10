@@ -9,6 +9,11 @@ public class MyToolBar extends JToolBar {
         super(HORIZONTAL);
         setFloatable(false);
         add(actionManager.getExitAction());
+        add(actionManager.getCreateNodeAction());
+        add(actionManager.getRenameNodeAction());
+        add(actionManager.getChangeAuthorAction());
+        add(actionManager.getChangePathAction());
+        add(actionManager.getDeleteNodeAction());
         add(actionManager.getAboutUsAction());
     }
 }

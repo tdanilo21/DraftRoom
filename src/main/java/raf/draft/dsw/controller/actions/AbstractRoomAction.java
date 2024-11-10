@@ -6,7 +6,6 @@ import java.net.URL;
 
 public abstract class AbstractRoomAction extends AbstractAction {
 
-    //deo koda za ucitavanje ikonice...
     protected Icon loadIcon(String path){
         Icon icon = null;
         URL ImageURL = getClass().getResource(path);
