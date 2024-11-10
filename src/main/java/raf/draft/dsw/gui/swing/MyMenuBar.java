@@ -11,6 +11,9 @@ public class MyMenuBar extends JMenuBar {
         fileMenu.setMnemonic(KeyEvent.VK_F);
         fileMenu.add(actionManager.getExitAction());
         fileMenu.add(actionManager.getCreateNodeAction());
+        fileMenu.add(actionManager.getRenameNodeAction());
+        fileMenu.add(actionManager.getChangeAuthorAction());
+        fileMenu.add(actionManager.getChangePathAction());
         fileMenu.add(actionManager.getDeleteNodeAction());
         add(fileMenu);
     }
