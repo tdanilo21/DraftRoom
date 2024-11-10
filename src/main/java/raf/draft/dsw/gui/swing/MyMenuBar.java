@@ -16,5 +16,10 @@ public class MyMenuBar extends JMenuBar {
         fileMenu.add(actionManager.getChangePathAction());
         fileMenu.add(actionManager.getDeleteNodeAction());
         add(fileMenu);
+
+        JMenu helpMenu = new JMenu("Help");
+        helpMenu.setMnemonic(KeyEvent.VK_H);
+        helpMenu.add(actionManager.getAboutUsAction());
+        add(helpMenu);
     }
 }

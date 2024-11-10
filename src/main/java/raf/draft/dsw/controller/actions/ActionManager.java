@@ -10,6 +10,7 @@ public class ActionManager {
     private final RenameNodeAction renameNodeAction;
     private final ChangeAuthorAction changeAuthorAction;
     private final ChangePathAction changePathAction;
+    private final AboutUsAction aboutUsAction;
 
     public ActionManager(){
         exitAction = new ExitAction();
@@ -18,5 +19,6 @@ public class ActionManager {
         renameNodeAction = new RenameNodeAction();
         changeAuthorAction = new ChangeAuthorAction();
         changePathAction = new ChangePathAction();
+        aboutUsAction = new AboutUsAction();
     }
 }
