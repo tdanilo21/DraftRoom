@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 
 public class ChangePathAction extends AbstractRoomAction {
     public ChangePathAction(){
-        putValue(SMALL_ICON, loadIcon("/images/exit.png"));
+        putValue(SMALL_ICON, loadIcon("/images/edit.png"));
         putValue(NAME, "Change path");
         putValue(SHORT_DESCRIPTION, "Change path");
     }
