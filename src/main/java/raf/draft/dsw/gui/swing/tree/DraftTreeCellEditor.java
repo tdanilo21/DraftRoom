@@ -49,14 +49,17 @@ public class DraftTreeCellEditor extends DefaultTreeCellEditor implements Action
 
     @Override
     public void actionPerformed(ActionEvent e){
-        stopCellEditing();
         if (node instanceof DraftTreeNode draftTreeNode){
             DraftRoomRepository repository = ApplicationFramework.getInstance().getRepository();
-            if (!repository.isReadOnly(draftTreeNode.getData().id())){
-                repository.renameNode(draftTreeNode.getData().id(), e.getActionCommand());
-                draftTreeNode.setName(e.getActionCommand());
-                MainFrame.getInstance().getRepoTreeModel().reload(draftTreeNode);
+            String newName = e.getActionCommand();
+            if (repository.hasSiblingWithName(draftTreeNode.getData().id(), newName)) {
+                System.err.println("Node with the same name already exists at the same path.");
+                return;
             }
+            stopCellEditing();
+            repository.renameNode(draftTreeNode.getData().id(), newName);
+            draftTreeNode.setName(newName);
+            MainFrame.getInstance().getRepoTreeModel().reload(draftTreeNode);
         }
     }
 }
