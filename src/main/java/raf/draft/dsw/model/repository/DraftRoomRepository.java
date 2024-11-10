@@ -4,7 +4,7 @@ import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.dtos.DraftNodeTypes;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
-import raf.draft.dsw.model.nodes.Renamable;
+import raf.draft.dsw.model.nodes.Named;
 import raf.draft.dsw.model.structures.Building;
 import raf.draft.dsw.model.structures.Project;
 import raf.draft.dsw.model.structures.ProjectExplorer;
@@ -63,6 +63,20 @@ public class DraftRoomRepository {
         createNode(DraftNodeTypes.PROJECT_EXPLORER);
     }
 
+    public boolean hasChildWithName(Integer parentId, String name){
+        DraftNode node = nodes.get(parentId);
+        if (node instanceof DraftNodeComposite parent)
+            for (DraftNode child : parent.getChildren())
+                if (child instanceof Named named && named.getName().equals(name))
+                    return true;
+        return false;
+    }
+
+    public boolean hasSiblingWithName(Integer id, String name){
+        DraftNodeComposite parent = nodes.get(id).getParent();
+        return parent != null && hasChildWithName(parent.getId(), name);
+    }
+
     private DraftNodeDTO createDraftNodeDTO(DraftNode node){
         if (node instanceof ProjectExplorer)
             return new DraftNodeDTO(node.getId(), DraftNodeTypes.PROJECT_EXPLORER, "ProjectExplorer", null);
@@ -83,6 +97,8 @@ public class DraftRoomRepository {
             case DraftNodeTypes.ROOM -> roomFactory.createNode(K, parameters);
         };
         if (node == null) return null;
+        if (node instanceof Named namedNode && node.getParent() != null && hasChildWithName(node.getParent().getId(), namedNode.getName()))
+            return null;
         K++;
         nodes.put(node.getId(), node);
         return createDraftNodeDTO(node);
@@ -165,8 +181,8 @@ public class DraftRoomRepository {
 
     public void renameNode(Integer id, String newName){
         DraftNode node = nodes.get(id);
-        if (node instanceof Renamable)
-            ((Renamable)node).setName(newName);
+        if (node instanceof Named namedNode && (node.getParent() == null || !hasChildWithName(node.getParent().getId(), newName)))
+            namedNode.setName(newName);
     }
 
     public void changeAuthor(Integer id, String newAuthor){

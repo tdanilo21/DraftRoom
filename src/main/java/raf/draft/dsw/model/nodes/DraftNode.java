@@ -1,8 +1,8 @@
 package raf.draft.dsw.model.nodes;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import raf.draft.dsw.model.structures.Project;
 
 @Getter
 public abstract class DraftNode {
