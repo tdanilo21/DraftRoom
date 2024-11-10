@@ -11,11 +11,13 @@ import raf.draft.dsw.model.repository.DraftRoomRepository;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.Vector;
 
 public class CreateNodeAction extends AbstractRoomAction {
     public CreateNodeAction(){
-        putValue(SMALL_ICON, loadIcon("/images/exit.png"));
+        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+        putValue(SMALL_ICON, loadIcon("/images/add.png"));
         putValue(NAME, "Add");
         putValue(SHORT_DESCRIPTION, "Add");
     }
