@@ -1,6 +1,7 @@
 package raf.draft.dsw.core;
 
 import lombok.Getter;
+import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
 
@@ -23,5 +24,8 @@ public class ApplicationFramework {
 
         MainFrame mainFrame = MainFrame.getInstance();
         mainFrame.setVisible(true);
+
+        repository.addSubscriber(MainFrame.getInstance().getRoomViewController(), EventTypes.NODE_CREATED, EventTypes.NODE_DELETED, EventTypes.NODE_EDITED);
+        repository.addSubscriber(MainFrame.getInstance().getProjectViewController(), EventTypes.NODE_EDITED);
     }
 }

@@ -2,6 +2,9 @@ package raf.draft.dsw.model.repository;
 
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.dtos.DraftNodeTypes;
+import raf.draft.dsw.controller.observer.EventTypes;
+import raf.draft.dsw.controller.observer.IPublisher;
+import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
 import raf.draft.dsw.model.nodes.Named;
@@ -10,6 +13,7 @@ import raf.draft.dsw.model.structures.Project;
 import raf.draft.dsw.model.structures.ProjectExplorer;
 import raf.draft.dsw.model.structures.Room;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
@@ -42,13 +46,14 @@ class RoomFactory implements DraftNodeFactory{
     }
 }
 
-public class DraftRoomRepository {
+public class DraftRoomRepository implements IPublisher {
     private HashMap<Integer, DraftNode> nodes;
     private Integer K;
     private final ProjectExplorerFactory projectExplorerFactory;
     private final ProjectFactory projectFactory;
     private final BuildingFactory buildingFactory;
     private final RoomFactory roomFactory;
+    private HashMap<EventTypes, Vector<ISubscriber> > subscribers;
 
 
     public DraftRoomRepository(){
@@ -60,7 +65,31 @@ public class DraftRoomRepository {
         buildingFactory = new BuildingFactory();
         roomFactory = new RoomFactory();
 
+        subscribers = new HashMap<>();
+
         createNode(DraftNodeTypes.PROJECT_EXPLORER);
+    }
+
+    @Override
+    public void addSubscriber(ISubscriber subscriber, EventTypes... types) {
+        for (EventTypes type : types) {
+            subscribers.computeIfAbsent(type, k -> new Vector<>());
+            subscribers.get(type).add(subscriber);
+        }
+    }
+
+    @Override
+    public void removeSubscriber(ISubscriber subscriber, EventTypes... types) {
+        for (EventTypes type : types)
+            if (subscribers.get(type) != null)
+                subscribers.get(type).remove(subscriber);
+    }
+
+    @Override
+    public void notifySubscribers(EventTypes type, Object state) {
+        if (subscribers.get(type) != null)
+            for (ISubscriber subscriber : subscribers.get(type))
+                subscriber.notify(type, state);
     }
 
     public boolean hasChildWithName(Integer parentId, String name){
@@ -77,15 +106,37 @@ public class DraftRoomRepository {
         return parent != null && hasChildWithName(parent.getId(), name);
     }
 
+    public Vector<Integer> getChildrenIds(Integer id){
+        DraftNode node = nodes.get(id);
+        Vector<Integer> ids = new Vector<>();
+        if (node instanceof DraftNodeComposite nodeComposite){
+            for (DraftNode child : nodeComposite.getChildren())
+                ids.add(child.getId());
+        }
+        return ids;
+    }
+
+    private Integer getParentId(DraftNode node){
+        if (node.getParent() != null)
+            return node.getParent().getId();
+        return null;
+    }
+
+    private Color getColor(DraftNode node){
+        if (node != null && node.getParent() instanceof Building)
+            return ((Building) node.getParent()).getColor();
+        return null;
+    }
+
     private DraftNodeDTO createDraftNodeDTO(DraftNode node){
         if (node instanceof ProjectExplorer)
-            return new DraftNodeDTO(node.getId(), DraftNodeTypes.PROJECT_EXPLORER, "ProjectExplorer", null);
+            return new DraftNodeDTO(node.getId(), DraftNodeTypes.PROJECT_EXPLORER, "ProjectExplorer", null, null, null);
         if (node instanceof Project)
-            return new DraftNodeDTO(node.getId(), DraftNodeTypes.PROJECT, ((Project) node).getName(), null);
+            return new DraftNodeDTO(node.getId(), DraftNodeTypes.PROJECT, ((Project) node).getName(), ((Project) node).getAuthor(), null, getParentId(node));
         if (node instanceof Building)
-            return new DraftNodeDTO(node.getId(), DraftNodeTypes.BUILDING, ((Building) node).getName(), ((Building) node).getColor());
+            return new DraftNodeDTO(node.getId(), DraftNodeTypes.BUILDING, ((Building) node).getName(), null, ((Building) node).getColor(), getParentId(node));
         if (node instanceof Room)
-            return new DraftNodeDTO(node.getId(), DraftNodeTypes.ROOM, ((Room) node).getName(), null);
+            return new DraftNodeDTO(node.getId(), DraftNodeTypes.ROOM, ((Room) node).getName(), null, getColor(node), getParentId(node));
         return null;
     }
 
@@ -115,9 +166,13 @@ public class DraftRoomRepository {
     }
 
     public void addChild(Integer parentId, Integer id){
-        DraftNode parent = nodes.get(parentId);
-        if (parent instanceof DraftNodeComposite)
-            ((DraftNodeComposite) parent).addChild(nodes.get(id));
+        DraftNode parent = nodes.get(parentId), child = nodes.get(id);
+        if (parent instanceof DraftNodeComposite) {
+            boolean newNode = child.getParent() == null;
+            ((DraftNodeComposite) parent).addChild(child);
+            if (newNode) notifySubscribers(EventTypes.NODE_CREATED, createDraftNodeDTO(child));
+            else notifySubscribers(EventTypes.NODE_EDITED, createDraftNodeDTO(child));
+        }
     }
 
     public DraftNodeDTO getNode(Integer id){
@@ -175,25 +230,71 @@ public class DraftRoomRepository {
             System.err.println("Node is read-only");
             return;
         }
+        notifySubscribers(EventTypes.NODE_DELETED, createDraftNodeDTO(node));
         removeNode(node);
         deleteNode(node);
     }
 
     public void renameNode(Integer id, String newName){
         DraftNode node = nodes.get(id);
-        if (node instanceof Named namedNode && (node.getParent() == null || !hasChildWithName(node.getParent().getId(), newName)))
+        if (node instanceof Named namedNode && (node.getParent() == null || !hasChildWithName(node.getParent().getId(), newName))) {
             namedNode.setName(newName);
+            notifySubscribers(EventTypes.NODE_EDITED, createDraftNodeDTO(node));
+        }
     }
 
     public void changeAuthor(Integer id, String newAuthor){
         DraftNode node = nodes.get(id);
-        if (node instanceof Project)
+        if (node instanceof Project) {
             ((Project) node).setAuthor(newAuthor);
+            notifySubscribers(EventTypes.NODE_EDITED, createDraftNodeDTO(node));
+        }
     }
 
     public void changePath(Integer id, String newPath){
         DraftNode node = nodes.get(id);
-        if (node instanceof Project)
+        if (node instanceof Project) {
             ((Project) node).setPath(newPath);
+            notifySubscribers(EventTypes.NODE_EDITED, createDraftNodeDTO(node));
+        }
+    }
+
+    private void getSubtree(DraftNode node, Vector<DraftNodeDTO> subtree){
+        subtree.add(createDraftNodeDTO(node));
+        if (node instanceof DraftNodeComposite parent)
+            for (DraftNode child : parent.getChildren())
+                getSubtree(child, subtree);
+    }
+
+    public Vector<DraftNodeDTO> getSubtree(Integer id){
+        Vector<DraftNodeDTO> subtree = new Vector<>();
+        DraftNode node = nodes.get(id);
+        if (node != null) getSubtree(node, subtree);
+        return subtree;
+    }
+
+    public boolean isAncestor(Integer parentId, Integer id){
+        DraftNode parent = nodes.get(parentId), child = nodes.get(id);
+        return child != null && child.isAncestor(parent);
+    }
+
+    private DraftNodeDTO getProject(DraftNode node){
+        if (node == null) return null;
+        if (node instanceof Project) return createDraftNodeDTO(node);
+        return getProject(node.getParent());
+    }
+
+    public DraftNodeDTO getProject(Integer id){
+        return getProject(nodes.get(id));
+    }
+
+    private DraftNodeDTO getBuilding(DraftNode node){
+        if (node == null) return null;
+        if (node instanceof Building) return createDraftNodeDTO(node);
+        return getBuilding(node.getParent());
+    }
+
+    public DraftNodeDTO getBuilding(Integer id){
+        return getBuilding(nodes.get(id));
     }
 }

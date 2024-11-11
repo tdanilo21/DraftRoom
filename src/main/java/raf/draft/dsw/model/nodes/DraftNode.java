@@ -17,7 +17,7 @@ public abstract class DraftNode {
     public abstract Class<? extends DraftNode>[] getAllowedChildrenTypes();
 
     public boolean isAncestor(DraftNode ancestor) {
-        if (parent == null) return false;
+        if (ancestor == null || parent == null) return false;
         if (parent.equals(ancestor)) return true;
         return parent.isAncestor(ancestor);
     }
