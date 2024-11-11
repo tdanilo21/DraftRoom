@@ -34,11 +34,11 @@ public class ApplicationFramework {
         repository.addSubscriber(MainFrame.getInstance().getProjectViewController(), EventTypes.NODE_EDITED);
 
         Logger consoleLogger = LoggerFactory.createLogger(LoggerFactory.CONSOLE);
-        messageGenerator.addSubscriber(consoleLogger);
+        messageGenerator.addSubscriber(consoleLogger, EventTypes.MESSAGE_GENERATED);
 
         Logger fileLogger = LoggerFactory.createLogger(LoggerFactory.FILE);
-        messageGenerator.addSubscriber(fileLogger);
+        messageGenerator.addSubscriber(fileLogger, EventTypes.MESSAGE_GENERATED);
 
-        messageGenerator.addSubscriber(mainFrame);
+        messageGenerator.addSubscriber(mainFrame, EventTypes.MESSAGE_GENERATED);
     }
 }

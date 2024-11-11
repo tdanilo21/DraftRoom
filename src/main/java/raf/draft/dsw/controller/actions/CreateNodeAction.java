@@ -27,7 +27,7 @@ public class CreateNodeAction extends AbstractRoomAction {
         DraftRoomRepository repository = ApplicationFramework.getInstance().getRepository();
 
         if (repository.hasChildWithName(parent.getData().id(), parameters[0])){
-            System.err.println("Node with the same name already exists at the same path.");
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object with the same name already exists at the same path.", MessageTypes.WARNING);
             return;
         }
 
@@ -38,6 +38,8 @@ public class CreateNodeAction extends AbstractRoomAction {
         MainFrame.getInstance().getRepoTreeModel().insertNodeInto(child, parent, parent.getChildCount());
         DraftRepository repoTreeView = MainFrame.getInstance().getRepoTreeView();
         repoTreeView.expandPath(repoTreeView.getSelectionPath());
+
+        ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has been created.", MessageTypes.NOTIFICATION);
     }
 
     private void perform(DraftTreeNode selectedNode, DraftNodeTypes type){
@@ -62,12 +64,11 @@ public class CreateNodeAction extends AbstractRoomAction {
     public void actionPerformed(ActionEvent e) {
         DraftTreeNode selectedNode = (DraftTreeNode)MainFrame.getInstance().getRepoTreeView().getLastSelectedPathComponent();
         if (selectedNode == null){
-            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Node has not been selected.", MessageTypes.ERROR);
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has not been selected.", MessageTypes.ERROR);
             return;
         }
         Vector<DraftNodeTypes> allowedTypes = ApplicationFramework.getInstance().getRepository().getAllowedChildrenTypes(selectedNode.getData().id());
         if (allowedTypes.isEmpty()){
-            System.err.println(STR."Cannot add children to \{selectedNode.getData().name()}.");
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage(STR."Cannot add children to \{selectedNode.getData().name()}.", MessageTypes.WARNING);
             return;
         }

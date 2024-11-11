@@ -20,7 +20,7 @@ public class ChangeAuthorAction extends AbstractRoomAction {
     public void actionPerformed(ActionEvent e) {
         DraftTreeNode selectedNode = (DraftTreeNode) MainFrame.getInstance().getRepoTreeView().getLastSelectedPathComponent();
         if (selectedNode == null){
-            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Node has not been selected.", MessageTypes.ERROR);
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has not been selected.", MessageTypes.ERROR);
             return;
         }
         DraftRoomRepository repository = ApplicationFramework.getInstance().getRepository();
@@ -31,6 +31,7 @@ public class ChangeAuthorAction extends AbstractRoomAction {
         String newAuthor = JOptionPane.showInputDialog(null, "New author", "Change author", JOptionPane.QUESTION_MESSAGE);
         if (newAuthor != null){
             repository.changeAuthor(selectedNode.getData().id(), newAuthor);
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Author has been changed.", MessageTypes.NOTIFICATION);
         }
     }
 }

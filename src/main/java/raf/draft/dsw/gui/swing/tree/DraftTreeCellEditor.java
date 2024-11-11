@@ -2,6 +2,7 @@ package raf.draft.dsw.gui.swing.tree;
 
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.MainFrame;
+import raf.draft.dsw.model.messages.MessageTypes;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
 
 import javax.swing.*;
@@ -53,13 +54,14 @@ public class DraftTreeCellEditor extends DefaultTreeCellEditor implements Action
             DraftRoomRepository repository = ApplicationFramework.getInstance().getRepository();
             String newName = e.getActionCommand();
             if (repository.hasSiblingWithName(draftTreeNode.getData().id(), newName)) {
-                System.err.println("Node with the same name already exists at the same path.");
+                ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object with the same name already exists at the same path.", MessageTypes.WARNING);
                 return;
             }
             stopCellEditing();
             repository.renameNode(draftTreeNode.getData().id(), newName);
             draftTreeNode.setName(newName);
             MainFrame.getInstance().getRepoTreeModel().reload(draftTreeNode);
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has been renamed.", MessageTypes.NOTIFICATION);
         }
     }
 }

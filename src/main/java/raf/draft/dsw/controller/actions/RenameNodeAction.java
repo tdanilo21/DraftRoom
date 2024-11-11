@@ -22,24 +22,24 @@ public class RenameNodeAction extends AbstractRoomAction {
     public void actionPerformed(ActionEvent e) {
         DraftTreeNode selectedNode = (DraftTreeNode) MainFrame.getInstance().getRepoTreeView().getLastSelectedPathComponent();
         if (selectedNode == null){
-            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Node has not been selected.", MessageTypes.ERROR);
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has not been selected.", MessageTypes.ERROR);
             return;
         }
         DraftRoomRepository repository = ApplicationFramework.getInstance().getRepository();
         if (repository.isReadOnly(selectedNode.getData().id())){
-            System.err.println(STR."\{selectedNode.getUserObject()} cannot be renamed");
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage(STR."\{selectedNode.getUserObject()} cannot be renamed", MessageTypes.WARNING);
             return;
         }
         String newName = JOptionPane.showInputDialog(null, "New name", "Rename object", JOptionPane.QUESTION_MESSAGE);
         if (newName != null){
             if (repository.hasSiblingWithName(selectedNode.getData().id(), newName)){
-                System.err.println("Node with the same name already exists at the same path.");
+                ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object with the same name already exists at the same path.", MessageTypes.WARNING);
                 return;
             }
             repository.renameNode(selectedNode.getData().id(), newName);
             selectedNode.setName(newName);
             MainFrame.getInstance().getRepoTreeModel().reload(selectedNode);
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has been renamed.", MessageTypes.NOTIFICATION);
         }
     }
 }
