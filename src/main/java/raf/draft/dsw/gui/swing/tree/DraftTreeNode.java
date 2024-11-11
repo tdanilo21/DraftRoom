@@ -16,7 +16,7 @@ public class DraftTreeNode extends DefaultMutableTreeNode {
     }
 
     public void setName(String newName){
-        data = new DraftNodeDTO(data.id(), data.type(), newName, data.color());
+        data = new DraftNodeDTO(data.id(), data.type(), newName, data.author(), data.color(), data.parent());
         setUserObject(data.name());
     }
 }
