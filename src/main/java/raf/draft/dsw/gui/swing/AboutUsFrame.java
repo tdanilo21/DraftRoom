@@ -43,7 +43,7 @@ public class AboutUsFrame extends JFrame {
         setTitle("AboutUs");
 
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 80, 5));
-        panel.add(createProfile("Iva Videnov RN 15/23","/images/Avatar.png"));
+        panel.add(createProfile("Iva Videnov RN 15/23","/images/iva.png"));
         panel.add(createProfile("Danilo Trninić RN 19/23","/images/danilo.png"));
 
         Box box = new Box(BoxLayout.Y_AXIS);
