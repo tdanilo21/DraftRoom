@@ -1,5 +1,6 @@
 package raf.draft.dsw.controller.messagegenerator;
 
+import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.model.messages.Message;
 
 import java.io.File;
@@ -10,8 +11,8 @@ import java.nio.file.Paths;
 
 public class FileLogger extends Logger{
     @Override
-    public void notify(Object state) {
-        if(state instanceof Message message) {
+    public void notify(EventTypes type, Object state) {
+        if(type == EventTypes.MESSAGE_GENERATED && state instanceof Message message) {
             try {
                 String path = STR."\{Paths.get("").toAbsolutePath()}\\src\\main\\resources\\log.txt";
                 File file = new File(path);

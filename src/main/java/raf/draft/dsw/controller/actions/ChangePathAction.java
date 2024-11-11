@@ -20,7 +20,7 @@ public class ChangePathAction extends AbstractRoomAction {
     public void actionPerformed(ActionEvent e) {
         DraftTreeNode selectedNode = (DraftTreeNode) MainFrame.getInstance().getRepoTreeView().getLastSelectedPathComponent();
         if (selectedNode == null){
-            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Node has not been selected.", MessageTypes.ERROR);
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has not been selected.", MessageTypes.ERROR);
             return;
         }
         DraftRoomRepository repository = ApplicationFramework.getInstance().getRepository();
@@ -31,6 +31,7 @@ public class ChangePathAction extends AbstractRoomAction {
         String newPath = JOptionPane.showInputDialog(null, "New path", "Change path", JOptionPane.QUESTION_MESSAGE);
         if (newPath != null){
             repository.changePath(selectedNode.getData().id(), newPath);
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Path has been changed.", MessageTypes.NOTIFICATION);
         }
     }
 }

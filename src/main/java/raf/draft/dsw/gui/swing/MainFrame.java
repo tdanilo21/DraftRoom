@@ -75,8 +75,8 @@ public class MainFrame extends JFrame implements ISubscriber {
     }
 
     @Override
-    public void notify(Object state) {
-        if (state instanceof Message message){
+    public void notify(EventTypes type, Object state) {
+        if (type == EventTypes.MESSAGE_GENERATED && state instanceof Message message){
             JOptionPane.showMessageDialog(null, message.getText(), message.getType().toString(),
                 switch (message.getType()){
                     case MessageTypes.ERROR -> JOptionPane.ERROR_MESSAGE;

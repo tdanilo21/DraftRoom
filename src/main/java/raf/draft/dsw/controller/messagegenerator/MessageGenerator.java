@@ -1,5 +1,6 @@
 package raf.draft.dsw.controller.messagegenerator;
 
+import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.IPublisher;
 import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.model.messages.Message;
@@ -14,21 +15,21 @@ public class MessageGenerator implements IPublisher {
         subscribers = new Vector<>();
     }
     @Override
-    public void addSubscriber(ISubscriber subscriber){
+    public void addSubscriber(ISubscriber subscriber, EventTypes... types){
         subscribers.add(subscriber);
     }
     @Override
-    public void removeSubscriber(ISubscriber subscriber){
+    public void removeSubscriber(ISubscriber subscriber, EventTypes... types){
         subscribers.remove(subscriber);
     }
     @Override
-    public void notifySubscribers(Object state){
+    public void notifySubscribers(EventTypes type, Object state){
         for(ISubscriber subscriber : subscribers){
-            subscriber.notify(state);
+            subscriber.notify(type, state);
         }
     }
     public void generateMessage(String text, MessageTypes type){
         Message message = new Message(text, type, LocalDateTime.now());
-        notifySubscribers(message);
+        notifySubscribers(EventTypes.MESSAGE_GENERATED, message);
     }
 }

@@ -22,7 +22,7 @@ public class DeleteNodeAction extends AbstractRoomAction {
     public void actionPerformed(ActionEvent e) {
         DraftTreeNode selectedNode = (DraftTreeNode)MainFrame.getInstance().getRepoTreeView().getLastSelectedPathComponent();
         if (selectedNode == null){
-            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Node has not been selected.", MessageTypes.ERROR);
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has not been selected.", MessageTypes.ERROR);
             return;
         }
         DraftRoomRepository repository = ApplicationFramework.getInstance().getRepository();
@@ -38,6 +38,7 @@ public class DeleteNodeAction extends AbstractRoomAction {
         if (choice == JOptionPane.YES_OPTION){
             repository.deleteNode(selectedNode.getData().id());
             MainFrame.getInstance().getRepoTreeModel().removeNodeFromParent(selectedNode);
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has been deleted.", MessageTypes.NOTIFICATION);
         }
     }
 }
