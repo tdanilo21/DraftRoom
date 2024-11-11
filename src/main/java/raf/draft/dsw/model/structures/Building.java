@@ -1,17 +1,16 @@
 package raf.draft.dsw.model.structures;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
-import raf.draft.dsw.model.nodes.Renamable;
+import raf.draft.dsw.model.nodes.Named;
 
 import java.awt.*;
 import java.util.Random;
 
 @Getter @Setter
-public class Building extends DraftNodeComposite implements Renamable {
+public class Building extends DraftNodeComposite implements Named {
     private String name;
     private Color color;
 

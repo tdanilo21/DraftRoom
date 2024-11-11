@@ -23,39 +23,37 @@ public class CreateNodeAction extends AbstractRoomAction {
         putValue(SHORT_DESCRIPTION, "Add");
     }
 
-    private void insertNode(DraftTreeNode parent, DraftTreeNode child){
+    private void insertNode(DraftTreeNode parent, DraftNodeTypes type, String... parameters){
         DraftRoomRepository repository = ApplicationFramework.getInstance().getRepository();
-        repository.addChild(parent.getData().id(), child.getData().id());
 
+        if (repository.hasChildWithName(parent.getData().id(), parameters[0])){
+            System.err.println("Node with the same name already exists at the same path.");
+            return;
+        }
+
+        DraftNodeDTO node = repository.createNode(type, parameters);
+        repository.addChild(parent.getData().id(), node.id());
+
+        DraftTreeNode child = new DraftTreeNode(node);
         MainFrame.getInstance().getRepoTreeModel().insertNodeInto(child, parent, parent.getChildCount());
         DraftRepository repoTreeView = MainFrame.getInstance().getRepoTreeView();
         repoTreeView.expandPath(repoTreeView.getSelectionPath());
     }
 
     private void perform(DraftTreeNode selectedNode, DraftNodeTypes type){
-        DraftRoomRepository repository = ApplicationFramework.getInstance().getRepository();
         String[] result;
         switch(type){
             case DraftNodeTypes.PROJECT:
                 result = CreateNodeOptionPane.showDialog("New project", new String[]{"name", "author"});
-                if (result != null){
-                    DraftNodeDTO node = repository.createNode(DraftNodeTypes.PROJECT, result[0], result[1], "");
-                    insertNode(selectedNode, new DraftTreeNode(node));
-                }
+                if (result != null) insertNode(selectedNode, DraftNodeTypes.PROJECT, result[0], result[1], "");
                 break;
             case DraftNodeTypes.BUILDING:
                 result = CreateNodeOptionPane.showDialog("New Building", new String[]{"name"});
-                if (result != null){
-                    DraftNodeDTO node = repository.createNode(DraftNodeTypes.BUILDING, result[0]);
-                    insertNode(selectedNode, new DraftTreeNode(node));
-                }
+                if (result != null) insertNode(selectedNode, DraftNodeTypes.BUILDING, result[0]);
                 break;
             case DraftNodeTypes.ROOM:
                 result = CreateNodeOptionPane.showDialog("New Room", new String[]{"name"});
-                if (result != null){
-                    DraftNodeDTO node = repository.createNode(DraftNodeTypes.ROOM, result[0]);
-                    insertNode(selectedNode, new DraftTreeNode(node));
-                }
+                if (result != null) insertNode(selectedNode, DraftNodeTypes.ROOM, result[0]);
                 break;
         }
     }

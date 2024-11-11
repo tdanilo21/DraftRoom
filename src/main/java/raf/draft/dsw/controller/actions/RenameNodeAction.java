@@ -33,6 +33,10 @@ public class RenameNodeAction extends AbstractRoomAction {
         }
         String newName = JOptionPane.showInputDialog(null, "New name", "Rename object", JOptionPane.QUESTION_MESSAGE);
         if (newName != null){
+            if (repository.hasSiblingWithName(selectedNode.getData().id(), newName)){
+                System.err.println("Node with the same name already exists at the same path.");
+                return;
+            }
             repository.renameNode(selectedNode.getData().id(), newName);
             selectedNode.setName(newName);
             MainFrame.getInstance().getRepoTreeModel().reload(selectedNode);
