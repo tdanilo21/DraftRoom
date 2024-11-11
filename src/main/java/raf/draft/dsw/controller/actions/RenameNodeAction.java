@@ -3,6 +3,7 @@ package raf.draft.dsw.controller.actions;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.gui.swing.tree.DraftTreeNode;
+import raf.draft.dsw.model.messages.MessageTypes;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
 
 import javax.swing.*;
@@ -21,12 +22,13 @@ public class RenameNodeAction extends AbstractRoomAction {
     public void actionPerformed(ActionEvent e) {
         DraftTreeNode selectedNode = (DraftTreeNode) MainFrame.getInstance().getRepoTreeView().getLastSelectedPathComponent();
         if (selectedNode == null){
-            System.err.println("Node has not been selected");
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Node has not been selected.", MessageTypes.ERROR);
             return;
         }
         DraftRoomRepository repository = ApplicationFramework.getInstance().getRepository();
         if (repository.isReadOnly(selectedNode.getData().id())){
             System.err.println(STR."\{selectedNode.getUserObject()} cannot be renamed");
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage(STR."\{selectedNode.getUserObject()} cannot be renamed", MessageTypes.WARNING);
             return;
         }
         String newName = JOptionPane.showInputDialog(null, "New name", "Rename object", JOptionPane.QUESTION_MESSAGE);
