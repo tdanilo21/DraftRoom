@@ -7,6 +7,7 @@ import raf.draft.dsw.gui.swing.CreateNodeOptionPane;
 import raf.draft.dsw.gui.swing.tree.DraftRepository;
 import raf.draft.dsw.gui.swing.tree.DraftTreeNode;
 import raf.draft.dsw.gui.swing.MainFrame;
+import raf.draft.dsw.model.messages.MessageTypes;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
 
 import javax.swing.*;
@@ -40,10 +41,6 @@ public class CreateNodeAction extends AbstractRoomAction {
     }
 
     private void perform(DraftTreeNode selectedNode, DraftNodeTypes type){
-        if (!type.equals(DraftNodeTypes.PROJECT) && !type.equals(DraftNodeTypes.BUILDING) && !type.equals(DraftNodeTypes.ROOM)){
-            System.err.println(STR."Invalid type (\{type}) of node to create");
-            return;
-        }
         String[] result;
         switch(type){
             case DraftNodeTypes.PROJECT:
@@ -65,12 +62,13 @@ public class CreateNodeAction extends AbstractRoomAction {
     public void actionPerformed(ActionEvent e) {
         DraftTreeNode selectedNode = (DraftTreeNode)MainFrame.getInstance().getRepoTreeView().getLastSelectedPathComponent();
         if (selectedNode == null){
-            System.err.println("Node has not been selected");
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Node has not been selected.", MessageTypes.ERROR);
             return;
         }
         Vector<DraftNodeTypes> allowedTypes = ApplicationFramework.getInstance().getRepository().getAllowedChildrenTypes(selectedNode.getData().id());
         if (allowedTypes.isEmpty()){
-            System.err.println("Selected node cannot have children");
+            System.err.println(STR."Cannot add children to \{selectedNode.getData().name()}.");
+            ApplicationFramework.getInstance().getMessageGenerator().generateMessage(STR."Cannot add children to \{selectedNode.getData().name()}.", MessageTypes.WARNING);
             return;
         }
         if (allowedTypes.size() > 1){
