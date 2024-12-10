@@ -10,6 +10,10 @@ public class WashingMachine extends RectangularElement {
         super(w, h, location, angle, id);
     }
 
+    public WashingMachine(int w, int h, Point location, Integer id){
+        super(w, h, location, 0, id);
+    }
+
     @Override
     public Prototype clone(Integer id) {
         return new WashingMachine(w, h, location, angle, id);

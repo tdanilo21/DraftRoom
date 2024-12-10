@@ -2,6 +2,8 @@ package raf.draft.dsw.model.structures.room;
 
 import lombok.Getter;
 import lombok.Setter;
+import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.controller.dtos.DraftNodeTypes;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.Named;
 import raf.draft.dsw.model.structures.room.interfaces.Prototype;
@@ -21,6 +23,12 @@ public abstract class RoomElement extends DraftNode implements Named, Prototype,
         this.location = location;
         this.angle = angle;
         this.name = "Element";
+    }
+
+    @Override
+    public DraftNodeDTO getDTO() {
+        Integer parentId = (parent == null ? null : parent.getId());
+        return new DraftNodeDTO(id, DraftNodeTypes.ROOM_ELEMENT, name, null, null, parentId);
     }
 
     protected int multiply(int a, float b){

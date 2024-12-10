@@ -9,7 +9,7 @@ import raf.draft.dsw.core.ApplicationFramework;
 import java.util.Vector;
 
 public class RoomViewController implements ISubscriber {
-    private RoomView roomView;
+    private final RoomView roomView;
 
     public RoomViewController(RoomView roomView){
         this.roomView = roomView;

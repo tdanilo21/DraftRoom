@@ -1,7 +1,7 @@
 package raf.draft.dsw.controller.dtos;
 
 public enum DraftNodeTypes {
-    PROJECT_EXPLORER, PROJECT, BUILDING, ROOM;
+    PROJECT_EXPLORER, PROJECT, BUILDING, ROOM, ROOM_ELEMENT;
 
     @Override
     public String toString(){

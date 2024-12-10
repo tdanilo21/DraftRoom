@@ -1,6 +1,5 @@
 package raf.draft.dsw.gui.swing.tree;
 
-import jdk.jfr.Event;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.dtos.DraftNodeTypes;
 import raf.draft.dsw.controller.observer.EventTypes;
@@ -14,9 +13,9 @@ import java.util.Vector;
 
 public class TreeMouseListener extends MouseAdapter implements IPublisher {
     private Vector<ISubscriber> subscribers;
-    private DraftRepository tree;
+    private DraftTree tree;
 
-    public TreeMouseListener(DraftRepository tree){
+    public TreeMouseListener(DraftTree tree){
         this.tree = tree;
         subscribers = new Vector<>();
     }

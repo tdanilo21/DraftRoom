@@ -1,6 +1,7 @@
 package raf.draft.dsw.model.nodes;
 
 import lombok.Getter;
+import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 
 import java.util.Arrays;
 import java.util.Vector;
@@ -20,14 +21,14 @@ public abstract class DraftNodeComposite extends DraftNode{
             return;
         }
         if (!Arrays.stream(getAllowedChildrenTypes()).toList().contains(child.getClass())){
-            System.err.println("Child type is not compatable with allowed types of parent");
+            System.err.println("Child type is not compatible with allowed types of parent");
             return;
         }
         if (isAncestor(child)){
             System.err.println("Child cannot be ancestor of parent");
             return;
         }
-        DraftNodeComposite oldParent = (DraftNodeComposite)child.parent;
+        DraftNodeComposite oldParent = child.parent;
         if (oldParent != null) oldParent.removeChild(child);
         child.parent = this;
         children.add(child);
@@ -35,5 +36,20 @@ public abstract class DraftNodeComposite extends DraftNode{
 
     public void removeChild(DraftNode child){
         children.remove(child);
+        child.setParent(null);
+    }
+
+    public boolean hasChildWithName(String name){
+        for (DraftNode child : children)
+            if (child instanceof Named named && named.getName().equals(name))
+                return true;
+        return false;
+    }
+
+    @Override
+    public void getSubtree(Vector<DraftNodeDTO> subtree) {
+        subtree.add(getDTO());
+        for (DraftNode child : children)
+            child.getSubtree(subtree);
     }
 }

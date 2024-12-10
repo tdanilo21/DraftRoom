@@ -5,12 +5,18 @@ import raf.draft.dsw.model.structures.room.RoomElement;
 import raf.draft.dsw.model.structures.room.interfaces.TriangularVisualElement;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 public class Sink extends RoomElement implements TriangularVisualElement {
     private int a;
 
-    public Sink(int a, Point location, float rotation, Integer id){
-        super(location, rotation, id);
+    public Sink(int a, Point location, float angle, Integer id){
+        super(location, angle, id);
+        this.a = a;
+    }
+
+    public Sink(int a, Point location, Integer id){
+        super(location, 0, id);
         this.a = a;
     }
 
@@ -23,6 +29,11 @@ public class Sink extends RoomElement implements TriangularVisualElement {
     public int getA(){
         // TODO: Transform to pixel space
         return a;
+    }
+
+    @Override
+    public Point2D getCenter() {
+        return new Point2D.Float(location.x + (float)a / 2.0f, location.y + (float)a / 2.0f);
     }
 
     @Override

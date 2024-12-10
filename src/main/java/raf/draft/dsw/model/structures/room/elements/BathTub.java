@@ -10,6 +10,10 @@ public class BathTub extends RectangularElement {
         super(w, h, location, angle, id);
     }
 
+    public BathTub(int w, int h, Point location, Integer id){
+        super(w, h, location, 0, id);
+    }
+
     @Override
     public Prototype clone(Integer id) {
         return new BathTub(w, h, location, angle, id);

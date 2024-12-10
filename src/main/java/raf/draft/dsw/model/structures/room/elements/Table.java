@@ -10,6 +10,10 @@ public class Table extends RectangularElement {
         super(w, h, location, angle, id);
     }
 
+    public Table(int w, int h, Point location, Integer id){
+        super(w, h, location, 0, id);
+    }
+
     @Override
     public Prototype clone(Integer id) {
         return new Table(w, h, location, angle, id);

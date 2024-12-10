@@ -4,7 +4,7 @@ import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.dtos.DraftNodeTypes;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.CreateNodeOptionPane;
-import raf.draft.dsw.gui.swing.tree.DraftRepository;
+import raf.draft.dsw.gui.swing.tree.DraftTree;
 import raf.draft.dsw.gui.swing.tree.DraftTreeNode;
 import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.model.messages.MessageTypes;
@@ -31,12 +31,11 @@ public class CreateNodeAction extends AbstractRoomAction {
             return;
         }
 
-        DraftNodeDTO node = repository.createNode(type, parameters);
-        repository.addChild(parent.getData().id(), node.id());
+        DraftNodeDTO node = repository.createNode(type, parent.getData().id(), parameters);
 
         DraftTreeNode child = new DraftTreeNode(node);
         MainFrame.getInstance().getRepoTreeModel().insertNodeInto(child, parent, parent.getChildCount());
-        DraftRepository repoTreeView = MainFrame.getInstance().getRepoTreeView();
+        DraftTree repoTreeView = MainFrame.getInstance().getRepoTreeView();
         repoTreeView.expandPath(repoTreeView.getSelectionPath());
 
         ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has been created.", MessageTypes.NOTIFICATION);

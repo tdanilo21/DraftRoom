@@ -3,13 +3,12 @@ package raf.draft.dsw.gui.swing;
 import lombok.Getter;
 import raf.draft.dsw.controller.actions.ActionManager;
 import raf.draft.dsw.controller.observer.EventTypes;
-import raf.draft.dsw.controller.messagegenerator.MessageGenerator;
 import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.mainpanel.*;
 import raf.draft.dsw.gui.swing.mainpanel.project.ProjectViewController;
 import raf.draft.dsw.gui.swing.mainpanel.room.RoomViewController;
-import raf.draft.dsw.gui.swing.tree.DraftRepository;
+import raf.draft.dsw.gui.swing.tree.DraftTree;
 import raf.draft.dsw.gui.swing.tree.DraftTreeCellEditor;
 import raf.draft.dsw.gui.swing.tree.DraftTreeNode;
 import raf.draft.dsw.gui.swing.tree.TreeMouseListener;
@@ -36,7 +35,7 @@ public class MainFrame extends JFrame implements ISubscriber {
     }
 
     private ActionManager actionManager;
-    private DraftRepository repoTreeView;
+    private DraftTree repoTreeView;
     private DefaultTreeModel repoTreeModel;
     private RoomViewController roomViewController;
     private ProjectViewController projectViewController;
@@ -58,7 +57,7 @@ public class MainFrame extends JFrame implements ISubscriber {
 
         DraftTreeNode root = new DraftTreeNode(ApplicationFramework.getInstance().getRepository().getRoot());
         repoTreeModel = new DefaultTreeModel(root);
-        repoTreeView = new DraftRepository(repoTreeModel);
+        repoTreeView = new DraftTree(repoTreeModel);
         repoTreeView.setEditable(true);
         repoTreeView.setCellEditor(new DraftTreeCellEditor(repoTreeView, (DefaultTreeCellRenderer) repoTreeView.getCellRenderer()));
         TreeMouseListener treeMouseListener = new TreeMouseListener(repoTreeView);

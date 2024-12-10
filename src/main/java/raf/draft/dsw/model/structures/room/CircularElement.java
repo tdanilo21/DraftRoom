@@ -3,6 +3,7 @@ package raf.draft.dsw.model.structures.room;
 import raf.draft.dsw.model.structures.room.interfaces.CircularVisualElement;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 public abstract class CircularElement extends RoomElement implements CircularVisualElement {
     protected int r;
