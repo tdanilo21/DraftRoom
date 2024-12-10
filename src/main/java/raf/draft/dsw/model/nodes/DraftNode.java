@@ -14,7 +14,9 @@ public abstract class DraftNode {
         this.id = id;
     }
 
-    public abstract Class<? extends DraftNode>[] getAllowedChildrenTypes();
+    public Class<? extends DraftNode>[] getAllowedChildrenTypes(){
+        return new Class[]{};
+    }
 
     public boolean isAncestor(DraftNode ancestor) {
         if (ancestor == null || parent == null) return false;
