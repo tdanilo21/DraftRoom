@@ -18,9 +18,9 @@ public abstract class RectangularElement extends RoomElement implements Rectangu
     protected void rotate90(){
         angle = (float)Math.PI / 2;
         Point2D center = new Point2D.Double(location.getX() + w / 2, location.getY() + h / 2);
-        AffineTransform t = AffineTransform.getRotateInstance(angle, center.getX(), center.getY());
+        AffineTransform f = AffineTransform.getRotateInstance(angle, center.getX(), center.getY());
         translate(w, 0);
-        location = t.transform(location, null);
+        location = f.transform(location, null);
         float temp = w; w = h; h = temp;
         angle *= -1;
     }

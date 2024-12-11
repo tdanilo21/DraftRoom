@@ -49,17 +49,17 @@ public abstract class RoomElement extends DraftNode implements Named, Prototype,
     protected Point2D toPixelSpace(Point2D a){
         float scaleFactor = getRoom().getScaleFactor();
         Point2D d = getRoom().getLocation();
-        AffineTransform t = AffineTransform.getScaleInstance(scaleFactor, scaleFactor);
-        t.concatenate(AffineTransform.getTranslateInstance(d.getX(), d.getY()));
-        return t.transform(a, null);
+        AffineTransform f = AffineTransform.getScaleInstance(scaleFactor, scaleFactor);
+        f.concatenate(AffineTransform.getTranslateInstance(d.getX(), d.getY()));
+        return f.transform(a, null);
     }
 
     protected Point2D fromPixelSpace(Point2D a){
         float scaleFactor = getRoom().getScaleFactor();
         Point2D d = getRoom().getLocation();
-        AffineTransform t = AffineTransform.getScaleInstance(1.0f / scaleFactor, 1.0f / scaleFactor);
-        t.concatenate(AffineTransform.getTranslateInstance(-d.getX(), -d.getY()));
-        return t.transform(a, null);
+        AffineTransform f = AffineTransform.getScaleInstance(1.0f / scaleFactor, 1.0f / scaleFactor);
+        f.concatenate(AffineTransform.getTranslateInstance(-d.getX(), -d.getY()));
+        return f.transform(a, null);
     }
 
     @Override

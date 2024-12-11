@@ -11,13 +11,14 @@ import raf.draft.dsw.model.nodes.Named;
 import raf.draft.dsw.model.structures.room.RoomElement;
 import raf.draft.dsw.model.structures.room.interfaces.RectangularVisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
+import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Vector;
 
-public class Room extends DraftNodeComposite implements Named, RectangularVisualElement {
+public class Room extends DraftNodeComposite implements Named, Wall {
     @Getter @Setter
     private String name;
 
@@ -44,6 +45,7 @@ public class Room extends DraftNodeComposite implements Named, RectangularVisual
         return new DraftNodeDTO(id, DraftNodeTypes.ROOM, name, null, getColor(), parentId);
     }
 
+    private static final float wallWidth = 20;
     private HashMap<VisualElementTypes, Integer> nameCounters;
     private float w, h;
     @Getter
@@ -107,13 +109,20 @@ public class Room extends DraftNodeComposite implements Named, RectangularVisual
     }
 
     @Override
-    public float getHInPixelSpace() { return h * scaleFactor; }
+    public float getHInPixelSpace() {
+        return h * scaleFactor;
+    }
 
     @Override
     public Point2D getCenterInPixelSpace() {
         Point2D location = getLocationInPixelSpace();
         float w = getWInPixelSpace(), h = getHInPixelSpace();
         return new Point2D.Double(location.getX() + w / 2, location.getY() + h / 2);
+    }
+
+    @Override
+    public float getWallWidth() {
+        return Room.wallWidth;
     }
 
     @Override
