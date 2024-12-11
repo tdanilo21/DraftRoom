@@ -2,6 +2,7 @@ package raf.draft.dsw.model.repository;
 
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.dtos.DraftNodeTypes;
+import raf.draft.dsw.controller.dtos.VisualElementTypes;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.IPublisher;
 import raf.draft.dsw.controller.observer.ISubscriber;
@@ -12,6 +13,9 @@ import raf.draft.dsw.model.structures.Building;
 import raf.draft.dsw.model.structures.Project;
 import raf.draft.dsw.model.structures.ProjectExplorer;
 import raf.draft.dsw.model.structures.Room;
+import raf.draft.dsw.model.structures.room.RoomElement;
+import raf.draft.dsw.model.structures.room.elements.*;
+import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -46,14 +50,31 @@ class RoomFactory implements DraftNodeFactory{
     }
 }
 
+class RoomElementFactory{
+    public static RoomElement createRoomElement(VisualElementTypes type, Integer id, Point location, int... dimensions){
+        return switch (type){
+            case VisualElementTypes.BED -> new Bed(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.BATH_TUB -> new BathTub(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.CLOSET -> new Closet(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.TABLE -> new Table(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.WASHING_MACHINE -> new WashingMachine(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.BOILER -> new Boiler(dimensions[0], location, id);
+            case VisualElementTypes.DOOR -> new Door(dimensions[0], location, id);
+            case VisualElementTypes.TOILET -> new Toilet(dimensions[0], location, id);
+            case VisualElementTypes.SINK -> new Sink(dimensions[0], location, id);
+            default -> null;
+        };
+    }
+}
+
 public class DraftRoomRepository implements IPublisher {
-    private HashMap<Integer, DraftNode> nodes;
+    private final HashMap<Integer, DraftNode> nodes;
     private Integer K;
     private final ProjectExplorerFactory projectExplorerFactory;
     private final ProjectFactory projectFactory;
     private final BuildingFactory buildingFactory;
     private final RoomFactory roomFactory;
-    private HashMap<EventTypes, Vector<ISubscriber> > subscribers;
+    private final HashMap<EventTypes, Vector<ISubscriber> > subscribers;
 
 
     public DraftRoomRepository(){
@@ -67,7 +88,7 @@ public class DraftRoomRepository implements IPublisher {
 
         subscribers = new HashMap<>();
 
-        createNode(DraftNodeTypes.PROJECT_EXPLORER);
+        createNode(DraftNodeTypes.PROJECT_EXPLORER, null);
     }
 
     @Override
@@ -94,16 +115,12 @@ public class DraftRoomRepository implements IPublisher {
 
     public boolean hasChildWithName(Integer parentId, String name){
         DraftNode node = nodes.get(parentId);
-        if (node instanceof DraftNodeComposite parent)
-            for (DraftNode child : parent.getChildren())
-                if (child instanceof Named named && named.getName().equals(name))
-                    return true;
-        return false;
+        return node instanceof DraftNodeComposite parent && parent.hasChildWithName(name);
     }
 
     public boolean hasSiblingWithName(Integer id, String name){
         DraftNodeComposite parent = nodes.get(id).getParent();
-        return parent != null && hasChildWithName(parent.getId(), name);
+        return parent != null && parent.hasChildWithName(name);
     }
 
     public Vector<Integer> getChildrenIds(Integer id){
@@ -116,43 +133,23 @@ public class DraftRoomRepository implements IPublisher {
         return ids;
     }
 
-    private Integer getParentId(DraftNode node){
-        if (node.getParent() != null)
-            return node.getParent().getId();
-        return null;
-    }
-
-    private Color getColor(DraftNode node){
-        if (node != null && node.getParent() instanceof Building)
-            return ((Building) node.getParent()).getColor();
-        return null;
-    }
-
-    private DraftNodeDTO createDraftNodeDTO(DraftNode node){
-        if (node instanceof ProjectExplorer)
-            return new DraftNodeDTO(node.getId(), DraftNodeTypes.PROJECT_EXPLORER, "ProjectExplorer", null, null, null);
-        if (node instanceof Project)
-            return new DraftNodeDTO(node.getId(), DraftNodeTypes.PROJECT, ((Project) node).getName(), ((Project) node).getAuthor(), null, getParentId(node));
-        if (node instanceof Building)
-            return new DraftNodeDTO(node.getId(), DraftNodeTypes.BUILDING, ((Building) node).getName(), null, ((Building) node).getColor(), getParentId(node));
-        if (node instanceof Room)
-            return new DraftNodeDTO(node.getId(), DraftNodeTypes.ROOM, ((Room) node).getName(), null, getColor(node), getParentId(node));
-        return null;
-    }
-
-    public DraftNodeDTO createNode(DraftNodeTypes type, String... parameters){
+    public DraftNodeDTO createNode(DraftNodeTypes type, Integer parentId, String... parameters){
         DraftNode node = switch (type) {
             case DraftNodeTypes.PROJECT_EXPLORER -> projectExplorerFactory.createNode(K, parameters);
             case DraftNodeTypes.PROJECT -> projectFactory.createNode(K, parameters);
             case DraftNodeTypes.BUILDING -> buildingFactory.createNode(K, parameters);
             case DraftNodeTypes.ROOM -> roomFactory.createNode(K, parameters);
+            default -> null;
         };
         if (node == null) return null;
         if (node instanceof Named namedNode && node.getParent() != null && hasChildWithName(node.getParent().getId(), namedNode.getName()))
             return null;
+        DraftNode parent = nodes.get(parentId);
+        if (parent instanceof DraftNodeComposite composite) composite.addChild(node);
         K++;
         nodes.put(node.getId(), node);
-        return createDraftNodeDTO(node);
+        notifySubscribers(EventTypes.NODE_CREATED, node.getDTO());
+        return node.getDTO();
     }
 
     public Vector<DraftNodeTypes> getAllowedChildrenTypes(Integer id){
@@ -167,20 +164,18 @@ public class DraftRoomRepository implements IPublisher {
 
     public void addChild(Integer parentId, Integer id){
         DraftNode parent = nodes.get(parentId), child = nodes.get(id);
-        if (parent instanceof DraftNodeComposite) {
-            boolean newNode = child.getParent() == null;
-            ((DraftNodeComposite) parent).addChild(child);
-            if (newNode) notifySubscribers(EventTypes.NODE_CREATED, createDraftNodeDTO(child));
-            else notifySubscribers(EventTypes.NODE_EDITED, createDraftNodeDTO(child));
+        if (parent instanceof DraftNodeComposite composite) {
+            composite.addChild(child);
+            notifySubscribers(EventTypes.NODE_EDITED, child.getDTO());
         }
     }
 
     public DraftNodeDTO getNode(Integer id){
-        return createDraftNodeDTO(nodes.get(id));
+        return nodes.get(id).getDTO();
     }
 
     public DraftNodeDTO getRoot(){
-        return createDraftNodeDTO(nodes.get(0));
+        return nodes.get(0).getDTO();
     }
 
     public boolean isReadOnly(Integer id){
@@ -206,7 +201,6 @@ public class DraftRoomRepository implements IPublisher {
         }
         DraftNodeComposite parent = node.getParent();
         if (parent != null) parent.removeChild(node);
-        node.setParent(null);
     }
 
     public void removeNode(Integer id){
@@ -214,8 +208,8 @@ public class DraftRoomRepository implements IPublisher {
     }
 
     private void deleteNode(DraftNode node){
-        if (node instanceof DraftNodeComposite)
-            for (DraftNode child : ((DraftNodeComposite) node).getChildren())
+        if (node instanceof DraftNodeComposite composite)
+            for (DraftNode child : composite.getChildren())
                 deleteNode(child);
         nodes.remove(node.getId());
     }
@@ -230,16 +224,16 @@ public class DraftRoomRepository implements IPublisher {
             System.err.println("Node is read-only");
             return;
         }
-        notifySubscribers(EventTypes.NODE_DELETED, createDraftNodeDTO(node));
         removeNode(node);
         deleteNode(node);
+        notifySubscribers(EventTypes.NODE_DELETED, node.getDTO());
     }
 
     public void renameNode(Integer id, String newName){
         DraftNode node = nodes.get(id);
-        if (node instanceof Named namedNode && (node.getParent() == null || !hasChildWithName(node.getParent().getId(), newName))) {
+        if (node instanceof Named namedNode && hasSiblingWithName(id, newName)){
             namedNode.setName(newName);
-            notifySubscribers(EventTypes.NODE_EDITED, createDraftNodeDTO(node));
+            notifySubscribers(EventTypes.NODE_EDITED, node.getDTO());
         }
     }
 
@@ -247,7 +241,7 @@ public class DraftRoomRepository implements IPublisher {
         DraftNode node = nodes.get(id);
         if (node instanceof Project) {
             ((Project) node).setAuthor(newAuthor);
-            notifySubscribers(EventTypes.NODE_EDITED, createDraftNodeDTO(node));
+            notifySubscribers(EventTypes.NODE_EDITED, node.getDTO());
         }
     }
 
@@ -255,21 +249,14 @@ public class DraftRoomRepository implements IPublisher {
         DraftNode node = nodes.get(id);
         if (node instanceof Project) {
             ((Project) node).setPath(newPath);
-            notifySubscribers(EventTypes.NODE_EDITED, createDraftNodeDTO(node));
+            notifySubscribers(EventTypes.NODE_EDITED, node.getDTO());
         }
-    }
-
-    private void getSubtree(DraftNode node, Vector<DraftNodeDTO> subtree){
-        subtree.add(createDraftNodeDTO(node));
-        if (node instanceof DraftNodeComposite parent)
-            for (DraftNode child : parent.getChildren())
-                getSubtree(child, subtree);
     }
 
     public Vector<DraftNodeDTO> getSubtree(Integer id){
         Vector<DraftNodeDTO> subtree = new Vector<>();
         DraftNode node = nodes.get(id);
-        if (node != null) getSubtree(node, subtree);
+        if (node != null) node.getSubtree(subtree);
         return subtree;
     }
 
@@ -278,23 +265,67 @@ public class DraftRoomRepository implements IPublisher {
         return child != null && child.isAncestor(parent);
     }
 
-    private DraftNodeDTO getProject(DraftNode node){
-        if (node == null) return null;
-        if (node instanceof Project) return createDraftNodeDTO(node);
-        return getProject(node.getParent());
-    }
-
     public DraftNodeDTO getProject(Integer id){
-        return getProject(nodes.get(id));
-    }
-
-    private DraftNodeDTO getBuilding(DraftNode node){
-        if (node == null) return null;
-        if (node instanceof Building) return createDraftNodeDTO(node);
-        return getBuilding(node.getParent());
+        DraftNode node = nodes.get(id);
+        if (node != null){
+            Project project = node.getProject();
+            return project == null ? null : project.getDTO();
+        }
+        return null;
     }
 
     public DraftNodeDTO getBuilding(Integer id){
-        return getBuilding(nodes.get(id));
+        DraftNode node = nodes.get(id);
+        if (node != null){
+            Building building = node.getBuilding();
+            return building == null ? null : building.getDTO();
+        }
+        return null;
+    }
+
+    public VisualElement createRoomElement(VisualElementTypes type, Integer parentId, Point location, int... dimensions){
+        RoomElement roomElement = RoomElementFactory.createRoomElement(type, K, location, dimensions);
+        DraftNode node = nodes.get(parentId);
+        if (roomElement != null && node instanceof Room room){
+            // TODO: Check for overlaps
+            room.addChild(roomElement);
+            K++;
+            nodes.put(roomElement.getId(), roomElement);
+            notifySubscribers(EventTypes.NODE_CREATED, roomElement.getDTO());
+            return roomElement;
+        }
+        return null;
+    }
+
+    public VisualElement cloneRoomElement(Integer id){
+        DraftNode node = nodes.get(id);
+        if (node instanceof RoomElement roomElement){
+            RoomElement clone = (RoomElement)roomElement.clone(K);
+            if (clone != null) {
+                if (roomElement.getParent() != null) roomElement.getParent().addChild(clone);
+                K++;
+                nodes.put(clone.getId(), clone);
+                notifySubscribers(EventTypes.NODE_CREATED, clone.getDTO());
+                return clone;
+            }
+            return null;
+        }
+        return null;
+    }
+
+    public void initializeRoom(Integer roomId, int w, int h, int screenW, int screenH){
+        DraftNode node = nodes.get(roomId);
+        if (node instanceof Room room) room.initialize(w, h, screenW, screenH);
+    }
+
+    public void updateRoomScaleFactor(Integer roomId, int screenW, int screenH){
+        DraftNode node = nodes.get(roomId);
+        if (node instanceof Room room) room.updateScaleFactor(screenW, screenH);
+    }
+
+    public Vector<VisualElement> getVisualElements(Integer roomId){
+        DraftNode node = nodes.get(roomId);
+        if (node instanceof Room room) return room.getVisualElements();
+        return null;
     }
 }

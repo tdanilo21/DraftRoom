@@ -1,6 +1,6 @@
 package raf.draft.dsw.model.structures.room.interfaces;
 
 public interface TriangularVisualElement extends VisualElement {
-    int getA();
+    float getAInPixelSpace();
     void scaleA(float lambda);
 }

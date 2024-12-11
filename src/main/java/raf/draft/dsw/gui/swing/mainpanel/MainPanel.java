@@ -1,7 +1,6 @@
 package raf.draft.dsw.gui.swing.mainpanel;
 
 import lombok.Getter;
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 import raf.draft.dsw.gui.swing.mainpanel.project.ProjectView;
 import raf.draft.dsw.gui.swing.mainpanel.project.ProjectViewController;
 import raf.draft.dsw.gui.swing.mainpanel.room.RoomTab;
@@ -29,7 +28,7 @@ public class MainPanel extends JPanel {
 
         roomView.getModel().addChangeListener((ChangeEvent e) -> {
             if (roomView.getSelectedComponent() instanceof RoomTab roomTab)
-                projectViewController.selectedNodeChanged(roomTab.getNode());
+                projectViewController.selectedNodeChanged(roomTab.getRoom());
         });
 
         JPanel panel = new JPanel(new GridLayout(1, 1));

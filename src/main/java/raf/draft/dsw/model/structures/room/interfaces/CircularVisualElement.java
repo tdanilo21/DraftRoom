@@ -1,6 +1,6 @@
 package raf.draft.dsw.model.structures.room.interfaces;
 
 public interface CircularVisualElement extends VisualElement {
-    int getR();
+    float getRInPixelSpace();
     void scaleR(float lambda);
 }

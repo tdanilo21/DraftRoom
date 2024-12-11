@@ -2,7 +2,12 @@ package raf.draft.dsw.model.nodes;
 
 import lombok.Getter;
 import lombok.Setter;
+import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.model.structures.Building;
 import raf.draft.dsw.model.structures.Project;
+
+import java.awt.*;
+import java.util.Vector;
 
 @Getter
 public abstract class DraftNode {
@@ -33,5 +38,25 @@ public abstract class DraftNode {
         if (o == this) return true;
         if (o == null || getClass() != o.getClass()) return false;
         return id.equals(((DraftNode)o).id);
+    }
+
+    public Color getColor(){
+        return null;
+    }
+
+    public abstract DraftNodeDTO getDTO();
+
+    public void getSubtree(Vector<DraftNodeDTO> subtree){
+        subtree.add(getDTO());
+    }
+
+    public Project getProject(){
+        if (parent == null) return null;
+        return parent.getProject();
+    }
+
+    public Building getBuilding(){
+        if (parent == null) return null;
+        return parent.getBuilding();
     }
 }

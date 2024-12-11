@@ -8,7 +8,7 @@ import raf.draft.dsw.core.ApplicationFramework;
 public class ProjectViewController implements ISubscriber {
 
     private DraftNodeDTO node;
-    private ProjectView projectView;
+    private final ProjectView projectView;
 
     public ProjectViewController(ProjectView projectView){
         this.projectView = projectView;
