@@ -2,7 +2,7 @@ package raf.draft.dsw.model.repository;
 
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.dtos.DraftNodeTypes;
-import raf.draft.dsw.controller.dtos.RoomElementTypes;
+import raf.draft.dsw.controller.dtos.VisualElementTypes;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.IPublisher;
 import raf.draft.dsw.controller.observer.ISubscriber;
@@ -51,17 +51,18 @@ class RoomFactory implements DraftNodeFactory{
 }
 
 class RoomElementFactory{
-    public static RoomElement createRoomElement(RoomElementTypes type, Integer id, Point location, int... dimensions){
+    public static RoomElement createRoomElement(VisualElementTypes type, Integer id, Point location, int... dimensions){
         return switch (type){
-            case RoomElementTypes.BED -> new Bed(dimensions[0], dimensions[1], location, id);
-            case RoomElementTypes.BATH_TUB -> new BathTub(dimensions[0], dimensions[1], location, id);
-            case RoomElementTypes.CLOSET -> new Closet(dimensions[0], dimensions[1], location, id);
-            case RoomElementTypes.TABLE -> new Table(dimensions[0], dimensions[1], location, id);
-            case RoomElementTypes.WASHING_MACHINE -> new WashingMachine(dimensions[0], dimensions[1], location, id);
-            case RoomElementTypes.BOILER -> new Boiler(dimensions[0], location, id);
-            case RoomElementTypes.DOOR -> new Door(dimensions[0], location, id);
-            case RoomElementTypes.TOILET -> new Toilet(dimensions[0], location, id);
-            case RoomElementTypes.SINK -> new Sink(dimensions[0], location, id);
+            case VisualElementTypes.BED -> new Bed(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.BATH_TUB -> new BathTub(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.CLOSET -> new Closet(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.TABLE -> new Table(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.WASHING_MACHINE -> new WashingMachine(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.BOILER -> new Boiler(dimensions[0], location, id);
+            case VisualElementTypes.DOOR -> new Door(dimensions[0], location, id);
+            case VisualElementTypes.TOILET -> new Toilet(dimensions[0], location, id);
+            case VisualElementTypes.SINK -> new Sink(dimensions[0], location, id);
+            default -> null;
         };
     }
 }
@@ -282,11 +283,15 @@ public class DraftRoomRepository implements IPublisher {
         return null;
     }
 
-    public VisualElement createRoomElement(RoomElementTypes type, Integer parentId, Point location, int... dimensions){
+    public VisualElement createRoomElement(VisualElementTypes type, Integer parentId, Point location, int... dimensions){
         RoomElement roomElement = RoomElementFactory.createRoomElement(type, K, location, dimensions);
-        if (roomElement != null){
+        DraftNode node = nodes.get(parentId);
+        if (roomElement != null && node instanceof Room room){
+            // TODO: Check for overlaps
+            room.addChild(roomElement);
             K++;
             nodes.put(roomElement.getId(), roomElement);
+            notifySubscribers(EventTypes.NODE_CREATED, roomElement.getDTO());
             return roomElement;
         }
         return null;
@@ -297,6 +302,7 @@ public class DraftRoomRepository implements IPublisher {
         if (node instanceof RoomElement roomElement){
             RoomElement clone = (RoomElement)roomElement.clone(K);
             if (clone != null) {
+                if (roomElement.getParent() != null) roomElement.getParent().addChild(clone);
                 K++;
                 nodes.put(clone.getId(), clone);
                 notifySubscribers(EventTypes.NODE_CREATED, clone.getDTO());
@@ -304,6 +310,22 @@ public class DraftRoomRepository implements IPublisher {
             }
             return null;
         }
+        return null;
+    }
+
+    public void initializeRoom(Integer roomId, int w, int h, int screenW, int screenH){
+        DraftNode node = nodes.get(roomId);
+        if (node instanceof Room room) room.initialize(w, h, screenW, screenH);
+    }
+
+    public void updateRoomScaleFactor(Integer roomId, int screenW, int screenH){
+        DraftNode node = nodes.get(roomId);
+        if (node instanceof Room room) room.updateScaleFactor(screenW, screenH);
+    }
+
+    public Vector<VisualElement> getVisualElements(Integer roomId){
+        DraftNode node = nodes.get(roomId);
+        if (node instanceof Room room) return room.getVisualElements();
         return null;
     }
 }

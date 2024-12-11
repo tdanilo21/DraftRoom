@@ -1,21 +1,28 @@
 package raf.draft.dsw.model.structures.room.elements;
 
+import raf.draft.dsw.controller.dtos.VisualElementTypes;
 import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 import raf.draft.dsw.model.structures.room.RectangularElement;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 public class WashingMachine extends RectangularElement {
-    public WashingMachine(int w, int h, Point location, float angle, Integer id){
+    public WashingMachine(float w, float h, Point2D location, float angle, Integer id){
         super(w, h, location, angle, id);
     }
 
-    public WashingMachine(int w, int h, Point location, Integer id){
+    public WashingMachine(float w, float h, Point2D location, Integer id){
         super(w, h, location, 0, id);
     }
 
     @Override
+    public VisualElementTypes getType() {
+        return VisualElementTypes.WASHING_MACHINE;
+    }
+
+    @Override
     public Prototype clone(Integer id) {
-        return new WashingMachine(w, h, location, angle, id);
+        return new WashingMachine(w, h, (Point2D)location.clone(), angle, id);
     }
 }

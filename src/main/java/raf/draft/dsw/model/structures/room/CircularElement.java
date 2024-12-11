@@ -6,20 +6,20 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 public abstract class CircularElement extends RoomElement implements CircularVisualElement {
-    protected int r;
+    protected float r;
 
-    public CircularElement(int r, Point location, float angle, Integer id){
+    public CircularElement(float r, Point2D location, float angle, Integer id){
         super(location, angle, id);
+        this.r = r;
     }
 
     @Override
-    public int getR(){
-        // TODO: Transform to pixel space
-        return r;
+    public float getRInPixelSpace(){
+        return toPixelSpace(r);
     }
 
     @Override
     public void scaleR(float lambda) {
-        r = multiply(r, lambda);
+        r *= lambda;
     }
 }
