@@ -1,8 +1,8 @@
-package raf.draft.dsw.gui.swing;
+package raf.draft.dsw.gui.swing.dialogs;
 
 import javax.swing.*;
 
-public class CreateNodeOptionPane {
+public class CreateNodePane {
 
     public static String[] showDialog(String title, String[] fields){
         Object[] message = new Object[2*fields.length];

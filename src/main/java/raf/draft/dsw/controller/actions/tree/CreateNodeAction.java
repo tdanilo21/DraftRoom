@@ -1,9 +1,10 @@
-package raf.draft.dsw.controller.actions;
+package raf.draft.dsw.controller.actions.tree;
 
+import raf.draft.dsw.controller.actions.AbstractRoomAction;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.dtos.DraftNodeTypes;
 import raf.draft.dsw.core.ApplicationFramework;
-import raf.draft.dsw.gui.swing.CreateNodeOptionPane;
+import raf.draft.dsw.gui.swing.dialogs.CreateNodePane;
 import raf.draft.dsw.gui.swing.tree.DraftTree;
 import raf.draft.dsw.gui.swing.tree.DraftTreeNode;
 import raf.draft.dsw.gui.swing.MainFrame;
@@ -45,15 +46,15 @@ public class CreateNodeAction extends AbstractRoomAction {
         String[] result;
         switch(type){
             case DraftNodeTypes.PROJECT:
-                result = CreateNodeOptionPane.showDialog("New project", new String[]{"name", "author"});
+                result = CreateNodePane.showDialog("New project", new String[]{"name", "author"});
                 if (result != null) insertNode(selectedNode, DraftNodeTypes.PROJECT, result[0], result[1], "");
                 break;
             case DraftNodeTypes.BUILDING:
-                result = CreateNodeOptionPane.showDialog("New Building", new String[]{"name"});
+                result = CreateNodePane.showDialog("New Building", new String[]{"name"});
                 if (result != null) insertNode(selectedNode, DraftNodeTypes.BUILDING, result[0]);
                 break;
             case DraftNodeTypes.ROOM:
-                result = CreateNodeOptionPane.showDialog("New Room", new String[]{"name"});
+                result = CreateNodePane.showDialog("New Room", new String[]{"name"});
                 if (result != null) insertNode(selectedNode, DraftNodeTypes.ROOM, result[0]);
                 break;
         }

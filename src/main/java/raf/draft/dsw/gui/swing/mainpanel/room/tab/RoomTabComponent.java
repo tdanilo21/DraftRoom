@@ -1,4 +1,4 @@
-package raf.draft.dsw.gui.swing.mainpanel.room;
+package raf.draft.dsw.gui.swing.mainpanel.room.tab;
 
 import javax.swing.*;
 import java.awt.*;

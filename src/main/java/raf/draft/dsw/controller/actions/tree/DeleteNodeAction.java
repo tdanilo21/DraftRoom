@@ -1,5 +1,6 @@
-package raf.draft.dsw.controller.actions;
+package raf.draft.dsw.controller.actions.tree;
 
+import raf.draft.dsw.controller.actions.AbstractRoomAction;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.tree.DraftTreeNode;
 import raf.draft.dsw.gui.swing.MainFrame;

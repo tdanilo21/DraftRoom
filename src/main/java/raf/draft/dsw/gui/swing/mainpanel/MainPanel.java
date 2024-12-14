@@ -3,7 +3,7 @@ package raf.draft.dsw.gui.swing.mainpanel;
 import lombok.Getter;
 import raf.draft.dsw.gui.swing.mainpanel.project.ProjectView;
 import raf.draft.dsw.gui.swing.mainpanel.project.ProjectViewController;
-import raf.draft.dsw.gui.swing.mainpanel.room.RoomTab;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.gui.swing.mainpanel.room.RoomView;
 import raf.draft.dsw.gui.swing.mainpanel.room.RoomViewController;
 
