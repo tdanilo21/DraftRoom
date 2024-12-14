@@ -3,6 +3,7 @@ package raf.draft.dsw.model.nodes;
 import lombok.Getter;
 import lombok.Setter;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.structures.Building;
 import raf.draft.dsw.model.structures.Project;
 
@@ -19,8 +20,10 @@ public abstract class DraftNode {
         this.id = id;
     }
 
-    public Class<? extends DraftNode>[] getAllowedChildrenTypes(){
-        return new Class[]{};
+    public abstract DraftNodeTypes getNodeType();
+
+    public Vector<DraftNodeTypes> getAllowedChildrenTypes(){
+        return new Vector<>();
     }
 
     public boolean isAncestor(DraftNode ancestor) {

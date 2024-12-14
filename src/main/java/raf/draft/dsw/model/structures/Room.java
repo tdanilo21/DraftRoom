@@ -3,13 +3,14 @@ package raf.draft.dsw.model.structures;
 import lombok.Getter;
 import lombok.Setter;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
-import raf.draft.dsw.controller.dtos.DraftNodeTypes;
-import raf.draft.dsw.controller.dtos.VisualElementTypes;
+import raf.draft.dsw.model.enums.DraftNodeTypes;
+import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
 import raf.draft.dsw.model.nodes.Named;
 import raf.draft.dsw.model.structures.room.RoomElement;
-import raf.draft.dsw.model.structures.room.interfaces.RectangularVisualElement;
+import raf.draft.dsw.model.structures.room.curves.Curve;
+import raf.draft.dsw.model.structures.room.elements.Table;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
@@ -29,8 +30,15 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     @Override
-    public Class<? extends DraftNode>[] getAllowedChildrenTypes() {
-        return new Class[]{RoomElement.class};
+    public DraftNodeTypes getNodeType() {
+        return DraftNodeTypes.ROOM;
+    }
+
+    @Override
+    public Vector<DraftNodeTypes> getAllowedChildrenTypes() {
+        Vector<DraftNodeTypes> types = new Vector<>();
+        types.add(DraftNodeTypes.ROOM_ELEMENT);
+        return types;
     }
 
     @Override
@@ -45,12 +53,12 @@ public class Room extends DraftNodeComposite implements Named, Wall {
         return new DraftNodeDTO(id, DraftNodeTypes.ROOM, name, null, getColor(), parentId);
     }
 
-    private static final float wallWidth = 20;
+    private static final double wallWidth = 20;
     private HashMap<VisualElementTypes, Integer> nameCounters;
-    private float w, h;
+    @Setter
+    private double w, h;
     @Getter
-    private float scaleFactor;
-    @Getter
+    private double scaleFactor;
     private Point2D location;
     @Getter
     private boolean initialized;
@@ -59,7 +67,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     public void addChild(DraftNode child){
         super.addChild(child);
         if (child instanceof RoomElement roomElement) {
-            VisualElementTypes type = roomElement.getType();
+            VisualElementTypes type = roomElement.getVisualElementType();
             nameCounters.putIfAbsent(type, 1);
             Integer index = nameCounters.get(type);
             nameCounters.replace(type, index+1);
@@ -67,12 +75,12 @@ public class Room extends DraftNodeComposite implements Named, Wall {
         }
     }
 
-    public void updateScaleFactor(float screenW, float screenH){
+    public void updateScaleFactor(double screenW, double screenH){
         scaleFactor = Math.min(screenW / w, screenH / h);
-        location = new Point2D.Float((screenW - w * scaleFactor) / 2, (screenH - h * scaleFactor) / 2);
+        location = new Point2D.Double((screenW - w * scaleFactor) / 2, (screenH - h * scaleFactor) / 2);
     }
 
-    public void initialize(int w, int h, int screenW, int screenH){
+    public void initialize(double w, double h, int screenW, int screenH){
         this.w = w; this.h = h;
         updateScaleFactor(screenW, screenH);
         nameCounters = new HashMap<>();
@@ -89,7 +97,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     @Override
-    public VisualElementTypes getType() {
+    public VisualElementTypes getVisualElementType() {
         return VisualElementTypes.WALL;
     }
 
@@ -99,49 +107,97 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     @Override
-    public float getAngle() {
+    public double getAngleInPixelSpace() {
         return 0;
     }
 
     @Override
-    public float getWInPixelSpace() {
+    public double getWInPixelSpace() {
         return w * scaleFactor;
     }
 
     @Override
-    public float getHInPixelSpace() {
+    public double getHInPixelSpace() {
         return h * scaleFactor;
     }
 
     @Override
     public Point2D getCenterInPixelSpace() {
         Point2D location = getLocationInPixelSpace();
-        float w = getWInPixelSpace(), h = getHInPixelSpace();
+        double w = getWInPixelSpace(), h = getHInPixelSpace();
         return new Point2D.Double(location.getX() + w / 2, location.getY() + h / 2);
     }
 
     @Override
-    public float getWallWidth() {
+    public double getWallWidth() {
         return Room.wallWidth;
     }
 
     @Override
-    public void translate(float dx, float dy) {
+    public void translate(double dx, double dy) {
 
     }
 
     @Override
-    public void rotate(float alpha) {
+    public void rotate(double alpha) {
 
     }
 
     @Override
-    public void scaleW(float lambda) {
+    public void scaleW(double lambda) {
         w *= lambda;
     }
 
     @Override
-    public void scaleH(float lambda) {
+    public void scaleH(double lambda) {
         h *= lambda;
+    }
+
+    @Override
+    public Point2D getCenter() {
+        return new Point2D.Double(w/2, h/2);
+    }
+
+    @Override
+    public boolean inside(Point2D p) {
+        Table rectangle = new Table(this, w, h, location, 0, -1);
+        if (!rectangle.inside(p)){
+            removeChild(rectangle);
+            nameCounters.put(VisualElementTypes.TABLE, nameCounters.get(VisualElementTypes.TABLE)-1);
+            return false;
+        }
+        rectangle.translate(wallWidth * scaleFactor, wallWidth * scaleFactor);
+        rectangle.scaleW(1 - 2*wallWidth/w);
+        rectangle.scaleH(1 - 2*wallWidth/h);
+        boolean ret = !rectangle.inside(p);
+        removeChild(rectangle);
+        nameCounters.put(VisualElementTypes.TABLE, nameCounters.get(VisualElementTypes.TABLE)-1);
+        return ret;
+    }
+
+    @Override
+    public boolean intersect(Curve curve) {
+        Table rectangle = new Table(this, w, h, location, 0, -1);
+        if (rectangle.intersect(curve)){
+            removeChild(rectangle);
+            nameCounters.put(VisualElementTypes.TABLE, nameCounters.get(VisualElementTypes.TABLE)-1);
+            return true;
+        }
+        rectangle.translate(wallWidth * scaleFactor, wallWidth * scaleFactor);
+        rectangle.scaleW(1 - 2*wallWidth/w);
+        rectangle.scaleH(1 - 2*wallWidth/h);
+        boolean ret = rectangle.intersect(curve);
+        removeChild(rectangle);
+        nameCounters.put(VisualElementTypes.TABLE, nameCounters.get(VisualElementTypes.TABLE)-1);
+        return ret;
+    }
+
+    @Override
+    public boolean overlap(VisualElement element) {
+        if (element instanceof Wall){
+            System.err.println("Detecting overlap between two walls");
+            return false;
+        }
+        return element.overlap(this);
     }
 }

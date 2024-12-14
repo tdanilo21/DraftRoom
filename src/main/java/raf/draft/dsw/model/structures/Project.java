@@ -3,10 +3,11 @@ package raf.draft.dsw.model.structures;
 import lombok.Getter;
 import lombok.Setter;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
-import raf.draft.dsw.controller.dtos.DraftNodeTypes;
-import raf.draft.dsw.model.nodes.DraftNode;
+import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
 import raf.draft.dsw.model.nodes.Named;
+
+import java.util.Vector;
 
 @Getter @Setter
 public class Project extends DraftNodeComposite implements Named {
@@ -22,8 +23,16 @@ public class Project extends DraftNodeComposite implements Named {
     }
 
     @Override
-    public Class<? extends DraftNode>[] getAllowedChildrenTypes() {
-        return new Class[]{Building.class, Room.class};
+    public DraftNodeTypes getNodeType() {
+        return DraftNodeTypes.PROJECT;
+    }
+
+    @Override
+    public Vector<DraftNodeTypes> getAllowedChildrenTypes() {
+        Vector<DraftNodeTypes> types = new Vector<>();
+        types.add(DraftNodeTypes.BUILDING);
+        types.add(DraftNodeTypes.ROOM);
+        return types;
     }
 
     @Override
