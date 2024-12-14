@@ -15,5 +15,8 @@ public class MyToolBar extends JToolBar {
         add(actionManager.getChangePathAction());
         add(actionManager.getDeleteNodeAction());
         add(actionManager.getAboutUsAction());
+
+        add(actionManager.getAddStateAction());
+        add(actionManager.getMoveStateAction());
     }
 }

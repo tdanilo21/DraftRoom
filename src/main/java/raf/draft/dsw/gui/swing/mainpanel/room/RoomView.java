@@ -1,6 +1,9 @@
 package raf.draft.dsw.gui.swing.mainpanel.room;
 
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTabComponent;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTabMouseListener;
 
 import javax.swing.*;
 
@@ -18,6 +21,8 @@ public class RoomView extends JTabbedPane {
 
     public void addTab(DraftNodeDTO room){
         RoomTab newTab = new RoomTab(room);
+        RoomTabMouseListener newTabMouseListener = new RoomTabMouseListener(newTab);
+        newTab.addMouseListener(newTabMouseListener);
         RoomTabComponent newTabComponent = new RoomTabComponent(this, room.name());
         add(newTab);
         int i = indexOfComponent(newTab);

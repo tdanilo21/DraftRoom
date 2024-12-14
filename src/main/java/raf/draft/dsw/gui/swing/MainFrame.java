@@ -4,6 +4,7 @@ import lombok.Getter;
 import raf.draft.dsw.controller.actions.ActionManager;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.ISubscriber;
+import raf.draft.dsw.controller.states.StateManager;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.mainpanel.*;
 import raf.draft.dsw.gui.swing.mainpanel.project.ProjectViewController;
@@ -35,6 +36,7 @@ public class MainFrame extends JFrame implements ISubscriber {
     }
 
     private ActionManager actionManager;
+    private StateManager stateManager;
     private DraftTree repoTreeView;
     private DefaultTreeModel repoTreeModel;
     private RoomViewController roomViewController;
@@ -48,6 +50,8 @@ public class MainFrame extends JFrame implements ISubscriber {
         setTitle("DraftRoom");
 
         actionManager = new ActionManager();
+
+        stateManager = new StateManager();
 
         MyMenuBar menu = new MyMenuBar(actionManager);
         setJMenuBar(menu);
