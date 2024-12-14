@@ -1,16 +1,20 @@
 package raf.draft.dsw.model.structures.room.interfaces;
 
-import raf.draft.dsw.controller.dtos.VisualElementTypes;
+import raf.draft.dsw.model.enums.VisualElementTypes;
+import raf.draft.dsw.model.structures.room.curves.Curve;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
 
 public interface VisualElement {
-    VisualElementTypes getType();
+    VisualElementTypes getVisualElementType();
     Integer getId();
     Point2D getLocationInPixelSpace();
-    float getAngle();
+    double getAngleInPixelSpace();
     Point2D getCenterInPixelSpace();
-    void translate(float dx, float dy);
-    void rotate(float alpha);
+    void translate(double dx, double dy);
+    void rotate(double alpha);
+    boolean overlap(VisualElement element);
+    boolean intersect(Curve curve);
+    boolean inside(Point2D p);
+    Point2D getCenter();
 }

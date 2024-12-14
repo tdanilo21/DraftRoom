@@ -1,5 +1,7 @@
 package raf.draft.dsw.controller.dtos;
 
+import raf.draft.dsw.model.enums.DraftNodeTypes;
+
 import java.awt.*;
 
 public record DraftNodeDTO(
