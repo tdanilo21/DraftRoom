@@ -1,8 +1,9 @@
 package raf.draft.dsw.controller.states;
 
-import raf.draft.dsw.controller.dtos.VisualElementTypes;
+
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.dialogs.RequestDimensionsPane;
+import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.messages.MessageTypes;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import javax.swing.*;
@@ -28,19 +29,19 @@ public class AddState implements State{
         type[8] = "Washing machine";
         VisualElementTypes selectedType = (VisualElementTypes)JOptionPane.showInputDialog(null, "Choose element type",
                         "Type selection", JOptionPane.QUESTION_MESSAGE, null, VisualElementTypes.values(), null);
-        int[] dims;
+        double[] dims;
         try{
             if (selectedType == VisualElementTypes.BOILER || selectedType == VisualElementTypes.TOILET
                     || selectedType == VisualElementTypes.DOOR || selectedType == VisualElementTypes.SINK){
                 int[] result = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width"}, null);
                 if (result == null) return;
-                dims = new int[]{result[0]};
+                dims = new double[]{result[0]};
                 if (selectedType == VisualElementTypes.BOILER || selectedType == VisualElementTypes.TOILET)
                     dims[0] /= 2;
             } else {
                 int[] result = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width", "Height"}, null);
                 if (result == null) return;
-                dims = new int[]{result[0], result[1]};
+                dims = new double[]{result[0], result[1]};
             }
         } catch(NumberFormatException e){
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Dimensions must be numbers", MessageTypes.ERROR);
