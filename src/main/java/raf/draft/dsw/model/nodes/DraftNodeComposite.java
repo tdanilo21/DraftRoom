@@ -20,7 +20,7 @@ public abstract class DraftNodeComposite extends DraftNode{
             System.err.println("Child is null");
             return;
         }
-        if (!Arrays.stream(getAllowedChildrenTypes()).toList().contains(child.getClass())){
+        if (!getAllowedChildrenTypes().contains(child.getNodeType())){
             System.err.println("Child type is not compatible with allowed types of parent");
             return;
         }

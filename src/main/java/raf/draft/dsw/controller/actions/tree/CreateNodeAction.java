@@ -2,7 +2,7 @@ package raf.draft.dsw.controller.actions.tree;
 
 import raf.draft.dsw.controller.actions.AbstractRoomAction;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
-import raf.draft.dsw.controller.dtos.DraftNodeTypes;
+import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.dialogs.CreateNodePane;
 import raf.draft.dsw.gui.swing.tree.DraftTree;

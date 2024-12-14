@@ -1,54 +1,85 @@
 package raf.draft.dsw.model.structures.room;
 
+import lombok.Setter;
+import raf.draft.dsw.model.structures.Room;
+import raf.draft.dsw.model.structures.room.curves.Curve;
+import raf.draft.dsw.model.structures.room.curves.Segment;
 import raf.draft.dsw.model.structures.room.interfaces.RectangularVisualElement;
+import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
-import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.Vector;
 
+@Setter
 public abstract class RectangularElement extends RoomElement implements RectangularVisualElement {
-    protected float w, h;
+    protected double w, h;
 
-    public RectangularElement(float w, float h, Point2D location, float angle, Integer id){
-        super(location, angle, id);
+    public RectangularElement(Room room, double w, double h, Point2D location, double angle, Integer id){
+        super(room, location, angle, id);
         this.w = w;
         this.h = h;
     }
 
     protected void rotate90(){
-        angle = (float)Math.PI / 2;
-        Point2D center = new Point2D.Double(location.getX() + w / 2, location.getY() + h / 2);
-        AffineTransform f = AffineTransform.getRotateInstance(angle, center.getX(), center.getY());
+        Point2D center = getCenter();
+        AffineTransform f = AffineTransform.getRotateInstance(Math.PI / 2, center.getX(), center.getY());
         translate(w, 0);
-        location = f.transform(location, null);
-        float temp = w; w = h; h = temp;
-        angle *= -1;
+        f.transform(location, location);
+        double temp = w; w = h; h = temp;
+        this.angle -= Math.PI / 2;
     }
 
     @Override
-    public float getWInPixelSpace(){
+    public double getWInPixelSpace(){
         return toPixelSpace(w);
     }
 
     @Override
-    public float getHInPixelSpace(){
+    public double getHInPixelSpace(){
         return toPixelSpace(h);
     }
 
     @Override
     public Point2D getCenterInPixelSpace() {
         Point2D location = getLocationInPixelSpace();
-        float w = getWInPixelSpace(), h = getHInPixelSpace();
+        double w = getWInPixelSpace(), h = getHInPixelSpace();
         return new Point2D.Double(location.getX() + w / 2, location.getY() + h / 2);
     }
 
     @Override
-    public void scaleW(float lambda) {
+    public void scaleW(double lambda) {
         w *= lambda;
     }
 
     @Override
-    public void scaleH(float lambda) {
+    public void scaleH(double lambda) {
         h *= lambda;
+    }
+
+    @Override
+    public Point2D getCenter() {
+        return new Point2D.Double(location.getX() + w / 2, location.getY() + h / 2);
+    }
+
+    @Override
+    public Vector<Point2D> getVertexes() {
+        Vector<Point2D> vertexes = new Vector<>();
+        vertexes.add((Point2D)location.clone());
+        vertexes.add(new Point2D.Double(location.getX(), location.getY()+h));
+        vertexes.add(new Point2D.Double(location.getX()+w, location.getY()+h));
+        vertexes.add(new Point2D.Double(location.getX()+w, location.getY()));
+        AffineTransform f = getRotation();
+        for (Point2D p : vertexes) f.transform(p, p);
+        return vertexes;
+    }
+
+    @Override
+    protected Vector<Curve> getEdgeCurves() {
+        Vector<Point2D> vertexes = getVertexes();
+        Vector<Curve> curves = new Vector<>();
+        for (int i = 0; i < vertexes.size(); i++)
+            curves.add(new Segment((Point2D)vertexes.get(i).clone(), (Point2D)vertexes.get((i+1) % vertexes.size()).clone()));
+        return curves;
     }
 }
