@@ -23,6 +23,8 @@ public class DoorPainter extends AbstractPainter{
         Graphics2D g2 = (Graphics2D)g;
         Point2D p = door.getLocationInPixelSpace();
         double r = door.getRInPixelSpace();
+        Point2D center = door.getCenterInPixelSpace();
+        f.concatenate(AffineTransform.getRotateInstance(door.getAngleInPixelSpace(), center.getX(), center.getY()));
         g2.setStroke(new BasicStroke(2));
 
         Point2D c = new Point2D.Double(p.getX() + r, p.getY() + r);

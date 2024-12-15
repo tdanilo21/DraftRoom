@@ -23,9 +23,9 @@ public class TablePainter extends AbstractPainter{
     public void paint(Graphics g, AffineTransform f) {
         Graphics2D g2 = (Graphics2D)g;
         Point2D p = table.getLocationInPixelSpace();
-        f.concatenate(AffineTransform.getTranslateInstance(p.getX(), p.getY()));
-        f.concatenate(AffineTransform.getRotateInstance(table.getAngleInPixelSpace(), p.getX(), p.getY()));
         double w = table.getWInPixelSpace(), h = table.getHInPixelSpace();
+        f.concatenate(AffineTransform.getTranslateInstance(p.getX(), p.getY()));
+        f.concatenate(AffineTransform.getRotateInstance(table.getAngleInPixelSpace(), w/2, h/2));
         g2.setStroke(new BasicStroke(2));
         Point2D a = new Point2D.Double(0, 0);
         Point2D b = new Point2D.Double(w, h);

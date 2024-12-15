@@ -23,9 +23,9 @@ public class ClosetPainter extends AbstractPainter{
     public void paint(Graphics g, AffineTransform f) {
         Graphics2D g2 = (Graphics2D)g;
         Point2D p = closet.getLocationInPixelSpace();
-        f.concatenate(AffineTransform.getTranslateInstance(p.getX(), p.getY()));
-        f.concatenate(AffineTransform.getRotateInstance(closet.getAngleInPixelSpace(), p.getX(), p.getY()));
         double w = closet.getWInPixelSpace(), h = closet.getHInPixelSpace();
+        f.concatenate(AffineTransform.getTranslateInstance(p.getX(), p.getY()));
+        f.concatenate(AffineTransform.getRotateInstance(closet.getAngleInPixelSpace(), w/2, h/2));
         g2.setStroke(new BasicStroke(2));
         Point2D a = new Point2D.Double(0, 0);
         Point2D b = new Point2D.Double(w, h);
