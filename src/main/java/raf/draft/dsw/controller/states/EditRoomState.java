@@ -12,7 +12,7 @@ import java.awt.*;
 public class EditRoomState extends AbstractState{
 
     @Override
-    public void mouseClick(int x, int y, VisualElement element, RoomTab roomTab) {
+    public void mouseClick(double x, double y, VisualElement element, RoomTab roomTab) {
         try{
             int[] dims = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width", "Height"}, null);
             if (dims == null) return;
