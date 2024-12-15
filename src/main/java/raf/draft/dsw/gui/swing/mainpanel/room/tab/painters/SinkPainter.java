@@ -25,6 +25,8 @@ public class SinkPainter extends AbstractPainter{
         Graphics2D g2 = (Graphics2D)g;
         Point2D b = sink.getLocationInPixelSpace();
         double a = sink.getAInPixelSpace();
+        Point2D center = sink.getCenterInPixelSpace();
+        f.concatenate(AffineTransform.getRotateInstance(sink.getAngleInPixelSpace(), center.getX(), center.getY()));
         g2.setStroke(new BasicStroke(2));
 
         Point2D c = new Point2D.Double(b.getX() + a, b.getY());

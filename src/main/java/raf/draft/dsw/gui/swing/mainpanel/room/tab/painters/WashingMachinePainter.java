@@ -22,9 +22,9 @@ public class WashingMachinePainter extends AbstractPainter{
     public void paint(Graphics g, AffineTransform f) {
         Graphics2D g2 = (Graphics2D)g;
         Point2D p = washingMachine.getLocationInPixelSpace();
-        f.concatenate(AffineTransform.getTranslateInstance(p.getX(), p.getY()));
-        f.concatenate(AffineTransform.getRotateInstance(washingMachine.getAngleInPixelSpace(), p.getX(), p.getY()));
         double w = washingMachine.getWInPixelSpace(), h = washingMachine.getHInPixelSpace();
+        f.concatenate(AffineTransform.getTranslateInstance(p.getX(), p.getY()));
+        f.concatenate(AffineTransform.getRotateInstance(washingMachine.getAngleInPixelSpace(), w/2, h/2));
         g2.setStroke(new BasicStroke(2));
         Point2D a = new Point2D.Double(0, 0);
         Point2D b = new Point2D.Double(w, h);
