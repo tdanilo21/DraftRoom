@@ -27,6 +27,7 @@ public class MyMenuBar extends JMenuBar {
         editMenu.add(actionManager.getZoomStateAction());
         editMenu.add(actionManager.getRotateLeftAction());
         editMenu.add(actionManager.getRotateRightAction());
+        editMenu.add(actionManager.getCopyPasteAction());
         add(editMenu);
 
         JMenu helpMenu = new JMenu("Help");

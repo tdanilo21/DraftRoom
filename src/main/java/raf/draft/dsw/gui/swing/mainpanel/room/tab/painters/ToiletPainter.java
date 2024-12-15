@@ -24,6 +24,8 @@ public class ToiletPainter extends AbstractPainter{
         Graphics2D g2 = (Graphics2D)g;
         Point2D p = toilet.getLocationInPixelSpace();
         double r = toilet.getRInPixelSpace();
+        Point2D center = toilet.getCenterInPixelSpace();
+        f.concatenate(AffineTransform.getRotateInstance(toilet.getAngleInPixelSpace(), center.getX(), center.getY()));
         g2.setStroke(new BasicStroke(2));
 
         Point2D p1 = new Point2D.Double(p.getX(), p.getY() + r/2);
