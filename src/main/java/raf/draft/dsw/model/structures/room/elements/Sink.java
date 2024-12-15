@@ -1,7 +1,9 @@
 package raf.draft.dsw.model.structures.room.elements;
 
+import lombok.Getter;
 import lombok.Setter;
 import raf.draft.dsw.model.enums.VisualElementTypes;
+import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.curves.Segment;
@@ -13,7 +15,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
-@Setter
+@Getter
 public class Sink extends RoomElement implements TriangularVisualElement {
     private double a;
 
@@ -29,24 +31,29 @@ public class Sink extends RoomElement implements TriangularVisualElement {
 
     @Override
     public double getAInPixelSpace(){
-        return toPixelSpace(a);
+        return getRoom().toPixelSpace(a);
     }
 
     @Override
     public Point2D getCenterInPixelSpace() {
-        Point2D location = getLocationInPixelSpace();
-        double a = getAInPixelSpace();
-        return new Point2D.Double(location.getX() + a / 2, location.getY() + a / 2);
+        return getRoom().toPixelSpace(getCenter());
     }
 
     @Override
     public void scaleA(double lambda) {
         a *= lambda;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
+    }
+
+    @Override
+    public void setA(double a) {
+        this.a = a;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public Point2D getCenter() {
-        return new Point2D.Double(location.getX() + a / 2, location.getY() + a / 2);
+        return new Point2D.Double(location.getX() + a / 2, location.getY() + a * (Math.sqrt(3) / 2));
     }
 
     @Override

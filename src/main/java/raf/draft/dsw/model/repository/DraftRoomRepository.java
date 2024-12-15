@@ -67,6 +67,11 @@ class RoomElementFactory{
 }
 
 public class DraftRoomRepository implements IPublisher {
+    private static DraftRoomRepository instance;
+    public static DraftRoomRepository getInstance(){
+        if (instance == null) instance = new DraftRoomRepository();
+        return instance;
+    }
     private final HashMap<Integer, DraftNode> nodes;
     private Integer K;
     private final ProjectExplorerFactory projectExplorerFactory;
@@ -76,7 +81,7 @@ public class DraftRoomRepository implements IPublisher {
     private final HashMap<EventTypes, Vector<ISubscriber> > subscribers;
 
 
-    public DraftRoomRepository(){
+    private DraftRoomRepository(){
         nodes = new HashMap<>();
         K = 0;
 
@@ -220,6 +225,8 @@ public class DraftRoomRepository implements IPublisher {
         removeNode(node);
         deleteNode(node);
         notifySubscribers(EventTypes.NODE_DELETED, node.getDTO());
+        if (node instanceof VisualElement)
+            notifySubscribers(EventTypes.VISUAL_ELEMENT_DELETED, node);
     }
 
     public void renameNode(Integer id, String newName){
@@ -284,10 +291,16 @@ public class DraftRoomRepository implements IPublisher {
                 K++;
                 nodes.put(roomElement.getId(), roomElement);
                 notifySubscribers(EventTypes.NODE_CREATED, roomElement.getDTO());
+                notifySubscribers(EventTypes.VISUAL_ELEMENT_CREATED, roomElement);
                 return roomElement;
             }
         }
         return null;
+    }
+
+    public boolean isRoomInitialized(Integer id){
+        DraftNode node = nodes.get(id);
+        return node instanceof Room && ((Room)node).isInitialized();
     }
 
     public VisualElement cloneRoomElement(Integer id){
@@ -298,6 +311,7 @@ public class DraftRoomRepository implements IPublisher {
                 K++;
                 nodes.put(clone.getId(), clone);
                 notifySubscribers(EventTypes.NODE_CREATED, clone.getDTO());
+                notifySubscribers(EventTypes.VISUAL_ELEMENT_CREATED, clone);
                 return clone;
             }
             return null;
@@ -319,5 +333,9 @@ public class DraftRoomRepository implements IPublisher {
         DraftNode node = nodes.get(roomId);
         if (node instanceof Room room) return room.getVisualElements();
         return null;
+    }
+
+    public void visualElementEdited(VisualElement element){
+        notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED , element);
     }
 }

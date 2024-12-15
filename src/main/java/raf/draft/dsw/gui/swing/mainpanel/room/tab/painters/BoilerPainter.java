@@ -1,4 +1,4 @@
-package raf.draft.dsw.gui.swing.mainpanel.room.tab;
+package raf.draft.dsw.gui.swing.mainpanel.room.tab.painters;
 
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.AbstractPainter;
 import raf.draft.dsw.model.structures.room.curves.CircularArc;

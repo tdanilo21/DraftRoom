@@ -24,14 +24,15 @@ public class ApplicationFramework {
     private MessageGenerator messageGenerator;
 
     public void initialize() {
-        repository = new DraftRoomRepository();
+        repository = DraftRoomRepository.getInstance();
         messageGenerator = new MessageGenerator();
 
         MainFrame mainFrame = MainFrame.getInstance();
         mainFrame.setVisible(true);
 
-        repository.addSubscriber(MainFrame.getInstance().getRoomViewController(), EventTypes.NODE_CREATED, EventTypes.NODE_DELETED, EventTypes.NODE_EDITED);
-        repository.addSubscriber(MainFrame.getInstance().getProjectViewController(), EventTypes.NODE_EDITED);
+        repository.addSubscriber(mainFrame.getRoomViewController(), EventTypes.NODE_CREATED, EventTypes.NODE_DELETED, EventTypes.NODE_EDITED,
+                EventTypes.VISUAL_ELEMENT_CREATED, EventTypes.VISUAL_ELEMENT_DELETED, EventTypes.VISUAL_ELEMENT_EDITED);
+        repository.addSubscriber(mainFrame.getProjectViewController(), EventTypes.NODE_EDITED);
 
         Logger consoleLogger = LoggerFactory.createLogger(LoggerFactory.CONSOLE);
         messageGenerator.addSubscriber(consoleLogger, EventTypes.MESSAGE_GENERATED);

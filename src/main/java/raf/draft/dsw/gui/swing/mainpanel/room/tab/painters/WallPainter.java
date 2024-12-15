@@ -1,6 +1,7 @@
 package raf.draft.dsw.gui.swing.mainpanel.room.tab.painters;
 
 import lombok.Getter;
+import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import raf.draft.dsw.model.structures.room.curves.Segment;
 import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
@@ -15,6 +16,12 @@ public class WallPainter extends AbstractPainter{
     public WallPainter(Wall wall){
         this.wall = wall;
     }
+
+    @Override
+    public VisualElement getElement() {
+        return wall;
+    }
+
     @Override
     public void paint(Graphics g, AffineTransform f) {
         Graphics2D g2 = (Graphics2D)g;

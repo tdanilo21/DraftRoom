@@ -1,8 +1,7 @@
 package raf.draft.dsw.controller.actions;
 
 import lombok.Getter;
-import raf.draft.dsw.controller.actions.state.AddStateAction;
-import raf.draft.dsw.controller.actions.state.MoveStateAction;
+import raf.draft.dsw.controller.actions.state.*;
 import raf.draft.dsw.controller.actions.tree.*;
 
 @Getter
@@ -16,8 +15,14 @@ public class ActionManager {
     private final ChangeAuthorAction changeAuthorAction;
     private final ChangePathAction changePathAction;
 
+    private final SelectStateAction selectStateAction;
     private final AddStateAction addStateAction;
+    private final DeleteStateAction deleteStateAction;
     private final MoveStateAction moveStateAction;
+    private final EditStateAction editStateAction;
+    private final ResizeStateAction resizeStateAction;
+    private final ZoomStateAction zoomStateAction;
+
 
     public ActionManager(){
         exitAction = new ExitAction();
@@ -29,7 +34,12 @@ public class ActionManager {
         changeAuthorAction = new ChangeAuthorAction();
         changePathAction = new ChangePathAction();
 
+        selectStateAction = new SelectStateAction();
         addStateAction = new AddStateAction();
+        deleteStateAction = new DeleteStateAction();
         moveStateAction = new MoveStateAction();
+        editStateAction = new EditStateAction();
+        resizeStateAction = new ResizeStateAction();
+        zoomStateAction = new ZoomStateAction();
     }
 }

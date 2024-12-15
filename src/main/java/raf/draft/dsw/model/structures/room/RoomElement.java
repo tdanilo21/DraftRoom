@@ -6,6 +6,7 @@ import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.Named;
+import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.curves.Segment;
@@ -14,7 +15,6 @@ import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.util.Collections;
 import java.util.Vector;
@@ -28,7 +28,7 @@ public abstract class RoomElement extends DraftNode implements Named, Prototype,
     public RoomElement(Room room, Point2D location, double angle, Integer id){
         super(id);
         room.addChild(this);
-        this.location = fromPixelSpace(location);
+        this.location = getRoom().fromPixelSpace(location);
         this.angle = angle;
     }
 
@@ -47,40 +47,14 @@ public abstract class RoomElement extends DraftNode implements Named, Prototype,
         return (Room)parent;
     }
 
-    private AffineTransform getTransformFromPixelSpace(){
-        Room room = getRoom();
-        double scaleFactor = 1 / room.getScaleFactor();
-        double w = room.getWInPixelSpace(), h = room.getHInPixelSpace() / 2;
-        double dx = -room.getLocationInPixelSpace().getX(), dy = -room.getLocationInPixelSpace().getY();
-        AffineTransform f = AffineTransform.getScaleInstance(scaleFactor, scaleFactor);
-        f.concatenate(AffineTransform.getTranslateInstance(dx, dy));
-        return f;
-    }
-
-    protected double toPixelSpace(double a){
-        return a * getRoom().getScaleFactor();
-    }
-
-    protected double fromPixelSpace(double a){
-        return a / getRoom().getScaleFactor();
-    }
-
-    protected Point2D toPixelSpace(Point2D a){
-        try{
-            return getTransformFromPixelSpace().inverseTransform(a, null);
-        } catch (NoninvertibleTransformException e){
-            System.err.println(e.getMessage());
-            return (Point2D)a.clone();
-        }
-    }
-
-    protected Point2D fromPixelSpace(Point2D a){
-        return getTransformFromPixelSpace().transform(a, null);
+    @Override
+    public Integer getRoomId() {
+        return getRoom().getId();
     }
 
     @Override
     public Point2D getLocationInPixelSpace(){
-        return toPixelSpace(location);
+        return getRoom().toPixelSpace(location);
     }
 
     @Override
@@ -90,12 +64,14 @@ public abstract class RoomElement extends DraftNode implements Named, Prototype,
 
     @Override
     public void translate(double dx, double dy){
-        location.setLocation(location.getX() + fromPixelSpace(dx), location.getY() + fromPixelSpace(dy));
+        location.setLocation(location.getX() + getRoom().fromPixelSpace(dx), location.getY() + getRoom().fromPixelSpace(dy));
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public void rotate(double alpha){
         angle += 2*Math.PI - alpha;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     protected AffineTransform getRotation(){
@@ -113,7 +89,7 @@ public abstract class RoomElement extends DraftNode implements Named, Prototype,
         for (Curve c : curves)
             if (element.intersect(c))
                 return true;
-        return inside(element.getCenter()) || element.inside(getCenter());
+        return contains(element.getCenter()) || element.contains(getCenter());
     }
 
     @Override
@@ -126,7 +102,7 @@ public abstract class RoomElement extends DraftNode implements Named, Prototype,
     }
 
     @Override
-    public boolean inside(Point2D p) {
+    public boolean contains(Point2D p) {
         Vector<Curve> curves = getEdgeCurves();
         double alpha = 0;
         Vector<Point2D> vertexes = getVertexes();

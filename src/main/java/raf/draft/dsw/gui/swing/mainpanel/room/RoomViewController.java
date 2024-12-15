@@ -1,11 +1,14 @@
 package raf.draft.dsw.gui.swing.mainpanel.room;
 
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.core.ApplicationFramework;
+import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
+import javax.swing.event.ChangeEvent;
 import java.util.Vector;
 
 public class RoomViewController implements ISubscriber {
@@ -13,6 +16,7 @@ public class RoomViewController implements ISubscriber {
 
     public RoomViewController(RoomView roomView){
         this.roomView = roomView;
+        roomView.getModel().addChangeListener((ChangeEvent e) -> getSelectedTab().updateElements());
     }
 
     private Vector<DraftNodeDTO> getRoomsInSubtree(DraftNodeDTO node){
@@ -51,5 +55,14 @@ public class RoomViewController implements ISubscriber {
                 case EventTypes.NODE_EDITED -> updateTabs(node);
             }
         }
+        if (state instanceof VisualElement element){
+            RoomTab selectedTab = getSelectedTab();
+            if (element.getRoomId().equals(selectedTab.getRoom().id()))
+                selectedTab.updateElements();
+        }
+    }
+
+    public RoomTab getSelectedTab(){
+        return (RoomTab)roomView.getSelectedComponent();
     }
 }

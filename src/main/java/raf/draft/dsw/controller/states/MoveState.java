@@ -1,16 +1,17 @@
 package raf.draft.dsw.controller.states;
 
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
-public class MoveState implements AbstractState {
-    @Override
-    public void mouseClick(int x, int y, VisualElement element, Integer roomId) {}
+import java.awt.geom.AffineTransform;
 
+public class MoveState extends AbstractState{
     @Override
-    public void mouseDragged(int dx, int dy, VisualElement element, Integer roomId) {
+    public void mouseDragged(int dx, int dy, VisualElement element, RoomTab roomTab) {
         if (element != null) element.translate(dx, dy);
         else{
-            // Move room view
+            roomTab.preConcatenateTransform(AffineTransform.getTranslateInstance(dx, dy));
+            roomTab.repaint();
         }
     }
 }
