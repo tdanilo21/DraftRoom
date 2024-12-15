@@ -25,7 +25,7 @@ public class BoilerPainter extends AbstractPainter {
         Graphics2D g2 = (Graphics2D)g;
         Point2D p = boiler.getCenterInPixelSpace();
         double r = boiler.getRInPixelSpace();
-        g2.setStroke(new BasicStroke());
+        g2.setStroke(new BasicStroke(2));
         drawCircularArc(new CircularArc(p, r, 0, 2*Math.PI), g2, f);
 
         Point2D p1 = new Point2D.Double(p.getX() - r/2, p.getY() - r/2);

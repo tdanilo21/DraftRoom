@@ -9,6 +9,7 @@ import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.AbstractPainter;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.PainterFactory;
 import raf.draft.dsw.model.structures.room.SimpleRectangle;
+import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import javax.swing.*;
