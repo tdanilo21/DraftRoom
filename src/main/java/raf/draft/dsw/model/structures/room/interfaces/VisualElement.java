@@ -6,7 +6,7 @@ import raf.draft.dsw.model.structures.room.curves.Curve;
 
 import java.awt.geom.Point2D;
 
-public interface VisualElement {
+public interface VisualElement extends Prototype {
     VisualElementTypes getVisualElementType();
     Integer getId();
     Integer getRoomId();

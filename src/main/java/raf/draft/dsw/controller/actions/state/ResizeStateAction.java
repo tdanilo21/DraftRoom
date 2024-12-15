@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 
 public class ResizeStateAction extends AbstractRoomAction {
     public ResizeStateAction(){
-        putValue(SMALL_ICON, loadIcon("/images/add.png"));
+        putValue(SMALL_ICON, loadIcon("/images/resize.png"));
         putValue(NAME, "Resize");
         putValue(SHORT_DESCRIPTION, "Resize");
     }

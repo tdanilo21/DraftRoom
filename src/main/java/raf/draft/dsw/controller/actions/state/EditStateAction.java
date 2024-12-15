@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 
 public class EditStateAction extends AbstractRoomAction {
     public EditStateAction(){
-        putValue(SMALL_ICON, loadIcon("/images/add.png"));
+        putValue(SMALL_ICON, loadIcon("/images/edit.png"));
         putValue(NAME, "Edit");
         putValue(SHORT_DESCRIPTION, "Edit");
     }

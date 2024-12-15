@@ -6,6 +6,7 @@ import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.curves.Segment;
+import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 import raf.draft.dsw.model.structures.room.interfaces.RectangularVisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
@@ -135,5 +136,10 @@ public class SimpleRectangle implements RectangularVisualElement {
 
     public boolean contains(VisualElement element){
         return !overlap(element) && contains(element.getCenter());
+    }
+
+    @Override
+    public Prototype clone() {
+        return new SimpleRectangle(room, room.toPixelSpace(w), room.toPixelSpace(h), room.toPixelSpace(location));
     }
 }
