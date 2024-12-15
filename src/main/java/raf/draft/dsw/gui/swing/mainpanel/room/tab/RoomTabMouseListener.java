@@ -7,9 +7,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
 
 public class RoomTabMouseListener extends MouseAdapter {
     private final RoomTab tab;
+    private int lastX, lastY;
 
     public RoomTabMouseListener(RoomTab tab){
         this.tab = tab;
@@ -19,5 +21,29 @@ public class RoomTabMouseListener extends MouseAdapter {
     public void mouseClicked(MouseEvent e) {
         VisualElement element = tab.getElementAt(e.getX(), e.getY());
         MainFrame.getInstance().getStateManager().mouseClick(e.getX(), e.getY(), element, tab.getRoom().id());
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        lastX = e.getX();
+        lastY = e.getY();
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        int dx = e.getX() - lastX, dy = e.getY() - lastY;
+        VisualElement element = tab.getElementAt(e.getX(), e.getY());
+        MainFrame.getInstance().getStateManager().mouseDragged(dx, dy, element, tab.getRoom().id());
+        lastX += dx; lastY += dy;
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+
     }
 }

@@ -5,7 +5,7 @@ import raf.draft.dsw.gui.swing.dialogs.RequestDimensionsPane;
 import raf.draft.dsw.model.messages.MessageTypes;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
-public class EditRoomState implements State{
+public class EditRoomState extends State{
 
     @Override
     public void mouseClick(int x, int y, VisualElement element, Integer roomId) {
@@ -16,7 +16,4 @@ public class EditRoomState implements State{
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Dimensions must be numbers", MessageTypes.ERROR);
         }
     }
-
-    @Override
-    public void mouseDragged(int dx, int dy, VisualElement element, Integer roomId) {}
 }

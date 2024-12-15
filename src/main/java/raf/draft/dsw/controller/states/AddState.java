@@ -9,7 +9,7 @@ import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import javax.swing.*;
 import java.awt.*;
 
-public class AddState implements State{
+public class AddState extends State{
 
     @Override
     public void mouseClick(int x, int y, VisualElement element, Integer roomId) {
@@ -49,7 +49,4 @@ public class AddState implements State{
         }
         ApplicationFramework.getInstance().getRepository().createRoomElement(selectedType, roomId, new Point(x, y), dims);
     }
-
-    @Override
-    public void mouseDragged(int dx, int dy, VisualElement element, Integer roomId){}
 }

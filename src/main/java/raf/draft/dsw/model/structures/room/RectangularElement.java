@@ -1,5 +1,6 @@
 package raf.draft.dsw.model.structures.room;
 
+import lombok.Getter;
 import lombok.Setter;
 import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.curves.Curve;
@@ -11,7 +12,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
-@Setter
+@Getter @Setter
 public abstract class RectangularElement extends RoomElement implements RectangularVisualElement {
     protected double w, h;
 
@@ -32,19 +33,17 @@ public abstract class RectangularElement extends RoomElement implements Rectangu
 
     @Override
     public double getWInPixelSpace(){
-        return toPixelSpace(w);
+        return getRoom().toPixelSpace(w);
     }
 
     @Override
     public double getHInPixelSpace(){
-        return toPixelSpace(h);
+        return getRoom().toPixelSpace(h);
     }
 
     @Override
     public Point2D getCenterInPixelSpace() {
-        Point2D location = getLocationInPixelSpace();
-        double w = getWInPixelSpace(), h = getHInPixelSpace();
-        return new Point2D.Double(location.getX() + w / 2, location.getY() + h / 2);
+        return getRoom().toPixelSpace(getCenter());
     }
 
     @Override

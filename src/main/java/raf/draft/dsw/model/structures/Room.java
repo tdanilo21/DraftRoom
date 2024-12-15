@@ -9,12 +9,15 @@ import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
 import raf.draft.dsw.model.nodes.Named;
 import raf.draft.dsw.model.structures.room.RoomElement;
+import raf.draft.dsw.model.structures.room.SimpleRectangle;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.elements.Table;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Vector;
@@ -55,7 +58,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
 
     private static final double wallWidth = 20;
     private HashMap<VisualElementTypes, Integer> nameCounters;
-    @Setter
+    @Getter @Setter
     private double w, h;
     @Getter
     private double scaleFactor;
@@ -85,6 +88,33 @@ public class Room extends DraftNodeComposite implements Named, Wall {
         updateScaleFactor(screenW, screenH);
         nameCounters = new HashMap<>();
         initialized = true;
+    }
+
+    private AffineTransform getTransformFromPixelSpace(){
+        AffineTransform f = AffineTransform.getScaleInstance(1 / scaleFactor, 1 / scaleFactor);
+        f.concatenate(AffineTransform.getTranslateInstance(location.getX(), location.getY()));
+        return f;
+    }
+
+    public double toPixelSpace(double a){
+        return a * scaleFactor;
+    }
+
+    public double fromPixelSpace(double a){
+        return a / scaleFactor;
+    }
+
+    public Point2D toPixelSpace(Point2D a){
+        try{
+            return getTransformFromPixelSpace().inverseTransform(a, null);
+        } catch (NoninvertibleTransformException e){
+            System.err.println(e.getMessage());
+            return (Point2D)a.clone();
+        }
+    }
+
+    public Point2D fromPixelSpace(Point2D a){
+        return getTransformFromPixelSpace().transform(a, null);
     }
 
     public Vector<VisualElement> getVisualElements(){
@@ -134,14 +164,10 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     @Override
-    public void translate(double dx, double dy) {
-
-    }
+    public void translate(double dx, double dy) {}
 
     @Override
-    public void rotate(double alpha) {
-
-    }
+    public void rotate(double alpha) {}
 
     @Override
     public void scaleW(double lambda) {
@@ -159,45 +185,28 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     @Override
-    public boolean inside(Point2D p) {
-        Table rectangle = new Table(this, w, h, location, 0, -1);
-        if (!rectangle.inside(p)){
-            removeChild(rectangle);
-            nameCounters.put(VisualElementTypes.TABLE, nameCounters.get(VisualElementTypes.TABLE)-1);
-            return false;
-        }
+    public boolean contains(Point2D p) {
+        SimpleRectangle rectangle = new SimpleRectangle(this, w * scaleFactor, h * scaleFactor, location);
+        if (!rectangle.contains(p)) return false;
         rectangle.translate(wallWidth * scaleFactor, wallWidth * scaleFactor);
         rectangle.scaleW(1 - 2*wallWidth/w);
         rectangle.scaleH(1 - 2*wallWidth/h);
-        boolean ret = !rectangle.inside(p);
-        removeChild(rectangle);
-        nameCounters.put(VisualElementTypes.TABLE, nameCounters.get(VisualElementTypes.TABLE)-1);
-        return ret;
+        return !rectangle.contains(p);
     }
 
     @Override
     public boolean intersect(Curve curve) {
-        Table rectangle = new Table(this, w, h, location, 0, -1);
-        if (rectangle.intersect(curve)){
-            removeChild(rectangle);
-            nameCounters.put(VisualElementTypes.TABLE, nameCounters.get(VisualElementTypes.TABLE)-1);
-            return true;
-        }
+        SimpleRectangle rectangle = new SimpleRectangle(this, w * scaleFactor, h * scaleFactor, location);
+        if (rectangle.intersect(curve)) return true;
         rectangle.translate(wallWidth * scaleFactor, wallWidth * scaleFactor);
         rectangle.scaleW(1 - 2*wallWidth/w);
         rectangle.scaleH(1 - 2*wallWidth/h);
-        boolean ret = rectangle.intersect(curve);
-        removeChild(rectangle);
-        nameCounters.put(VisualElementTypes.TABLE, nameCounters.get(VisualElementTypes.TABLE)-1);
-        return ret;
+        return rectangle.intersect(curve);
     }
 
     @Override
     public boolean overlap(VisualElement element) {
-        if (element instanceof Wall){
-            System.err.println("Detecting overlap between two walls");
-            return false;
-        }
-        return element.overlap(this);
+        if (element instanceof RoomElement) return element.overlap(this);
+        return false;
     }
 }

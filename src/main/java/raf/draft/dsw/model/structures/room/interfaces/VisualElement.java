@@ -15,6 +15,6 @@ public interface VisualElement {
     void rotate(double alpha);
     boolean overlap(VisualElement element);
     boolean intersect(Curve curve);
-    boolean inside(Point2D p);
+    boolean contains(Point2D p);
     Point2D getCenter();
 }

@@ -24,9 +24,7 @@ public class Toilet extends CircularElement {
 
     @Override
     public Point2D getCenterInPixelSpace() {
-        Point2D location = getLocationInPixelSpace();
-        double r = getRInPixelSpace();
-        return new Point2D.Double(location.getX() + r, location.getY() + r);
+        return getRoom().toPixelSpace(getCenter());
     }
 
     @Override

@@ -9,12 +9,12 @@ import java.awt.event.ActionEvent;
 public class MoveStateAction extends AbstractRoomAction {
     public MoveStateAction(){
         putValue(SMALL_ICON, loadIcon("/images/add.png"));
-        putValue(NAME, "Move state");
-        putValue(SHORT_DESCRIPTION, "Move state");
+        putValue(NAME, "Move");
+        putValue(SHORT_DESCRIPTION, "Move");
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MainFrame.getInstance().getStateManager().setCurrentState(new MoveState());
+        MainFrame.getInstance().getStateManager().changeState(new MoveState());
     }
 }

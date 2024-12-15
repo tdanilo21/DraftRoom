@@ -23,8 +23,10 @@ public class RoomView extends JTabbedPane {
         RoomTab newTab = new RoomTab(room);
         RoomTabMouseListener newTabMouseListener = new RoomTabMouseListener(newTab);
         newTab.addMouseListener(newTabMouseListener);
-        RoomTabComponent newTabComponent = new RoomTabComponent(this, room.name());
+        newTab.addMouseMotionListener(newTabMouseListener);
+        newTab.addMouseWheelListener(newTabMouseListener);
         add(newTab);
+        RoomTabComponent newTabComponent = new RoomTabComponent(this, room.name());
         int i = indexOfComponent(newTab);
         setTabComponentAt(i, newTabComponent);
         setBackgroundAt(i, room.color());
