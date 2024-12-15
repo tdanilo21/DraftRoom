@@ -6,7 +6,7 @@ import java.awt.geom.AffineTransform;
 
 public class ZoomState extends AbstractState{
     @Override
-    void mouseWheelScrolled(int x, int y, double wheelRotation, RoomTab roomTab) {
+    void mouseWheelScrolled(double x, double y, double wheelRotation, RoomTab roomTab) {
         AffineTransform f = AffineTransform.getTranslateInstance(-x, -y);
         f.concatenate(AffineTransform.getScaleInstance(1 - wheelRotation/10, 1 - wheelRotation/10));
         f.concatenate(AffineTransform.getTranslateInstance(x, y));

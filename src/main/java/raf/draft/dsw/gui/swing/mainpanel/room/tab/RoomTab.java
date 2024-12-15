@@ -6,6 +6,7 @@ import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.AbstractPainter;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.PainterFactory;
 import raf.draft.dsw.model.structures.room.SimpleRectangle;
+import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import javax.swing.*;
@@ -61,7 +62,7 @@ public class RoomTab extends JPanel {
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         for (AbstractPainter p : painters)
-            p.paint(g, f);
+            p.paint(g, (AffineTransform)f.clone());
     }
 
     @Override

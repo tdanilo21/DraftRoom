@@ -9,25 +9,16 @@ import raf.draft.dsw.model.messages.MessageTypes;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 public class AddState extends AbstractState{
 
     @Override
-    public void mouseClick(int x, int y, VisualElement element, RoomTab roomTab) {
+    public void mouseClick(double x, double y, VisualElement element, RoomTab roomTab) {
         if (element != null){
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Can not create new element inside another one.", MessageTypes.ERROR);
             return;
         }
-        String[] type = new String[9];
-        type[0] = "Bathtub";
-        type[1] = "Bed";
-        type[2] = "Boiler";
-        type[3] = "Closet";
-        type[4] = "Door";
-        type[5] = "Sink";
-        type[6] = "Table";
-        type[7] = "Toilet";
-        type[8] = "Washing machine";
         VisualElementTypes selectedType = (VisualElementTypes)JOptionPane.showInputDialog(null, "Choose element type",
                         "Type selection", JOptionPane.QUESTION_MESSAGE, null, VisualElementTypes.values(), null);
         double[] dims;
@@ -48,6 +39,6 @@ public class AddState extends AbstractState{
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Dimensions must be numbers", MessageTypes.ERROR);
             return;
         }
-        ApplicationFramework.getInstance().getRepository().createRoomElement(selectedType, roomTab.getRoom().id(), new Point(x, y), dims);
+        ApplicationFramework.getInstance().getRepository().createRoomElement(selectedType, roomTab.getRoom().id(), new Point2D.Double(x, y), dims);
     }
 }
