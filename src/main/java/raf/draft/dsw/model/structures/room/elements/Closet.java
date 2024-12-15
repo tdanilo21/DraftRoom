@@ -19,6 +19,6 @@ public class Closet extends RectangularElement {
 
     @Override
     public Prototype clone(Integer id) {
-        return new Closet(getRoom(), w, h, (Point2D)location.clone(), angle, id);
+        return new Closet(getRoom(), w, h, getRoom().toPixelSpace(location), angle, id);
     }
 }

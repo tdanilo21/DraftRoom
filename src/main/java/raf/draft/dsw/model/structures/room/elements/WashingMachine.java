@@ -19,6 +19,6 @@ public class WashingMachine extends RectangularElement {
 
     @Override
     public Prototype clone(Integer id) {
-        return new WashingMachine(getRoom(), w, h, (Point2D)location.clone(), angle, id);
+        return new WashingMachine(getRoom(), w, h, getRoom().toPixelSpace(location), angle, id);
     }
 }

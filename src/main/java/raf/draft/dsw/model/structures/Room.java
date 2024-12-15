@@ -60,6 +60,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
 
     private static final double wallWidth = 10;
     private HashMap<VisualElementTypes, Integer> nameCounters;
+    private double screenW, screenH;
     @Getter
     private double w, h;
     @Getter
@@ -81,6 +82,11 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     public void updateScaleFactor(double screenW, double screenH){
+        this.screenH = screenH; this.screenW = screenW;
+        updateScaleFactor();
+    }
+
+    private void updateScaleFactor(){
         scaleFactor = Math.min(screenW / w, screenH / h);
         location = new Point2D.Double((screenW - w * scaleFactor) / 2, (screenH - h * scaleFactor) / 2);
     }
@@ -178,24 +184,28 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     @Override
     public void scaleW(double lambda) {
         w = (w - 2*wallWidth) * lambda + 2*wallWidth;
+        updateScaleFactor();
         DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public void scaleH(double lambda) {
         h = (h - 2*wallWidth) * lambda + 2*wallWidth;
+        updateScaleFactor();
         DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public void setH(double h) {
         this.h = h + 2*wallWidth;
+        updateScaleFactor();
         DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public void setW(double w) {
         this.w = w + 2*wallWidth;
+        updateScaleFactor();
         DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 

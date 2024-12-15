@@ -62,6 +62,6 @@ public class Toilet extends CircularElement {
 
     @Override
     public Prototype clone(Integer id) {
-        return new Toilet(getRoom(), r, (Point2D)location.clone(), angle, id);
+        return new Toilet(getRoom(), r, getRoom().toPixelSpace(location), angle, id);
     }
 }

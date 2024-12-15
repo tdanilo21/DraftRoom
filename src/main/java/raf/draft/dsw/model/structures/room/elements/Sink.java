@@ -78,6 +78,6 @@ public class Sink extends RoomElement implements TriangularVisualElement {
 
     @Override
     public Prototype clone(Integer id) {
-        return new Sink(getRoom(), a, (Point2D)location.clone(), angle, id);
+        return new Sink(getRoom(), a, getRoom().toPixelSpace(location), angle, id);
     }
 }

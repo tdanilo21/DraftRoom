@@ -19,7 +19,7 @@ public class RotateLeftAction extends AbstractRoomAction{
     public void actionPerformed(ActionEvent e) {
         Vector<VisualElement> selection = MainFrame.getInstance().getRoomViewController().getSelectedTab().getSelection();
         for(VisualElement element : selection) {
-            element.rotate(-Math.PI/2);
+            element.rotate(Math.PI/2);
         }
     }
 }

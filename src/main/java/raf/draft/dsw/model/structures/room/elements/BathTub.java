@@ -20,6 +20,6 @@ public class BathTub extends RectangularElement {
 
     @Override
     public RoomElement clone(Integer id) {
-        return new BathTub(getRoom(), w, h, (Point2D)location.clone(), angle, id);
+        return new BathTub(getRoom(), w, h, getRoom().toPixelSpace(location), angle, id);
     }
 }
