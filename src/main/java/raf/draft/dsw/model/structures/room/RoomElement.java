@@ -142,6 +142,6 @@ public abstract class RoomElement extends DraftNode implements Named, VisualElem
 
     @Override
     public Prototype clone() {
-        return (Prototype)DraftRoomRepository.getInstance().cloneRoomElement(id);
+        return DraftRoomRepository.getInstance().cloneRoomElement(id);
     }
 }

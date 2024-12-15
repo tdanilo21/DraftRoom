@@ -19,6 +19,6 @@ public class Bed extends RectangularElement {
 
     @Override
     public Prototype clone(Integer id) {
-        return new Bed(getRoom(), w, h, (Point2D)location.clone(), angle, id);
+        return new Bed(getRoom(), w, h, getRoom().toPixelSpace(location), angle, id);
     }
 }

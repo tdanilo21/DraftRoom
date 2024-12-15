@@ -57,9 +57,8 @@ public class Door extends CircularElement {
         return curves;
     }
 
-
     @Override
     public Prototype clone(Integer id) {
-        return new Door(getRoom(), r, (Point2D)location.clone(), angle, id);
+        return new Door(getRoom(), r, getRoom().toPixelSpace(location), angle, id);
     }
 }

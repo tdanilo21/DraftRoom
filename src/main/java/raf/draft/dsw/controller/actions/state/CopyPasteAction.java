@@ -19,8 +19,8 @@ public class CopyPasteAction extends AbstractRoomAction {
     public void actionPerformed(ActionEvent e) {
         Vector<VisualElement> selection = MainFrame.getInstance().getRoomViewController().getSelectedTab().getSelection();
         for(VisualElement element : selection){
-            element.clone();
-            element.translate(10, 0);
+            VisualElement clone = (VisualElement)element.clone();
+            clone.translate(20, 0);
         }
     }
 }

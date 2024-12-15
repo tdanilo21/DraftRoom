@@ -46,6 +46,6 @@ public class Boiler extends CircularElement {
 
     @Override
     public Prototype clone(Integer id) {
-        return new Boiler(getRoom(), r, (Point2D)location.clone(), angle, id);
+        return new Boiler(getRoom(), r, getRoom().toPixelSpace(location), angle, id);
     }
 }

@@ -19,7 +19,7 @@ public class Table extends RectangularElement {
 
     @Override
     public Prototype clone(Integer id) {
-        return new Table(getRoom(), w, h, (Point2D)location.clone(), angle, id);
+        return new Table(getRoom(), w, h, getRoom().toPixelSpace(location), angle, id);
     }
 
 
