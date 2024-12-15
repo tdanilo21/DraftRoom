@@ -8,6 +8,7 @@ import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.curves.Segment;
 import raf.draft.dsw.model.structures.room.interfaces.RectangularVisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
+import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
 import java.awt.geom.Point2D;
 import java.util.Vector;
@@ -19,8 +20,8 @@ public class SimpleRectangle implements RectangularVisualElement {
     @Getter
     private double w, h;
 
-    public SimpleRectangle(Room room, double w, double h, Point2D location){
-        this.room = room;
+    public SimpleRectangle(Integer roomId, double w, double h, Point2D location){
+        this.room = (Room)DraftRoomRepository.getInstance().getNodeObject(roomId);
         this.w = room.fromPixelSpace(w);
         this.h = room.fromPixelSpace(h);
         this.location = room.fromPixelSpace(location);
@@ -99,6 +100,15 @@ public class SimpleRectangle implements RectangularVisualElement {
         DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
+    private Vector<Curve> getCurves(){
+        Vector<Curve> curves = new Vector<>();
+        curves.add(new Segment(new Point2D.Double(location.getX(), location.getY()), new Point2D.Double(location.getX()+w, location.getY())));
+        curves.add(new Segment(new Point2D.Double(location.getX()+w, location.getY()), new Point2D.Double(location.getX()+w, location.getY()+h)));
+        curves.add(new Segment(new Point2D.Double(location.getX()+w, location.getY()+h), new Point2D.Double(location.getX(), location.getY()+h)));
+        curves.add(new Segment(new Point2D.Double(location.getX(), location.getY()+h), new Point2D.Double(location.getX(), location.getY())));
+        return curves;
+    }
+
     @Override
     public boolean overlap(VisualElement element) {
         if (element instanceof RoomElement) return element.overlap(this);
@@ -107,11 +117,7 @@ public class SimpleRectangle implements RectangularVisualElement {
 
     @Override
     public boolean intersect(Curve curve) {
-        Vector<Curve> curves = new Vector<>();
-        curves.add(new Segment(new Point2D.Double(location.getX(), location.getY()), new Point2D.Double(location.getX()+w, location.getY())));
-        curves.add(new Segment(new Point2D.Double(location.getX()+w, location.getY()), new Point2D.Double(location.getX()+w, location.getY()+h)));
-        curves.add(new Segment(new Point2D.Double(location.getX()+w, location.getY()+h), new Point2D.Double(location.getX(), location.getY()+h)));
-        curves.add(new Segment(new Point2D.Double(location.getX(), location.getY()+h), new Point2D.Double(location.getX(), location.getY())));
+        Vector<Curve> curves = getCurves();
         for (Curve c : curves)
             if (curve.countIntersections(c) > 0)
                 return true;
@@ -120,7 +126,11 @@ public class SimpleRectangle implements RectangularVisualElement {
 
     @Override
     public boolean contains(Point2D p) {
-        return p.getX() > location.getX() && p.getX() < location.getX() + w && p.getY() > location.getY() && p.getY() < location.getY() + h;
+        double x1 = Math.min(location.getX(), location.getX()+w);
+        double x2 = Math.max(location.getX(), location.getX()+w);
+        double y1 = Math.min(location.getY(), location.getY()+h);
+        double y2 = Math.max(location.getY(), location.getY()+h);
+        return p.getX() > x1 && p.getX() < x2 && p.getY() > y1 && p.getY() < y2;
     }
 
     @Override
@@ -134,6 +144,12 @@ public class SimpleRectangle implements RectangularVisualElement {
     }
 
     public boolean contains(VisualElement element){
-        return !overlap(element) && contains(element.getCenter());
+        Vector<Curve> curves = getCurves();
+        for (Curve curve : curves)
+            if (element.intersect(curve))
+                return false;
+        Point2D p = element.getCenter();
+        if (element instanceof Wall wall) p = (Point2D)room.fromPixelSpace(wall.getLocationInPixelSpace()).clone();
+        return contains(p);
     }
 }

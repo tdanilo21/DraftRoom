@@ -21,6 +21,7 @@ public class StateManager {
             app.getMessageGenerator().generateMessage("Room must be initialized first", MessageTypes.WARNING);
             return;
         }
+        if (currentState instanceof SelectState) MainFrame.getInstance().getRoomViewController().getSelectedTab().setSelectionRectangle(null);
         currentState = newState;
         if (currentState instanceof DeleteState) ((DeleteState)currentState).deleteSelection();
     }
