@@ -8,7 +8,7 @@ import raf.draft.dsw.model.structures.room.interfaces.RectangularVisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.TriangularVisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
-public class EditState extends State{
+public class EditState extends AbstractState{
     @Override
     void mouseClick(int x, int y, VisualElement element, Integer roomId) {
         try{

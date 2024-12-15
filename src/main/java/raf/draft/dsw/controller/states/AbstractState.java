@@ -2,7 +2,7 @@ package raf.draft.dsw.controller.states;
 
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
-public abstract class State {
+public abstract class AbstractState {
     void mouseClick(int x, int y, VisualElement element, Integer roomId){}
     void mousePressed(int x, int y, VisualElement element, Integer roomId){}
     void mouseReleased(int x, int y, VisualElement element, Integer roomId){}

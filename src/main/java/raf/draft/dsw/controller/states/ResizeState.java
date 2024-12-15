@@ -2,7 +2,7 @@ package raf.draft.dsw.controller.states;
 
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
-public class ResizeState extends State{
+public class ResizeState extends AbstractState{
     public static final int VERTICALLY = 1;
     public static final int HORIZONTALLY = 2;
 

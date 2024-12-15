@@ -3,13 +3,13 @@ package raf.draft.dsw.controller.states;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 public class StateManager {
-    private State currentState;
+    private AbstractState currentState;
 
     public StateManager(){
         currentState = new EditRoomState();
     }
 
-    public void changeState(State newState){
+    public void changeState(AbstractState newState){
         currentState = newState;
     }
 
