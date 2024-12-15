@@ -5,7 +5,7 @@ import raf.draft.dsw.gui.swing.dialogs.RequestDimensionsPane;
 import raf.draft.dsw.model.messages.MessageTypes;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
-public class EditRoomState extends State{
+public class EditRoomState extends AbstractState{
 
     @Override
     public void mouseClick(int x, int y, VisualElement element, Integer roomId) {
