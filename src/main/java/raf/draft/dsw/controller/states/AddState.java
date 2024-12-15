@@ -9,7 +9,7 @@ import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import javax.swing.*;
 import java.awt.*;
 
-public class AddState implements State{
+public class AddState implements AbstractState {
 
     @Override
     public void mouseClick(int x, int y, VisualElement element, Integer roomId) {

@@ -5,7 +5,7 @@ import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 @Setter
 public class StateManager {
-    private State currentState;
+    private AbstractState currentState;
 
     public StateManager(){
         currentState = new EditRoomState();
