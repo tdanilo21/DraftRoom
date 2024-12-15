@@ -2,6 +2,7 @@ package raf.draft.dsw.model.structures.room;
 
 import lombok.Getter;
 import lombok.Setter;
+import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.curves.Segment;
@@ -12,7 +13,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
-@Getter @Setter
+@Getter
 public abstract class RectangularElement extends RoomElement implements RectangularVisualElement {
     protected double w, h;
 
@@ -49,11 +50,25 @@ public abstract class RectangularElement extends RoomElement implements Rectangu
     @Override
     public void scaleW(double lambda) {
         w *= lambda;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public void scaleH(double lambda) {
         h *= lambda;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
+    }
+
+    @Override
+    public void setH(double h) {
+        this.h = h;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
+    }
+
+    @Override
+    public void setW(double w) {
+        this.w = w;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override

@@ -1,5 +1,9 @@
 package raf.draft.dsw.controller.states;
 
+import raf.draft.dsw.core.ApplicationFramework;
+import raf.draft.dsw.gui.swing.MainFrame;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
+import raf.draft.dsw.model.messages.MessageTypes;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 public class StateManager {
@@ -10,26 +14,33 @@ public class StateManager {
     }
 
     public void changeState(AbstractState newState){
+        Integer selectedRoomId = MainFrame.getInstance().getRoomViewController().getSelectedTab().getRoom().id();
+        ApplicationFramework app = ApplicationFramework.getInstance();
+        if (!app.getRepository().isRoomInitialized(selectedRoomId)){
+            app.getMessageGenerator().generateMessage("Room must be initialized first", MessageTypes.WARNING);
+            return;
+        }
         currentState = newState;
+        if (currentState instanceof DeleteState) ((DeleteState)currentState).deleteSelection();
     }
 
-    public void mouseClick(int x, int y, VisualElement element, Integer roomId){
-        currentState.mouseClick(x, y, element, roomId);
+    public void mouseClick(int x, int y, VisualElement element, RoomTab roomTab){
+        currentState.mouseClick(x, y, element, roomTab);
     }
 
-    public void mouseDragged(int dx, int dy, VisualElement element, Integer roomId){
-        currentState.mouseDragged(dx, dy, element, roomId);
+    public void mouseDragged(int dx, int dy, VisualElement element, RoomTab roomTab){
+        currentState.mouseDragged(dx, dy, element, roomTab);
     }
 
-    public void mousePressed(int x, int y, VisualElement element, Integer roomId){
-        currentState.mousePressed(x, y, element, roomId);
+    public void mousePressed(int x, int y, VisualElement element, RoomTab roomTab){
+        currentState.mousePressed(x, y, element, roomTab);
     }
 
-    public void mouseReleased(int x, int y, VisualElement element, Integer roomId){
-        currentState.mouseReleased(x, y, element, roomId);
+    public void mouseReleased(int x, int y, VisualElement element, RoomTab roomTab){
+        currentState.mouseReleased(x, y, element, roomTab);
     }
 
-    public void mouseWheelScrolled(int x, int y, double wheelRotation, Integer roomId){
-        currentState.mouseWheelScrolled(x, y, wheelRotation, roomId);
+    public void mouseWheelScrolled(int x, int y, double wheelRotation, RoomTab roomTab){
+        currentState.mouseWheelScrolled(x, y, wheelRotation, roomTab);
     }
 }

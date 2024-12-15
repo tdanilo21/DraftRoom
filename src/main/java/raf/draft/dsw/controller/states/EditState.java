@@ -2,6 +2,7 @@ package raf.draft.dsw.controller.states;
 
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.dialogs.RequestDimensionsPane;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.model.messages.MessageTypes;
 import raf.draft.dsw.model.structures.room.interfaces.CircularVisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.RectangularVisualElement;
@@ -10,7 +11,7 @@ import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 public class EditState extends AbstractState{
     @Override
-    void mouseClick(int x, int y, VisualElement element, Integer roomId) {
+    void mouseClick(int x, int y, VisualElement element, RoomTab roomTab) {
         try{
             if (element instanceof CircularVisualElement cElement){
                 int[] results = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width"}, new int[]{(int)Math.round(cElement.getR())});

@@ -3,6 +3,7 @@ package raf.draft.dsw.controller.states;
 
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.dialogs.RequestDimensionsPane;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.messages.MessageTypes;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
@@ -12,7 +13,7 @@ import java.awt.*;
 public class AddState extends AbstractState{
 
     @Override
-    public void mouseClick(int x, int y, VisualElement element, Integer roomId) {
+    public void mouseClick(int x, int y, VisualElement element, RoomTab roomTab) {
         if (element != null){
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Can not create new element inside another one.", MessageTypes.ERROR);
             return;
@@ -47,6 +48,6 @@ public class AddState extends AbstractState{
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Dimensions must be numbers", MessageTypes.ERROR);
             return;
         }
-        ApplicationFramework.getInstance().getRepository().createRoomElement(selectedType, roomId, new Point(x, y), dims);
+        ApplicationFramework.getInstance().getRepository().createRoomElement(selectedType, roomTab.getRoom().id(), new Point(x, y), dims);
     }
 }

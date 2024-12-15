@@ -8,6 +8,7 @@ import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
 import raf.draft.dsw.model.nodes.Named;
+import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.room.RoomElement;
 import raf.draft.dsw.model.structures.room.SimpleRectangle;
 import raf.draft.dsw.model.structures.room.curves.Curve;
@@ -56,9 +57,9 @@ public class Room extends DraftNodeComposite implements Named, Wall {
         return new DraftNodeDTO(id, DraftNodeTypes.ROOM, name, null, getColor(), parentId);
     }
 
-    private static final double wallWidth = 20;
+    private static final double wallWidth = 10;
     private HashMap<VisualElementTypes, Integer> nameCounters;
-    @Getter @Setter
+    @Getter
     private double w, h;
     @Getter
     private double scaleFactor;
@@ -84,10 +85,11 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     public void initialize(double w, double h, int screenW, int screenH){
-        this.w = w; this.h = h;
+        setW(w); setH(h);
         updateScaleFactor(screenW, screenH);
         nameCounters = new HashMap<>();
         initialized = true;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     private AffineTransform getTransformFromPixelSpace(){
@@ -119,7 +121,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
 
     public Vector<VisualElement> getVisualElements(){
         Vector<VisualElement> visualElements = new Vector<>();
-        visualElements.add(this);
+        if (initialized) visualElements.add(this);
         for (DraftNode child : children)
             if (child instanceof VisualElement e)
                 visualElements.add(e);
@@ -132,8 +134,13 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     @Override
+    public Integer getRoomId() {
+        return id;
+    }
+
+    @Override
     public Point2D getLocationInPixelSpace() {
-        return location;
+        return (Point2D)location.clone();
     }
 
     @Override
@@ -153,9 +160,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
 
     @Override
     public Point2D getCenterInPixelSpace() {
-        Point2D location = getLocationInPixelSpace();
-        double w = getWInPixelSpace(), h = getHInPixelSpace();
-        return new Point2D.Double(location.getX() + w / 2, location.getY() + h / 2);
+        return toPixelSpace(getCenter());
     }
 
     @Override
@@ -171,12 +176,26 @@ public class Room extends DraftNodeComposite implements Named, Wall {
 
     @Override
     public void scaleW(double lambda) {
-        w *= lambda;
+        w = (w - 2*wallWidth) * lambda + 2*wallWidth;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public void scaleH(double lambda) {
-        h *= lambda;
+        h = (h - 2*wallWidth) * lambda + 2*wallWidth;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
+    }
+
+    @Override
+    public void setH(double h) {
+        this.h = h + 2*wallWidth;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
+    }
+
+    @Override
+    public void setW(double w) {
+        this.w = w + 2*wallWidth;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override

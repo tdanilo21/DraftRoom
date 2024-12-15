@@ -2,6 +2,7 @@ package raf.draft.dsw.model.structures.room.elements;
 
 import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.structures.Room;
+import raf.draft.dsw.model.structures.room.RoomElement;
 import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 import raf.draft.dsw.model.structures.room.RectangularElement;
 
@@ -18,7 +19,7 @@ public class BathTub extends RectangularElement {
     }
 
     @Override
-    public Prototype clone(Integer id) {
+    public RoomElement clone(Integer id) {
         return new BathTub(getRoom(), w, h, (Point2D)location.clone(), angle, id);
     }
 }

@@ -2,6 +2,7 @@ package raf.draft.dsw.model.structures.room;
 
 import lombok.Getter;
 import raf.draft.dsw.model.enums.VisualElementTypes;
+import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.curves.Segment;
@@ -36,6 +37,11 @@ public class SimpleRectangle implements RectangularVisualElement {
     }
 
     @Override
+    public Integer getRoomId() {
+        return room.getId();
+    }
+
+    @Override
     public Point2D getLocationInPixelSpace() {
         return room.toPixelSpace(location);
     }
@@ -53,6 +59,7 @@ public class SimpleRectangle implements RectangularVisualElement {
     @Override
     public void translate(double dx, double dy) {
         location.setLocation(location.getX() + room.fromPixelSpace(dx), location.getY() + room.fromPixelSpace(dy));
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
@@ -71,21 +78,25 @@ public class SimpleRectangle implements RectangularVisualElement {
     @Override
     public void setH(double h) {
         this.h = room.fromPixelSpace(h);
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public void setW(double w) {
         this.w = room.fromPixelSpace(w);
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public void scaleW(double lambda) {
         w *= lambda;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public void scaleH(double lambda) {
         h *= lambda;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override

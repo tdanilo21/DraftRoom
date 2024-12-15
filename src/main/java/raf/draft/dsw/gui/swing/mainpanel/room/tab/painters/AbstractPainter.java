@@ -1,10 +1,14 @@
 package raf.draft.dsw.gui.swing.mainpanel.room.tab.painters;
 
+import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 public abstract class AbstractPainter{
+
+    public abstract VisualElement getElement();
 
     protected void drawLine(Point2D a, Point2D b, Graphics2D g2, AffineTransform f){
         Point2D at = f.transform(a, null);

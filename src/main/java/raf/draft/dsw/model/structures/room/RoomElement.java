@@ -6,6 +6,7 @@ import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.Named;
+import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.curves.Segment;
@@ -47,6 +48,11 @@ public abstract class RoomElement extends DraftNode implements Named, Prototype,
     }
 
     @Override
+    public Integer getRoomId() {
+        return getRoom().getId();
+    }
+
+    @Override
     public Point2D getLocationInPixelSpace(){
         return getRoom().toPixelSpace(location);
     }
@@ -59,11 +65,13 @@ public abstract class RoomElement extends DraftNode implements Named, Prototype,
     @Override
     public void translate(double dx, double dy){
         location.setLocation(location.getX() + getRoom().fromPixelSpace(dx), location.getY() + getRoom().fromPixelSpace(dy));
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public void rotate(double alpha){
         angle += 2*Math.PI - alpha;
+        DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     protected AffineTransform getRotation(){

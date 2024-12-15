@@ -20,7 +20,7 @@ public class RoomTabMouseListener extends MouseAdapter {
     @Override
     public void mouseClicked(MouseEvent e) {
         VisualElement element = tab.getElementAt(e.getX(), e.getY());
-        MainFrame.getInstance().getStateManager().mouseClick(e.getX(), e.getY(), element, tab.getRoom().id());
+        MainFrame.getInstance().getStateManager().mouseClick(e.getX(), e.getY(), element, tab);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class RoomTabMouseListener extends MouseAdapter {
     public void mouseDragged(MouseEvent e) {
         int dx = e.getX() - lastX, dy = e.getY() - lastY;
         VisualElement element = tab.getElementAt(e.getX(), e.getY());
-        MainFrame.getInstance().getStateManager().mouseDragged(dx, dy, element, tab.getRoom().id());
+        MainFrame.getInstance().getStateManager().mouseDragged(dx, dy, element, tab);
         lastX += dx; lastY += dy;
     }
 
