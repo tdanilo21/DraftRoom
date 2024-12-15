@@ -4,6 +4,7 @@ import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.AbstractPainter;
 import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.curves.Segment;
 import raf.draft.dsw.model.structures.room.interfaces.CircularVisualElement;
+import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -13,6 +14,12 @@ public class BoilerPainter extends AbstractPainter {
     private final CircularVisualElement boiler;
 
     public BoilerPainter(CircularVisualElement boiler){this.boiler = boiler;}
+
+    @Override
+    public VisualElement getElement() {
+        return boiler;
+    }
+
     @Override
     public void paint(Graphics g, AffineTransform f) {
         Graphics2D g2 = (Graphics2D)g;

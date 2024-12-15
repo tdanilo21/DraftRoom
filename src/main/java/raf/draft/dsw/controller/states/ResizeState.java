@@ -10,12 +10,12 @@ public class ResizeState extends AbstractState{
     private int type = 0;
 
     @Override
-    void mousePressed(int x, int y, VisualElement element, RoomTab roomTab) {
+    void mousePressed(double x, double y, VisualElement element, RoomTab roomTab) {
         // Set type
     }
 
     @Override
-    void mouseDragged(int dx, int dy, VisualElement element, RoomTab roomTab) {
+    void mouseDragged(double dx, double dy, VisualElement element, RoomTab roomTab) {
         // Resize
     }
 }

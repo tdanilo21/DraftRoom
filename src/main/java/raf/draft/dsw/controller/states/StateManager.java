@@ -1,5 +1,6 @@
 package raf.draft.dsw.controller.states;
 
+import lombok.Getter;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
@@ -24,23 +25,23 @@ public class StateManager {
         if (currentState instanceof DeleteState) ((DeleteState)currentState).deleteSelection();
     }
 
-    public void mouseClick(int x, int y, VisualElement element, RoomTab roomTab){
+    public void mouseClick(double x, double y, VisualElement element, RoomTab roomTab){
         currentState.mouseClick(x, y, element, roomTab);
     }
 
-    public void mouseDragged(int dx, int dy, VisualElement element, RoomTab roomTab){
+    public void mouseDragged(double dx, double dy, VisualElement element, RoomTab roomTab){
         currentState.mouseDragged(dx, dy, element, roomTab);
     }
 
-    public void mousePressed(int x, int y, VisualElement element, RoomTab roomTab){
+    public void mousePressed(double x, double y, VisualElement element, RoomTab roomTab){
         currentState.mousePressed(x, y, element, roomTab);
     }
 
-    public void mouseReleased(int x, int y, VisualElement element, RoomTab roomTab){
+    public void mouseReleased(double x, double y, VisualElement element, RoomTab roomTab){
         currentState.mouseReleased(x, y, element, roomTab);
     }
 
-    public void mouseWheelScrolled(int x, int y, double wheelRotation, RoomTab roomTab){
+    public void mouseWheelScrolled(double x, double y, double wheelRotation, RoomTab roomTab){
         currentState.mouseWheelScrolled(x, y, wheelRotation, roomTab);
     }
 }

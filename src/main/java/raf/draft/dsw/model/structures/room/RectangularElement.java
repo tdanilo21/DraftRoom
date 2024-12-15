@@ -23,15 +23,6 @@ public abstract class RectangularElement extends RoomElement implements Rectangu
         this.h = h;
     }
 
-    protected void rotate90(){
-        Point2D center = getCenter();
-        AffineTransform f = AffineTransform.getRotateInstance(Math.PI / 2, center.getX(), center.getY());
-        translate(w, 0);
-        f.transform(location, location);
-        double temp = w; w = h; h = temp;
-        this.angle -= Math.PI / 2;
-    }
-
     @Override
     public double getWInPixelSpace(){
         return getRoom().toPixelSpace(w);

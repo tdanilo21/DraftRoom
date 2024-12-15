@@ -11,7 +11,7 @@ import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 public class EditState extends AbstractState{
     @Override
-    void mouseClick(int x, int y, VisualElement element, RoomTab roomTab) {
+    void mouseClick(double x, double y, VisualElement element, RoomTab roomTab) {
         try{
             if (element instanceof CircularVisualElement cElement){
                 int[] results = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width"}, new int[]{(int)Math.round(cElement.getR())});

@@ -94,7 +94,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
 
     private AffineTransform getTransformFromPixelSpace(){
         AffineTransform f = AffineTransform.getScaleInstance(1 / scaleFactor, 1 / scaleFactor);
-        f.concatenate(AffineTransform.getTranslateInstance(location.getX(), location.getY()));
+        f.concatenate(AffineTransform.getTranslateInstance(-location.getX(), -location.getY()));
         return f;
     }
 
@@ -211,6 +211,11 @@ public class Room extends DraftNodeComposite implements Named, Wall {
         rectangle.scaleW(1 - 2*wallWidth/w);
         rectangle.scaleH(1 - 2*wallWidth/h);
         return !rectangle.contains(p);
+    }
+
+    @Override
+    public boolean containsInPixelSpace(Point2D p) {
+        return contains(fromPixelSpace(p));
     }
 
     @Override

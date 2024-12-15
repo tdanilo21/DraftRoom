@@ -16,7 +16,10 @@ public class RoomViewController implements ISubscriber {
 
     public RoomViewController(RoomView roomView){
         this.roomView = roomView;
-        roomView.getModel().addChangeListener((ChangeEvent e) -> getSelectedTab().updateElements());
+        roomView.getModel().addChangeListener((ChangeEvent e) -> {
+            RoomTab roomTab = getSelectedTab();
+            if (roomTab != null) roomTab.updateElements();
+        });
     }
 
     private Vector<DraftNodeDTO> getRoomsInSubtree(DraftNodeDTO node){
@@ -55,9 +58,9 @@ public class RoomViewController implements ISubscriber {
                 case EventTypes.NODE_EDITED -> updateTabs(node);
             }
         }
-        if (state instanceof VisualElement element){
+        if (state instanceof Integer roomId){
             RoomTab selectedTab = getSelectedTab();
-            if (element.getRoomId().equals(selectedTab.getRoom().id()))
+            if (roomId.equals(selectedTab.getRoom().id()))
                 selectedTab.updateElements();
         }
     }

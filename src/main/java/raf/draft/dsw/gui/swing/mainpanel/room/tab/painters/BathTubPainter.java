@@ -5,6 +5,7 @@ import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.curves.Segment;
 import raf.draft.dsw.model.structures.room.elements.BathTub;
 import raf.draft.dsw.model.structures.room.interfaces.RectangularVisualElement;
+import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -13,6 +14,12 @@ import java.awt.geom.Point2D;
 public class BathTubPainter extends AbstractPainter {
     private final RectangularVisualElement bathTub;
     public BathTubPainter(RectangularVisualElement bathTub){this.bathTub = bathTub;}
+
+    @Override
+    public VisualElement getElement() {
+        return bathTub;
+    }
+
     @Override
     public void paint(Graphics g, AffineTransform f) {
         Graphics2D g2 = (Graphics2D)g;

@@ -18,5 +18,6 @@ public interface VisualElement {
     boolean overlap(VisualElement element);
     boolean intersect(Curve curve);
     boolean contains(Point2D p);
+    boolean containsInPixelSpace(Point2D p);
     Point2D getCenter();
 }

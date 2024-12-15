@@ -50,6 +50,7 @@ public class CircularArc implements Curve {
 
     @Override
     public boolean isEdgePoint(Point2D p){
+        if (Vec.equals(sweepAngle, 2*Math.PI)) return false;
         return Vec.equals(getStartPoint(), p) || Vec.equals(getEndPoint(), p);
     }
 

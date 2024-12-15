@@ -10,7 +10,6 @@ import java.awt.geom.Point2D;
 public class Closet extends RectangularElement {
     public Closet(Room room, double w, double h, Point2D location, double angle, Integer id){
         super(room, w, h, location, angle, id);
-        if (w > h) rotate90();
     }
 
     @Override
