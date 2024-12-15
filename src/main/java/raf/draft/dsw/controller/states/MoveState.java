@@ -2,7 +2,7 @@ package raf.draft.dsw.controller.states;
 
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
-public class MoveState implements State{
+public class MoveState implements AbstractState {
     @Override
     public void mouseClick(int x, int y, VisualElement element, Integer roomId) {}
 
