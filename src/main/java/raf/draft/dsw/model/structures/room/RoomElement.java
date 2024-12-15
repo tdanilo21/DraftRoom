@@ -13,6 +13,7 @@ import raf.draft.dsw.model.structures.room.curves.Segment;
 import raf.draft.dsw.model.structures.room.curves.Vec;
 import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
+import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -89,7 +90,9 @@ public abstract class RoomElement extends DraftNode implements Named, VisualElem
         for (Curve c : curves)
             if (element.intersect(c))
                 return true;
-        return contains(element.getCenter()) || element.contains(getCenter());
+        Point2D p = element.getCenter();
+        if (element instanceof Wall wall) p = (Point2D)getRoom().fromPixelSpace(wall.getLocationInPixelSpace()).clone();
+        return contains(p) || element.contains(getCenter());
     }
 
     @Override

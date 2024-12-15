@@ -206,7 +206,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
 
     @Override
     public boolean contains(Point2D p) {
-        SimpleRectangle rectangle = new SimpleRectangle(this, w * scaleFactor, h * scaleFactor, location);
+        SimpleRectangle rectangle = new SimpleRectangle(id, w * scaleFactor, h * scaleFactor, location);
         if (!rectangle.contains(p)) return false;
         rectangle.translate(wallWidth * scaleFactor, wallWidth * scaleFactor);
         rectangle.scaleW(1 - 2*wallWidth/w);
@@ -221,7 +221,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
 
     @Override
     public boolean intersect(Curve curve) {
-        SimpleRectangle rectangle = new SimpleRectangle(this, w * scaleFactor, h * scaleFactor, location);
+        SimpleRectangle rectangle = new SimpleRectangle(id, w * scaleFactor, h * scaleFactor, location);
         if (rectangle.intersect(curve)) return true;
         rectangle.translate(wallWidth * scaleFactor, wallWidth * scaleFactor);
         rectangle.scaleW(1 - 2*wallWidth/w);

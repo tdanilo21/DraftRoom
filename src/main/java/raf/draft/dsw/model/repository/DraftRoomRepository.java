@@ -172,6 +172,10 @@ public class DraftRoomRepository implements IPublisher {
         return nodes.get(id).getDTO();
     }
 
+    public DraftNode getNodeObject(Integer id){
+        return nodes.get(id);
+    }
+
     public DraftNodeDTO getRoot(){
         return nodes.get(0).getDTO();
     }

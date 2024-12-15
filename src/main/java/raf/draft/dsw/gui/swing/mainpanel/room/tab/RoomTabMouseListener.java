@@ -45,7 +45,11 @@ public class RoomTabMouseListener extends MouseAdapter {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        Point2D p = toDefaultPixelSpace(e.getX(), e.getY());
+        lastX = p.getX();
+        lastY = p.getY();
+        VisualElement element = roomTab.getElementAt(p);
+        MainFrame.getInstance().getStateManager().mouseReleased(p.getX(), p.getY(), element, roomTab);
     }
 
     @Override
