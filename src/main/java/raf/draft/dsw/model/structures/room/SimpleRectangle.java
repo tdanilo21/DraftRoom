@@ -156,6 +156,6 @@ public class SimpleRectangle implements RectangularVisualElement {
 
     @Override
     public Prototype clone() {
-        return new SimpleRectangle(room, room.toPixelSpace(w), room.toPixelSpace(h), room.toPixelSpace(location));
+        return new SimpleRectangle(room.getId(), room.toPixelSpace(w), room.toPixelSpace(h), room.toPixelSpace(location));
     }
 }

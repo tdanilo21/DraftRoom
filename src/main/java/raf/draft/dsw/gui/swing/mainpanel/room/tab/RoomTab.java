@@ -73,7 +73,6 @@ public class RoomTab extends JPanel {
         for (int i = 0; i < painters.size(); i++)
             if (selectionRectangle.contains(painters.get(i).getElement()))
                 selection.add(painters.get(i).getElement());
-        System.out.println(selection);
     }
 
     public void scaleSelectionRectangle(double dx, double dy){
@@ -87,6 +86,13 @@ public class RoomTab extends JPanel {
         this.selectionRectangle = selectionRectangle;
         updateSelection();
         repaint();
+    }
+
+    public boolean overlaps(VisualElement element){
+        for (int i = 0; i < painters.size(); i++)
+            if (!painters.get(i).getElement().getId().equals(element.getId()) && painters.get(i).getElement().overlap(element))
+                return true;
+        return false;
     }
 
     @Override
