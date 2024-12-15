@@ -11,7 +11,7 @@ public class Vec {
     public static final int COUNTER_CLOCKWISE = 0;
     public static final int CLOCKWISE = 1;
     public static final int COLLINEAR = 2;
-    private static final double E = 1e-9;
+    private static final double E = 1e-6;
 
     static boolean equals(double a, double b){
         return Math.abs(a - b) < E;

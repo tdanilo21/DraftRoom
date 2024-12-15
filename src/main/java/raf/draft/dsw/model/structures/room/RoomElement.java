@@ -121,12 +121,17 @@ public abstract class RoomElement extends DraftNode implements Named, Prototype,
             }
             alpha = v.get(index) + angle / 2;
         }
-        Point2D inf = new Point2D.Double(1e9, p.getY());
+        Point2D inf = new Point2D.Double(1e6, p.getY());
         AffineTransform.getRotateInstance(alpha, p.getX(), p.getY()).transform(inf, inf);
         Segment s = new Segment(p, inf);
         int cnt = 0;
         for (Curve c : curves)
             cnt += c.countIntersections(s);
         return cnt % 2 == 1;
+    }
+
+    @Override
+    public boolean containsInPixelSpace(Point2D p) {
+        return contains(getRoom().fromPixelSpace(p));
     }
 }

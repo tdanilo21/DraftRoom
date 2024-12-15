@@ -124,6 +124,11 @@ public class SimpleRectangle implements RectangularVisualElement {
     }
 
     @Override
+    public boolean containsInPixelSpace(Point2D p) {
+        return contains(room.fromPixelSpace(p));
+    }
+
+    @Override
     public Point2D getCenter() {
         return new Point2D.Double(location.getX() + w / 2, location.getY() + h / 2);
     }

@@ -17,7 +17,6 @@ public class PainterFactory {
             case VisualElementTypes.DOOR -> new DoorPainter((CircularVisualElement)element);
             case VisualElementTypes.SINK -> new SinkPainter((TriangularVisualElement)element);
             case VisualElementTypes.TOILET -> new ToiletPainter((CircularVisualElement)element);
-            default -> null;
         };
     }
 }

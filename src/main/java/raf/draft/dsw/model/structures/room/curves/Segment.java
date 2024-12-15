@@ -68,7 +68,10 @@ public class Segment implements Curve {
         CircularArc cut = new CircularArc((Point2D)arc.getC().clone(), arc.getR(), alpha, 2*(Math.PI - alpha));
         Point2D a = cut.getStartPoint(), b = cut.getEndPoint();
         int cnt = 0;
-        if (!isEdgePoint(a) && !arc.isEdgePoint(a) && contains(a) && arc.contains(a)) cnt++;
+        if (!isEdgePoint(a)
+                && !arc.isEdgePoint(a)
+                && contains(a) &&
+                arc.contains(a)) cnt++;
         if (!isEdgePoint(b) && !arc.isEdgePoint(b) && contains(b) && arc.contains(b)) cnt++;
         return cnt;
     }

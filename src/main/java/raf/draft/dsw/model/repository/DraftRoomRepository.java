@@ -222,11 +222,12 @@ public class DraftRoomRepository implements IPublisher {
             System.err.println("Node is read-only");
             return;
         }
+        Integer parentId = (node.getParent() != null ? node.getParent().getId() : null);
         removeNode(node);
         deleteNode(node);
         notifySubscribers(EventTypes.NODE_DELETED, node.getDTO());
         if (node instanceof VisualElement)
-            notifySubscribers(EventTypes.VISUAL_ELEMENT_DELETED, node);
+            notifySubscribers(EventTypes.VISUAL_ELEMENT_DELETED, parentId);
     }
 
     public void renameNode(Integer id, String newName){
@@ -291,7 +292,7 @@ public class DraftRoomRepository implements IPublisher {
                 K++;
                 nodes.put(roomElement.getId(), roomElement);
                 notifySubscribers(EventTypes.NODE_CREATED, roomElement.getDTO());
-                notifySubscribers(EventTypes.VISUAL_ELEMENT_CREATED, roomElement);
+                notifySubscribers(EventTypes.VISUAL_ELEMENT_CREATED, room.getId());
                 return roomElement;
             }
         }
@@ -311,7 +312,7 @@ public class DraftRoomRepository implements IPublisher {
                 K++;
                 nodes.put(clone.getId(), clone);
                 notifySubscribers(EventTypes.NODE_CREATED, clone.getDTO());
-                notifySubscribers(EventTypes.VISUAL_ELEMENT_CREATED, clone);
+                notifySubscribers(EventTypes.VISUAL_ELEMENT_CREATED, clone.getRoomId());
                 return clone;
             }
             return null;
@@ -336,6 +337,6 @@ public class DraftRoomRepository implements IPublisher {
     }
 
     public void visualElementEdited(VisualElement element){
-        notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED , element);
+        notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED , element.getRoomId());
     }
 }

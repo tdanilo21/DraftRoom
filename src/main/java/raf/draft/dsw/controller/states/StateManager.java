@@ -1,5 +1,6 @@
 package raf.draft.dsw.controller.states;
 
+import lombok.Getter;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;

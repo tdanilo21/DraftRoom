@@ -18,6 +18,6 @@ public class DeleteState extends AbstractState{
 
     @Override
     void mouseClick(double x, double y, VisualElement element, RoomTab roomTab) {
-        ApplicationFramework.getInstance().getRepository().deleteNode(element.getId());
+        if (element != null) ApplicationFramework.getInstance().getRepository().deleteNode(element.getId());
     }
 }
