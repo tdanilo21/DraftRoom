@@ -19,7 +19,7 @@ import java.awt.geom.Point2D;
 import java.util.Collections;
 import java.util.Vector;
 
-public abstract class RoomElement extends DraftNode implements Named, Prototype, VisualElement {
+public abstract class RoomElement extends DraftNode implements Named, VisualElement {
     @Getter @Setter
     protected String name;
     protected Point2D location;
@@ -133,5 +133,12 @@ public abstract class RoomElement extends DraftNode implements Named, Prototype,
     @Override
     public boolean containsInPixelSpace(Point2D p) {
         return contains(getRoom().fromPixelSpace(p));
+    }
+
+    public abstract Prototype clone(Integer id);
+
+    @Override
+    public Prototype clone() {
+        return (Prototype)DraftRoomRepository.getInstance().cloneRoomElement(id);
     }
 }

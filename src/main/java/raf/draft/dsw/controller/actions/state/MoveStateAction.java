@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 
 public class MoveStateAction extends AbstractRoomAction {
     public MoveStateAction(){
-        putValue(SMALL_ICON, loadIcon("/images/add.png"));
+        putValue(SMALL_ICON, loadIcon("/images/move.png"));
         putValue(NAME, "Move");
         putValue(SHORT_DESCRIPTION, "Move");
     }
