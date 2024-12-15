@@ -12,7 +12,7 @@ import java.awt.event.ActionEvent;
 
 public class ChangeAuthorAction extends AbstractRoomAction {
     public ChangeAuthorAction(){
-        putValue(SMALL_ICON, loadIcon("/images/edit.png"));
+        putValue(SMALL_ICON, loadIcon("/images/changeAuthor.png"));
         putValue(NAME, "Change author");
         putValue(SHORT_DESCRIPTION, "Change author");
     }

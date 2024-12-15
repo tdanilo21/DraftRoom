@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 
 public class ZoomStateAction extends AbstractRoomAction {
     public ZoomStateAction(){
-        putValue(SMALL_ICON, loadIcon("/images/add.png"));
+        putValue(SMALL_ICON, loadIcon("/images/zoom.png"));
         putValue(NAME, "Zoom");
         putValue(SHORT_DESCRIPTION, "Zoom");
     }

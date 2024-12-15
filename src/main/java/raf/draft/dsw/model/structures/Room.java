@@ -13,6 +13,7 @@ import raf.draft.dsw.model.structures.room.RoomElement;
 import raf.draft.dsw.model.structures.room.SimpleRectangle;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.elements.Table;
+import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
@@ -232,5 +233,10 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     public boolean overlap(VisualElement element) {
         if (element instanceof RoomElement) return element.overlap(this);
         return false;
+    }
+
+    @Override
+    public Prototype clone() {
+        return null;
     }
 }

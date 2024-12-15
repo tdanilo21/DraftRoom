@@ -22,6 +22,9 @@ public class ActionManager {
     private final EditStateAction editStateAction;
     private final ResizeStateAction resizeStateAction;
     private final ZoomStateAction zoomStateAction;
+    private final CopyPasteAction copyPasteAction;
+    private final RotateLeftAction rotateLeftAction;
+    private final RotateRightAction rotateRightAction;
 
 
     public ActionManager(){
@@ -41,5 +44,8 @@ public class ActionManager {
         editStateAction = new EditStateAction();
         resizeStateAction = new ResizeStateAction();
         zoomStateAction = new ZoomStateAction();
+        copyPasteAction = new CopyPasteAction();
+        rotateLeftAction = new RotateLeftAction();
+        rotateRightAction = new RotateRightAction();
     }
 }

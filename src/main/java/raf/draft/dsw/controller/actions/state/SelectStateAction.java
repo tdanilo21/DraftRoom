@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 
 public class SelectStateAction extends AbstractRoomAction {
     public SelectStateAction(){
-        putValue(SMALL_ICON, loadIcon("/images/add.png"));
+        putValue(SMALL_ICON, loadIcon("/images/select.png"));
         putValue(NAME, "Select");
         putValue(SHORT_DESCRIPTION, "Select");
     }

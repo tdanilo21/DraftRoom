@@ -6,10 +6,24 @@ import raf.draft.dsw.model.structures.room.curves.Segment;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 public abstract class AbstractPainter{
 
     public abstract VisualElement getElement();
+
+    private int[] getRect(Segment s){
+        int[] a = new int[4];
+        double x1 = s.getA().getX();
+        double y1 = s.getA().getY();
+        double x2 = s.getB().getX();
+        double y2 = s.getB().getY();
+        a[0] = (int)Math.round(Math.min(x1, x2));
+        a[1] = (int)Math.round(Math.min(y1, y2));
+        a[2] = (int)Math.round(Math.abs(x1 - x2));
+        a[3] = (int)Math.round(Math.abs(y1 - y2));
+        return a;
+    }
 
     protected void drawLine(Segment s, Graphics2D g2, AffineTransform f){
         Segment st = (Segment)s.getTransformedInstance(f);
@@ -22,11 +36,12 @@ public abstract class AbstractPainter{
 
     protected void drawRectangle(Segment s, Graphics2D g2, AffineTransform f){
         Segment st = (Segment)s.getTransformedInstance(f);
-        int x1 = (int)Math.round(st.getA().getX());
-        int y1 = (int)Math.round(st.getA().getY());
-        int x2 = (int)Math.round(st.getB().getX());
-        int y2 = (int)Math.round(st.getB().getY());
-        g2.drawRect(x1, y1, x2-x1, y2-y1);
+        int[] a = getRect(st);
+        int x = a[0];
+        int y = a[1];
+        int w = a[2];
+        int h = a[3];
+        g2.drawRect(x, y, w, h);
     }
 
     protected void drawCircularArc(CircularArc arc, Graphics2D g2, AffineTransform f){
@@ -40,11 +55,12 @@ public abstract class AbstractPainter{
     }
     protected void drawElipse(Segment s, Graphics2D g2, AffineTransform f){
         Segment st = (Segment)s.getTransformedInstance(f);
-        int x1 = (int)Math.round(st.getA().getX());
-        int y1 = (int)Math.round(st.getA().getY());
-        int x2 = (int)Math.round(st.getB().getX());
-        int y2 = (int)Math.round(st.getB().getY());
-        g2.drawArc(x1, y1, x2-x1, y2-y1, 0, 360);
+        int[] a = getRect(st);
+        int x = a[0];
+        int y = a[1];
+        int w = a[2];
+        int h = a[3];
+        g2.drawArc(x, y, w, h, 0, 360);
     }
 
     public abstract void paint(Graphics g, AffineTransform f);

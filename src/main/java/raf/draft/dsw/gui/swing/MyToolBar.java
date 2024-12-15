@@ -28,6 +28,8 @@ public class MyToolBar extends JToolBar {
         add(actionManager.getEditStateAction());
         add(actionManager.getResizeStateAction());
         add(actionManager.getZoomStateAction());
+        add(actionManager.getRotateLeftAction());
+        add(actionManager.getRotateRightAction());
 
         addSeparator();
 
