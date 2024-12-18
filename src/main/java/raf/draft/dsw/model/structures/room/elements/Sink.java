@@ -53,7 +53,7 @@ public class Sink extends RoomElement implements TriangularVisualElement {
 
     @Override
     public Point2D getCenter() {
-        return new Point2D.Double(location.getX() + a / 2, location.getY() + a * (Math.sqrt(3) / 2));
+        return new Point2D.Double(location.getX() + a / 2, location.getY() + a * (Math.sqrt(3) / 4));
     }
 
     @Override

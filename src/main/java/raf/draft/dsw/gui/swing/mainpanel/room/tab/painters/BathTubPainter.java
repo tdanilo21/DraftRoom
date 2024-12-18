@@ -25,8 +25,9 @@ public class BathTubPainter extends AbstractPainter {
         Graphics2D g2 = (Graphics2D)g;
         Point2D p = bathTub.getLocationInPixelSpace();
         double w = bathTub.getWInPixelSpace(), h = bathTub.getHInPixelSpace();
+        double angle = bathTub.getAngleInPixelSpace();
         f.concatenate(AffineTransform.getTranslateInstance(p.getX(), p.getY()));
-        f.concatenate(AffineTransform.getRotateInstance(bathTub.getAngleInPixelSpace(), w/2, h/2));
+        f.concatenate(AffineTransform.getRotateInstance(-angle, w/2, h/2));
         g2.setStroke(new BasicStroke(2));
         Point2D a = new Point2D.Double(0, 0);
         Point2D b = new Point2D.Double(w, h);
@@ -39,8 +40,8 @@ public class BathTubPainter extends AbstractPainter {
         Point2D p4 = new Point2D.Double(3*w/4, h/4);
         Point2D p5 = new Point2D.Double(3*w/4, 3*h/4);
         Point2D p6 = new Point2D.Double(w/4, 3*h/4);
-        drawCircularArc(new CircularArc(p1, w/4, 0, Math.PI), g2, f);
-        drawCircularArc(new CircularArc(p2, w/4, Math.PI, Math.PI), g2, f);
+        drawCircularArc(new CircularArc(p1, w/4, 0 + 2*angle, Math.PI), g2, f);
+        drawCircularArc(new CircularArc(p2, w/4, Math.PI + 2*angle, Math.PI), g2, f);
         drawLine(new Segment(p3, p6), g2, f);
         drawLine(new Segment(p4, p5), g2, f);
     }

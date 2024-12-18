@@ -32,6 +32,6 @@ public class WashingMachinePainter extends AbstractPainter{
 
         Point2D c = new Point2D.Double(w/6, h/5);
         Point2D d = new Point2D.Double(5*w/6, 4*h/5);
-        drawElipse(new Segment(c, d), g2, f);
+        drawEllipse(new Segment(c, d), g2, f);
     }
 }
