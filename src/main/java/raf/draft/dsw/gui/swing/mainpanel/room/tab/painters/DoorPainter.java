@@ -24,11 +24,12 @@ public class DoorPainter extends AbstractPainter{
         Point2D p = door.getLocationInPixelSpace();
         double r = door.getRInPixelSpace();
         Point2D center = door.getCenterInPixelSpace();
-        f.concatenate(AffineTransform.getRotateInstance(-door.getAngleInPixelSpace(), center.getX(), center.getY()));
+        double angle = door.getAngleInPixelSpace();
+        f.concatenate(AffineTransform.getRotateInstance(-angle, center.getX(), center.getY()));
         g2.setStroke(new BasicStroke(2));
 
         Point2D c = new Point2D.Double(p.getX() + r, p.getY() + r);
-        drawCircularArc(new CircularArc(c, r, Math.PI/2, 2*Math.PI), g2, f);
+        drawCircularArc(new CircularArc(c, r, Math.PI/2 + 2*angle, Math.PI/2), g2, f);
 
         Point2D a = new Point2D.Double(p.getX() + r, p.getY());
         Point2D b = new Point2D.Double(p.getX() + r, p.getY() + r);

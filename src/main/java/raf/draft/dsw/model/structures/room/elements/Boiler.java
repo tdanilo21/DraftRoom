@@ -7,27 +7,22 @@ import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
 public class Boiler extends CircularElement {
-    public Boiler(Room room, double r, Point2D location, double angle, Integer id){
-        super(room, r, location, angle, id);
+    public Boiler(double r, Point2D location, Integer id){
+        super(r, location, id);
+    }
+
+    public Boiler(AffineTransform transform, Integer id){
+        super(transform, id);
     }
 
     @Override
     public VisualElementTypes getVisualElementType() {
         return VisualElementTypes.BOILER;
-    }
-
-    @Override
-    public Point2D getCenterInPixelSpace() {
-        return getRoom().toPixelSpace(getCenter());
-    }
-
-    @Override
-    public Point2D getCenter() {
-        return new Point2D.Double(location.getX() + r, location.getY() + r);
     }
 
     @Override
@@ -37,15 +32,15 @@ public class Boiler extends CircularElement {
 
 
     @Override
-    protected Vector<Curve> getEdgeCurves() {
+    public Vector<Curve> getEdgeCurves() {
         Vector<Curve> curves = new Vector<>();
-        curves.add(new CircularArc(getCenter(), r, 0, 2*Math.PI));
-        curves.getFirst().transform(getRotation());
+        curves.add(new CircularArc(new Point2D.Double(0.5, 0.5), 0.5, 0, 2*Math.PI));
+        curves.getFirst().transform(transform);
         return curves;
     }
 
     @Override
     public Prototype clone(Integer id) {
-        return new Boiler(getRoom(), r, getRoom().toPixelSpace(location), angle, id);
+        return new Boiler(transform, id);
     }
 }

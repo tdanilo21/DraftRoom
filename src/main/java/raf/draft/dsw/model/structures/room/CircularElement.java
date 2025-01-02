@@ -4,34 +4,36 @@ import lombok.Getter;
 import lombok.Setter;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.Room;
+import raf.draft.dsw.model.structures.room.curves.Segment;
+import raf.draft.dsw.model.structures.room.curves.Vec;
 import raf.draft.dsw.model.structures.room.interfaces.CircularVisualElement;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
-@Getter
 public abstract class CircularElement extends RoomElement implements CircularVisualElement {
-    protected double r;
+    public CircularElement(double r, Point2D location, Integer id){
+        super(location, id);
+        pScale(location, r, r);
+    }
 
-    public CircularElement(Room room, double r, Point2D location, double angle, Integer id){
-        super(room, location, angle, id);
-        this.r = r;
+    public CircularElement(AffineTransform transform, Integer id){
+        super(transform, id);
     }
 
     @Override
-    public double getRInPixelSpace(){
-        return getRoom().toPixelSpace(r);
+    public void scale(Point2D p, double sx, double sy) {
+        double lambda = Math.max(sx, sy);
+        super.scale(p, lambda, lambda);
     }
 
-    @Override
-    public void scaleR(double lambda) {
-        r *= lambda;
-        DraftRoomRepository.getInstance().visualElementEdited(this);
-    }
+    protected abstract double getR();
 
     @Override
     public void setR(double r) {
-        this.r = r;
+        double r0 = getR();
+        pScale(getCurrentLocation(), r/r0, r/r0);
         DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 }

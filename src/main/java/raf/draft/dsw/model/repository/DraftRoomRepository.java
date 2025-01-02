@@ -16,6 +16,7 @@ import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.RoomElement;
 import raf.draft.dsw.model.structures.room.elements.*;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
+import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
 import java.awt.geom.Point2D;
 import java.util.HashMap;
@@ -50,17 +51,17 @@ class RoomFactory implements DraftNodeFactory{
 }
 
 class RoomElementFactory{
-    public static RoomElement createRoomElement(Room room, VisualElementTypes type, Integer id, Point2D location, double angle, double... dimensions){
+    public static RoomElement createRoomElement(VisualElementTypes type, Integer id, Point2D location, double... dimensions){
         return switch (type){
-            case VisualElementTypes.BED -> new Bed(room, dimensions[0], dimensions[1], location, angle, id);
-            case VisualElementTypes.BATH_TUB -> new BathTub(room, dimensions[0], dimensions[1], location, angle, id);
-            case VisualElementTypes.CLOSET -> new Closet(room, dimensions[0], dimensions[1], location, angle, id);
-            case VisualElementTypes.TABLE -> new Table(room, dimensions[0], dimensions[1], location, angle, id);
-            case VisualElementTypes.WASHING_MACHINE -> new WashingMachine(room, dimensions[0], dimensions[1], location, angle, id);
-            case VisualElementTypes.BOILER -> new Boiler(room, dimensions[0], location, angle, id);
-            case VisualElementTypes.DOOR -> new Door(room, dimensions[0], location, angle, id);
-            case VisualElementTypes.TOILET -> new Toilet(room, dimensions[0], location, angle, id);
-            case VisualElementTypes.SINK -> new Sink(room, dimensions[0], location, angle, id);
+            case VisualElementTypes.BED -> new Bed(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.BATH_TUB -> new BathTub(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.CLOSET -> new Closet(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.TABLE -> new Table(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.WASHING_MACHINE -> new WashingMachine(dimensions[0], dimensions[1], location, id);
+            case VisualElementTypes.BOILER -> new Boiler(dimensions[0], location, id);
+            case VisualElementTypes.DOOR -> new Door(dimensions[0], location, id);
+            case VisualElementTypes.TOILET -> new Toilet(dimensions[0], location, id);
+            case VisualElementTypes.SINK -> new Sink(dimensions[0], location, id);
             default -> null;
         };
     }
@@ -291,10 +292,11 @@ public class DraftRoomRepository implements IPublisher {
     public VisualElement createRoomElement(VisualElementTypes type, Integer parentId, Point2D location, double... dimensions){
         DraftNode node = nodes.get(parentId);
         if (node instanceof Room room && room.isInitialized()){
-            RoomElement roomElement = RoomElementFactory.createRoomElement(room, type, K, location, 0, dimensions);
+            RoomElement roomElement = RoomElementFactory.createRoomElement(type, K, location, dimensions);
             if (roomElement != null) {
                 K++;
                 nodes.put(roomElement.getId(), roomElement);
+                room.addChild(roomElement);
                 notifySubscribers(EventTypes.NODE_CREATED, roomElement.getDTO());
                 notifySubscribers(EventTypes.VISUAL_ELEMENT_CREATED, room.getId());
                 return roomElement;
@@ -315,6 +317,7 @@ public class DraftRoomRepository implements IPublisher {
             if (clone != null) {
                 K++;
                 nodes.put(clone.getId(), clone);
+                ((Room)nodes.get(roomElement.getRoomId())).addChild(clone);
                 notifySubscribers(EventTypes.NODE_CREATED, clone.getDTO());
                 notifySubscribers(EventTypes.VISUAL_ELEMENT_CREATED, clone.getRoomId());
                 return clone;
@@ -324,19 +327,20 @@ public class DraftRoomRepository implements IPublisher {
         return null;
     }
 
-    public void initializeRoom(Integer roomId, double w, double h, int screenW, int screenH){
+    public void initializeRoom(Integer roomId, double w, double h){
         DraftNode node = nodes.get(roomId);
-        if (node instanceof Room room) room.initialize(w, h, screenW, screenH);
-    }
-
-    public void updateRoomScaleFactor(Integer roomId, int screenW, int screenH){
-        DraftNode node = nodes.get(roomId);
-        if (node instanceof Room room) room.updateScaleFactor(screenW, screenH);
+        if (node instanceof Room room) room.initialize(w, h);
     }
 
     public Vector<VisualElement> getVisualElements(Integer roomId){
         DraftNode node = nodes.get(roomId);
         if (node instanceof Room room) return room.getVisualElements();
+        return null;
+    }
+
+    public Wall getRoom(Integer roomId){
+        DraftNode node = nodes.get(roomId);
+        if (node instanceof Room) return (Wall)node;
         return null;
     }
 

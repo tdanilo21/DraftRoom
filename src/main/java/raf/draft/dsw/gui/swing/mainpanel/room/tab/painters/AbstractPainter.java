@@ -6,7 +6,6 @@ import raf.draft.dsw.model.structures.room.curves.Segment;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 
 public abstract class AbstractPainter{
 
@@ -53,7 +52,7 @@ public abstract class AbstractPainter{
         int arcAngle = (int)Math.round(Math.toDegrees(arct.getSweepAngle()));
         g2.drawArc(x, y, a, a, startAngle, arcAngle);
     }
-    protected void drawElipse(Segment s, Graphics2D g2, AffineTransform f){
+    protected void drawEllipse(Segment s, Graphics2D g2, AffineTransform f){
         Segment st = (Segment)s.getTransformedInstance(f);
         int[] a = getRect(st);
         int x = a[0];

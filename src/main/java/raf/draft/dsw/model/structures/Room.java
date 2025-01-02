@@ -60,12 +60,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
 
     private static final double wallWidth = 10;
     private HashMap<VisualElementTypes, Integer> nameCounters;
-    private double screenW, screenH;
-    @Getter
-    private double w, h;
-    @Getter
-    private double scaleFactor;
-    private Point2D location;
+    private SimpleRectangle rect1, rect2;
     @Getter
     private boolean initialized;
 
@@ -81,49 +76,12 @@ public class Room extends DraftNodeComposite implements Named, Wall {
         }
     }
 
-    public void updateScaleFactor(double screenW, double screenH){
-        this.screenH = screenH; this.screenW = screenW;
-        updateScaleFactor();
-    }
-
-    private void updateScaleFactor(){
-        scaleFactor = Math.min(screenW / w, screenH / h);
-        location = new Point2D.Double((screenW - w * scaleFactor) / 2, (screenH - h * scaleFactor) / 2);
-    }
-
-    public void initialize(double w, double h, int screenW, int screenH){
-        setW(w); setH(h);
-        updateScaleFactor(screenW, screenH);
+    public void initialize(double w, double h){
+        rect1 = new SimpleRectangle(id, w, h, new Point2D.Double(0, 0));
+        rect2 = new SimpleRectangle(id, w - 2*wallWidth, h - 2*wallWidth, new Point2D.Double(wallWidth, wallWidth));
         nameCounters = new HashMap<>();
         initialized = true;
         DraftRoomRepository.getInstance().visualElementEdited(this);
-    }
-
-    private AffineTransform getTransformFromPixelSpace(){
-        AffineTransform f = AffineTransform.getScaleInstance(1 / scaleFactor, 1 / scaleFactor);
-        f.concatenate(AffineTransform.getTranslateInstance(-location.getX(), -location.getY()));
-        return f;
-    }
-
-    public double toPixelSpace(double a){
-        return a * scaleFactor;
-    }
-
-    public double fromPixelSpace(double a){
-        return a / scaleFactor;
-    }
-
-    public Point2D toPixelSpace(Point2D a){
-        try{
-            return getTransformFromPixelSpace().inverseTransform(a, null);
-        } catch (NoninvertibleTransformException e){
-            System.err.println(e.getMessage());
-            return (Point2D)a.clone();
-        }
-    }
-
-    public Point2D fromPixelSpace(Point2D a){
-        return getTransformFromPixelSpace().transform(a, null);
     }
 
     public Vector<VisualElement> getVisualElements(){
@@ -146,103 +104,77 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     @Override
-    public Point2D getLocationInPixelSpace() {
-        return (Point2D)location.clone();
+    public AffineTransform getTransform() {
+        return null;
     }
 
     @Override
-    public double getAngleInPixelSpace() {
-        return 0;
+    public void translate(double dx, double dy) {
+
     }
 
     @Override
-    public double getWInPixelSpace() {
-        return w * scaleFactor;
+    public void rotate(double alpha) {
+
     }
 
     @Override
-    public double getHInPixelSpace() {
-        return h * scaleFactor;
+    public void rotate(double alpha, Point2D p) {
+
     }
 
     @Override
-    public Point2D getCenterInPixelSpace() {
-        return toPixelSpace(getCenter());
+    public void scale(Point2D p, double sx, double sy) {
+
+    }
+
+    @Override
+    public Point2D getInternalPoint() {
+        Point2D p = rect1.getLocation();
+        return new Point2D.Double(p.getX() + wallWidth / 2, p.getY() + wallWidth / 2);
+    }
+
+    @Override
+    public Vector<Point2D> getVertexes() {
+        Vector<Point2D> vertexes = rect1.getVertexes();
+        vertexes.addAll(rect2.getVertexes());
+        return vertexes;
+    }
+
+    @Override
+    public Vector<Curve> getEdgeCurves() {
+        Vector<Curve> curves = rect1.getEdgeCurves();
+        curves.addAll(rect2.getEdgeCurves());
+        return curves;
     }
 
     @Override
     public double getWallWidth() {
-        return Room.wallWidth;
+        return wallWidth;
     }
 
     @Override
-    public void translate(double dx, double dy) {}
-
-    @Override
-    public void rotate(double alpha) {}
-
-    @Override
-    public void scaleW(double lambda) {
-        w = (w - 2*wallWidth) * lambda + 2*wallWidth;
-        updateScaleFactor();
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+    public double getW() {
+        return rect1.getW();
     }
 
     @Override
-    public void scaleH(double lambda) {
-        h = (h - 2*wallWidth) * lambda + 2*wallWidth;
-        updateScaleFactor();
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+    public double getH() {
+        return rect1.getH();
     }
 
     @Override
     public void setH(double h) {
-        this.h = h + 2*wallWidth;
-        updateScaleFactor();
+        rect1.setH(h);
+        rect2.setH(h - 2*wallWidth);
         DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public void setW(double w) {
-        this.w = w + 2*wallWidth;
-        updateScaleFactor();
+        rect1.setW(w);
+        rect2.setW(w - 2*wallWidth);
         DraftRoomRepository.getInstance().visualElementEdited(this);
-    }
-
-    @Override
-    public Point2D getCenter() {
-        return new Point2D.Double(w/2, h/2);
-    }
-
-    @Override
-    public boolean contains(Point2D p) {
-        SimpleRectangle rectangle = new SimpleRectangle(id, w * scaleFactor, h * scaleFactor, location);
-        if (!rectangle.contains(p)) return false;
-        rectangle.translate(wallWidth * scaleFactor, wallWidth * scaleFactor);
-        rectangle.scaleW(1 - 2*wallWidth/w);
-        rectangle.scaleH(1 - 2*wallWidth/h);
-        return !rectangle.contains(p);
-    }
-
-    @Override
-    public boolean containsInPixelSpace(Point2D p) {
-        return contains(fromPixelSpace(p));
-    }
-
-    @Override
-    public boolean intersect(Curve curve) {
-        SimpleRectangle rectangle = new SimpleRectangle(id, w * scaleFactor, h * scaleFactor, location);
-        if (rectangle.intersect(curve)) return true;
-        rectangle.translate(wallWidth * scaleFactor, wallWidth * scaleFactor);
-        rectangle.scaleW(1 - 2*wallWidth/w);
-        rectangle.scaleH(1 - 2*wallWidth/h);
-        return rectangle.intersect(curve);
-    }
-
-    @Override
-    public boolean overlap(VisualElement element) {
-        if (element instanceof RoomElement) return element.overlap(this);
-        return false;
     }
 
     @Override

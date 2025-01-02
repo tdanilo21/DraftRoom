@@ -29,16 +29,22 @@ public class CircularArc implements Curve {
         return AffineTransform.getRotateInstance(startAngle + sweepAngle, c.getX(), c.getY()).transform(startPoint, null);
     }
 
+    public Point2D getMiddlePoint(){
+        Point2D startPoint = new Point2D.Double(c.getX() + r, c.getY());
+        return AffineTransform.getRotateInstance(startAngle + sweepAngle / 2, c.getX(), c.getY()).transform(startPoint, null);
+    }
+
     @Override
     public void transform(AffineTransform f) {
         Segment s = new Segment(new Point2D.Double(0, 0), new Point2D.Double(1, 0));
         s.transform(f);
         double scaleFactor = s.getA().distance(s.getB());
-        Point2D startPoint = getStartPoint();
+        Point2D middlePoint = getMiddlePoint();
         f.transform(c, c);
-        f.transform(startPoint, startPoint);
+        f.transform(middlePoint, middlePoint);
         r *= scaleFactor;
-        startAngle = Vec.angle(new Vec(1, 0), new Vec(c, startPoint));
+        startAngle = Vec.angle(new Vec(1, 0), new Vec(c, middlePoint)) - sweepAngle / 2;
+        if (startAngle < 0) startAngle += 2*Math.PI;
     }
 
     @Override
@@ -95,5 +101,33 @@ public class CircularArc implements Curve {
         if (curve instanceof CircularArc) return pCountIntersections((CircularArc)curve);
         System.err.println("Curve c is not a segment or an arc");
         return 0;
+    }
+
+    @Override
+    public double getMinX() {
+        if ((startAngle < Math.PI && startAngle + sweepAngle > Math.PI) || startAngle + sweepAngle > 3*Math.PI)
+            return c.getX() - r;
+        return Math.min(getStartPoint().getX(), getEndPoint().getX());
+    }
+
+    @Override
+    public double getMaxX() {
+        if (startAngle + sweepAngle > 2*Math.PI)
+            return c.getX() + r;
+        return Math.max(getStartPoint().getX(), getEndPoint().getX());
+    }
+
+    @Override
+    public double getMinY() {
+        if ((startAngle < Math.PI/2 && startAngle + sweepAngle > Math.PI/2) || startAngle + sweepAngle > 5*Math.PI/2)
+            return c.getY() - r;
+        return Math.min(getStartPoint().getY(), getEndPoint().getY());
+    }
+
+    @Override
+    public double getMaxY() {
+        if ((startAngle < 3*Math.PI/2 && startAngle + sweepAngle > 2*Math.PI/2) || startAngle + sweepAngle > 7*Math.PI/2)
+            return c.getY() + r;
+        return Math.max(getStartPoint().getY(), getEndPoint().getY());
     }
 }
