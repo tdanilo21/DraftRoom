@@ -345,6 +345,6 @@ public class DraftRoomRepository implements IPublisher {
     }
 
     public void visualElementEdited(VisualElement element){
-        notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED , element.getRoomId());
+        notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, element.getRoomId());
     }
 }

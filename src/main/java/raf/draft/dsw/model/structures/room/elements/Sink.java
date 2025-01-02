@@ -1,10 +1,7 @@
 package raf.draft.dsw.model.structures.room.elements;
 
-import lombok.Getter;
-import lombok.Setter;
 import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
-import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.curves.Segment;
 import raf.draft.dsw.model.structures.room.curves.Vec;
@@ -39,11 +36,16 @@ public class Sink extends RoomElement implements TriangularVisualElement {
     }
 
     @Override
-    public void setA(double a) {
+    public double getA() {
         Segment s = new Segment(new Point2D.Double(0, 0), new Point2D.Double(1, 0));
         s.transform(transform);
-        double a0 = (new Vec(s.getA(), s.getB())).abs();
-        pScale(getCurrentLocation(), a/a0, a/a0);
+        return (new Vec(s.getA(), s.getB())).abs();
+    }
+
+    @Override
+    public void setA(double a) {
+        double a0 = getA();
+        pScale(getLocation(), a/a0, a/a0);
         DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 

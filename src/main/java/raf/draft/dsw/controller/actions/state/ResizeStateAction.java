@@ -15,6 +15,6 @@ public class ResizeStateAction extends AbstractRoomAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MainFrame.getInstance().getStateManager().changeState(new ResizeState());
+        MainFrame.getInstance().getRoomViewController().getSelectedTab().getStateManager().changeState(new ResizeState());
     }
 }

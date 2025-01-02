@@ -76,6 +76,11 @@ public class SimpleRectangle implements RectangularVisualElement {
     }
 
     @Override
+    public double getAngle() {
+        return 0;
+    }
+
+    @Override
     public void translate(double dx, double dy) {
         location = new Point2D.Double(location.getX() + dx, location.getY() + dy);
         DraftRoomRepository.getInstance().visualElementEdited(this);

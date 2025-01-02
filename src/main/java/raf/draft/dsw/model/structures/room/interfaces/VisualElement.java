@@ -14,6 +14,8 @@ public interface VisualElement extends Prototype {
     Integer getRoomId();
 
     AffineTransform getTransform();
+    double getAngle();
+    Point2D getLocation();
     void translate(double dx, double dy);
     void rotate(double alpha);
     void rotate(double alpha, Point2D p);

@@ -9,11 +9,11 @@ import raf.draft.dsw.model.structures.room.interfaces.Wall;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
-public class RealToPixelSpaceConverter implements ISubscriber {
+public class PixelSpaceConverter implements ISubscriber {
     private final RoomTab roomTab;
     private AffineTransform transform, itransform;
 
-    public RealToPixelSpaceConverter(RoomTab roomTab){
+    public PixelSpaceConverter(RoomTab roomTab){
         this.roomTab = roomTab;
         updateTransform();
         updateITransform();
@@ -22,7 +22,7 @@ public class RealToPixelSpaceConverter implements ISubscriber {
     private record Parameters(double scaleFactor, Point2D location){}
 
     private Parameters getParameters(){
-        double screenW = roomTab.getWidth(), screenH = roomTab.getHeight();
+        double screenW = roomTab.getScreenDimension().width, screenH = roomTab.getScreenDimension().height;
         Wall room = ApplicationFramework.getInstance().getRepository().getRoom(roomTab.getRoom().id());
         double roomW = room.getW(), roomH = room.getH();
         double scaleFactor = Math.min(screenW / roomW, screenH / roomH);
@@ -82,8 +82,14 @@ public class RealToPixelSpaceConverter implements ISubscriber {
         return f1;
     }
 
+    public void updateTransforms(){
+        updateTransform();
+        updateITransform();
+    }
+
     @Override
     public void notify(EventTypes type, Object state) {
-
+        if (type == EventTypes.VISUAL_ELEMENT_EDITED && state instanceof Integer roomId && roomId.equals(roomTab.getRoom().id()))
+            updateTransforms();
     }
 }

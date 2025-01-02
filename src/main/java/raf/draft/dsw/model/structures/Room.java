@@ -154,6 +154,16 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     @Override
+    public double getAngle() {
+        return 0;
+    }
+
+    @Override
+    public Point2D getLocation() {
+        return new Point2D.Double(0, 0);
+    }
+
+    @Override
     public double getW() {
         return rect1.getW();
     }

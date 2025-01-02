@@ -1,6 +1,5 @@
 package raf.draft.dsw.gui.swing.mainpanel.room.tab;
 
-import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import java.awt.*;
@@ -31,7 +30,7 @@ public class RoomTabMouseListener extends MouseAdapter {
     public void mouseClicked(MouseEvent e) {
         Point2D p = toDefaultPixelSpace(e.getX(), e.getY());
         VisualElement element = roomTab.getElementAt(p);
-        MainFrame.getInstance().getStateManager().mouseClick(p.getX(), p.getY(), element, roomTab);
+        roomTab.getStateManager().mouseClick(p.getX(), p.getY(), element);
     }
 
     @Override
@@ -40,7 +39,8 @@ public class RoomTabMouseListener extends MouseAdapter {
         lastX = p.getX();
         lastY = p.getY();
         VisualElement element = roomTab.getElementAt(p);
-        MainFrame.getInstance().getStateManager().mousePressed(p.getX(), p.getY(), element, roomTab);
+        roomTab.getStateManager().mousePressed(p.getX(), p.getY(), element);
+
     }
 
     @Override
@@ -49,7 +49,7 @@ public class RoomTabMouseListener extends MouseAdapter {
         lastX = p.getX();
         lastY = p.getY();
         VisualElement element = roomTab.getElementAt(p);
-        MainFrame.getInstance().getStateManager().mouseReleased(p.getX(), p.getY(), element, roomTab);
+        roomTab.getStateManager().mouseReleased(p.getX(), p.getY(), element);
     }
 
     @Override
@@ -57,13 +57,13 @@ public class RoomTabMouseListener extends MouseAdapter {
         Point2D p = toDefaultPixelSpace(e.getX(), e.getY());
         double dx = p.getX() - lastX, dy = p.getY() - lastY;
         VisualElement element = roomTab.getElementAt(p);
-        MainFrame.getInstance().getStateManager().mouseDragged(dx, dy, element, roomTab);
+        roomTab.getStateManager().mouseDragged(dx, dy, element);
         lastX += dx; lastY += dy;
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         Point2D p = toDefaultPixelSpace(e.getX(), e.getY());
-        MainFrame.getInstance().getStateManager().mouseWheelScrolled(p.getX(), p.getY(), e.getPreciseWheelRotation(), roomTab);
+        roomTab.getStateManager().mouseWheelScrolled(p.getX(), p.getY(), e.getPreciseWheelRotation());
     }
 }

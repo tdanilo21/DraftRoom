@@ -1,5 +1,6 @@
 package raf.draft.dsw.controller.actions.state;
 
+import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.controller.actions.AbstractRoomAction;
 import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
@@ -19,8 +20,8 @@ public class RotateRightAction extends AbstractRoomAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         Vector<VisualElement> selection = MainFrame.getInstance().getRoomViewController().getSelectedTab().getSelection();
-        for(VisualElement element : selection) {
-            element.rotate(-Math.PI/2);
-        }
+        PixelSpaceConverter converter = MainFrame.getInstance().getRoomViewController().getSelectedTab().getConverter();
+        for(VisualElement element : selection)
+            element.rotate(converter.angleFromPixelSpace(3*Math.PI/2));
     }
 }

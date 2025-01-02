@@ -15,6 +15,7 @@ public class AddState extends AbstractState{
 
     @Override
     public void mouseClick(double x, double y, VisualElement element, RoomTab roomTab) {
+        super.mouseClick(x, y, element, roomTab);
         if (element != null){
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Can not create new element inside another one.", MessageTypes.ERROR);
             return;
@@ -39,6 +40,7 @@ public class AddState extends AbstractState{
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Dimensions must be numbers", MessageTypes.ERROR);
             return;
         }
-        ApplicationFramework.getInstance().getRepository().createRoomElement(selectedType, roomTab.getRoom().id(), new Point2D.Double(x, y), dims);
+        Point2D location = roomTab.getConverter().pointFromPixelSpace(new Point2D.Double(x, y));
+        ApplicationFramework.getInstance().getRepository().createRoomElement(selectedType, roomTab.getRoom().id(), location, dims);
     }
 }

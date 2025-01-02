@@ -7,18 +7,13 @@ import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.Named;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
-import raf.draft.dsw.model.structures.Room;
-import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.curves.Segment;
 import raf.draft.dsw.model.structures.room.curves.Vec;
 import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
-import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.util.Collections;
-import java.util.Vector;
 
 @Getter
 public abstract class RoomElement extends DraftNode implements Named, VisualElement {
@@ -56,13 +51,15 @@ public abstract class RoomElement extends DraftNode implements Named, VisualElem
         return Geometry.getRectangleHull(this).getCenter();
     }
 
-    protected double getCurrentAngle(){
+    @Override
+    public double getAngle(){
         Segment a = new Segment(new Point2D.Double(0, 0), new Point2D.Double(1, 0));
         Segment b = (Segment)a.getTransformedInstance(transform);
         return Vec.angle(new Vec(a.getA(), a.getB()), new Vec(b.getA(), b.getB()));
     }
 
-    protected Point2D getCurrentLocation(){
+    @Override
+    public Point2D getLocation(){
         return Geometry.getRectangleHull(this).getLocation();
     }
 

@@ -15,6 +15,6 @@ public class MoveStateAction extends AbstractRoomAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MainFrame.getInstance().getStateManager().changeState(new MoveState());
+        MainFrame.getInstance().getRoomViewController().getSelectedTab().getStateManager().changeState(new MoveState());
     }
 }
