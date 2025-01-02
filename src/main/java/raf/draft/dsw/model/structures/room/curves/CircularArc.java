@@ -96,4 +96,32 @@ public class CircularArc implements Curve {
         System.err.println("Curve c is not a segment or an arc");
         return 0;
     }
+
+    @Override
+    public double getMinX() {
+        if ((startAngle < Math.PI && startAngle + sweepAngle > Math.PI) || startAngle + sweepAngle > 3*Math.PI)
+            return c.getX() - r;
+        return Math.min(getStartPoint().getX(), getEndPoint().getX());
+    }
+
+    @Override
+    public double getMaxX() {
+        if (startAngle + sweepAngle > 2*Math.PI)
+            return c.getX() + r;
+        return Math.max(getStartPoint().getX(), getEndPoint().getX());
+    }
+
+    @Override
+    public double getMinY() {
+        if ((startAngle < Math.PI/2 && startAngle + sweepAngle > Math.PI/2) || startAngle + sweepAngle > 5*Math.PI/2)
+            return c.getY() - r;
+        return Math.min(getStartPoint().getY(), getEndPoint().getY());
+    }
+
+    @Override
+    public double getMaxY() {
+        if ((startAngle < 3*Math.PI/2 && startAngle + sweepAngle > 2*Math.PI/2) || startAngle + sweepAngle > 7*Math.PI/2)
+            return c.getY() + r;
+        return Math.max(getStartPoint().getY(), getEndPoint().getY());
+    }
 }
