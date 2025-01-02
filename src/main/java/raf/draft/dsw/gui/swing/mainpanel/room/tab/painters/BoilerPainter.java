@@ -1,5 +1,6 @@
 package raf.draft.dsw.gui.swing.mainpanel.room.tab.painters;
 
+import raf.draft.dsw.controller.RealToPixelSpaceConverter;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.AbstractPainter;
 import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.curves.Segment;
@@ -21,9 +22,25 @@ public class BoilerPainter extends AbstractPainter {
     }
 
     @Override
-    public void paint(Graphics g, AffineTransform f) {
+    public void paint(Graphics g, AffineTransform f, RealToPixelSpaceConverter converter) {
         Graphics2D g2 = (Graphics2D)g;
-        Point2D p = boiler.getCenterInPixelSpace();
+        g2.setStroke(new BasicStroke(2));
+
+        AffineTransform t = converter.transformToPixelSpace(boiler.getTransform());
+        t.preConcatenate(f);
+
+        Point2D p = new Point2D.Double(0.5, 0.5);
+        drawCircularArc(new CircularArc(p, 0.5, 0, 2*Math.PI), g2, t);
+
+        Point2D p1 = new Point2D.Double(p.getX() - 0.5/2, p.getY() - 0.5/2);
+        Point2D p2 = new Point2D.Double(p.getX() + 0.5/2, p.getY() + 0.5/2);
+        drawLine(new Segment(p1, p2), g2, t);
+
+        Point2D p3 = new Point2D.Double(p.getX() + 0.5/2, p.getY() - 0.5/2);
+        Point2D p4 = new Point2D.Double(p.getX() - 0.5/2, p.getY() + 0.5/2);
+        drawLine(new Segment(p3, p4), g2, t);
+
+        /*Point2D p = boiler.getCenterInPixelSpace();
         double r = boiler.getRInPixelSpace();
         g2.setStroke(new BasicStroke(2));
         drawCircularArc(new CircularArc(p, r, 0, 2*Math.PI), g2, f);
@@ -35,5 +52,6 @@ public class BoilerPainter extends AbstractPainter {
         Point2D p3 = new Point2D.Double(p.getX() + r/2, p.getY() - r/2);
         Point2D p4 = new Point2D.Double(p.getX() - r/2, p.getY() + r/2);
         drawLine(new Segment(p3, p4), g2, f);
+         */
     }
 }

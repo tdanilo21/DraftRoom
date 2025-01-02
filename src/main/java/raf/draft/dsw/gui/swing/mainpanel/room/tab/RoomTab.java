@@ -102,7 +102,7 @@ public class RoomTab extends JPanel {
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         for (AbstractPainter p : painters)
-            p.paint(g, (AffineTransform) f.clone());
+            p.paint(g, (AffineTransform)f.clone(), converter);
         if (selectionRectangle != null) paintSelection(g);
     }
 
