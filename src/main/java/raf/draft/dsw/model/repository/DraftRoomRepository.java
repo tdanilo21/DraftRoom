@@ -16,6 +16,7 @@ import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.RoomElement;
 import raf.draft.dsw.model.structures.room.elements.*;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
+import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
 import java.awt.geom.Point2D;
 import java.util.HashMap;
@@ -334,6 +335,12 @@ public class DraftRoomRepository implements IPublisher {
     public Vector<VisualElement> getVisualElements(Integer roomId){
         DraftNode node = nodes.get(roomId);
         if (node instanceof Room room) return room.getVisualElements();
+        return null;
+    }
+
+    public Wall getRoom(Integer roomId){
+        DraftNode node = nodes.get(roomId);
+        if (node instanceof Room) return (Wall)node;
         return null;
     }
 

@@ -154,6 +154,16 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     @Override
+    public double getW() {
+        return rect1.getW();
+    }
+
+    @Override
+    public double getH() {
+        return rect1.getH();
+    }
+
+    @Override
     public void setH(double h) {
         rect1.setH(h);
         rect2.setH(h - 2*wallWidth);

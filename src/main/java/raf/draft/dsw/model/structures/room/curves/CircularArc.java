@@ -29,16 +29,22 @@ public class CircularArc implements Curve {
         return AffineTransform.getRotateInstance(startAngle + sweepAngle, c.getX(), c.getY()).transform(startPoint, null);
     }
 
+    public Point2D getMiddlePoint(){
+        Point2D startPoint = new Point2D.Double(c.getX() + r, c.getY());
+        return AffineTransform.getRotateInstance(startAngle + sweepAngle / 2, c.getX(), c.getY()).transform(startPoint, null);
+    }
+
     @Override
     public void transform(AffineTransform f) {
         Segment s = new Segment(new Point2D.Double(0, 0), new Point2D.Double(1, 0));
         s.transform(f);
         double scaleFactor = s.getA().distance(s.getB());
-        Point2D startPoint = getStartPoint();
+        Point2D middlePoint = getMiddlePoint();
         f.transform(c, c);
-        f.transform(startPoint, startPoint);
+        f.transform(middlePoint, middlePoint);
         r *= scaleFactor;
-        startAngle = Vec.angle(new Vec(1, 0), new Vec(c, startPoint));
+        startAngle = Vec.angle(new Vec(1, 0), new Vec(c, middlePoint)) - sweepAngle / 2;
+        if (startAngle < 0) startAngle += 2*Math.PI;
     }
 
     @Override
