@@ -2,6 +2,7 @@ package raf.draft.dsw.gui.swing.mainpanel.room.tab;
 
 import lombok.Getter;
 import lombok.Setter;
+import raf.draft.dsw.controller.RealToPixelSpaceConverter;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.states.DeleteState;
 import raf.draft.dsw.core.ApplicationFramework;
@@ -33,6 +34,7 @@ public class RoomTab extends JPanel {
     private final AffineTransform f;
     @Getter @Setter
     private double zoomFactor;
+    private final RealToPixelSpaceConverter converter;
 
     public RoomTab(DraftNodeDTO room){
         this.room = room;
@@ -40,6 +42,7 @@ public class RoomTab extends JPanel {
         selection = new Vector<>();
         f = AffineTransform.getTranslateInstance(padding, padding);
         zoomFactor = 1;
+        converter = new RealToPixelSpaceConverter(this);
         updateElements();
         setBackground(Color.WHITE);
     }
@@ -99,7 +102,7 @@ public class RoomTab extends JPanel {
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         for (AbstractPainter p : painters)
-            p.paint(g, (AffineTransform) f.clone());
+            p.paint(g, (AffineTransform)f.clone(), converter);
         if (selectionRectangle != null) paintSelection(g);
     }
 

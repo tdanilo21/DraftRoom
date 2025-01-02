@@ -1,5 +1,6 @@
 package raf.draft.dsw.gui.swing.mainpanel.room.tab.painters;
 
+import raf.draft.dsw.controller.RealToPixelSpaceConverter;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.AbstractPainter;
 import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.curves.Segment;
@@ -21,9 +22,30 @@ public class BathTubPainter extends AbstractPainter {
     }
 
     @Override
-    public void paint(Graphics g, AffineTransform f) {
+    public void paint(Graphics g, AffineTransform f, RealToPixelSpaceConverter converter) {
         Graphics2D g2 = (Graphics2D)g;
-        Point2D p = bathTub.getLocationInPixelSpace();
+        g2.setStroke(new BasicStroke(2));
+
+        AffineTransform t = converter.transformToPixelSpace(bathTub.getTransform());
+        t.preConcatenate(f);
+
+        Point2D a = new Point2D.Double(0, 0);
+        Point2D b = new Point2D.Double(1, 1);
+        drawRectangle(new Segment(a, b), g2, t);
+
+        Point2D p1 = new Point2D.Double( 1.0/2, 1.0/4);
+        Point2D p2 = new Point2D.Double(1.0/2, 3.0/4);
+        drawCircularArc(new CircularArc(p1, 1.0/4, 0, Math.PI), g2, t);
+        drawCircularArc(new CircularArc(p2, 1.0/4, Math.PI, Math.PI), g2, t);
+
+        Point2D p3 = new Point2D.Double(1.0/4, 1.0/4);
+        Point2D p4 = new Point2D.Double(3.0/4, 1.0/4);
+        Point2D p5 = new Point2D.Double(3.0/4, 3.0/4);
+        Point2D p6 = new Point2D.Double(1.0/4, 3.0/4);
+        drawLine(new Segment(p3, p6), g2, t);
+        drawLine(new Segment(p4, p5), g2, t);
+
+        /*Point2D p = bathTub.getLocationInPixelSpace();
         double w = bathTub.getWInPixelSpace(), h = bathTub.getHInPixelSpace();
         double angle = bathTub.getAngleInPixelSpace();
         f.concatenate(AffineTransform.getTranslateInstance(p.getX(), p.getY()));
@@ -44,5 +66,6 @@ public class BathTubPainter extends AbstractPainter {
         drawCircularArc(new CircularArc(p2, w/4, Math.PI + 2*angle, Math.PI), g2, f);
         drawLine(new Segment(p3, p6), g2, f);
         drawLine(new Segment(p4, p5), g2, f);
+         */
     }
 }
