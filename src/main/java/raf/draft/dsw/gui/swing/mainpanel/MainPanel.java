@@ -27,8 +27,12 @@ public class MainPanel extends JPanel {
         projectViewController = new ProjectViewController(projectView);
 
         roomView.getModel().addChangeListener((ChangeEvent e) -> {
-            if (roomView.getSelectedComponent() instanceof RoomTab roomTab)
+            if (roomView.getSelectedComponent() instanceof RoomTab roomTab) {
                 projectViewController.selectedNodeChanged(roomTab.getRoom());
+                roomTab.getConverter().updateTransforms();
+            }
+            if (roomView.getSelectedComponent() == null)
+                projectViewController.selectedNodeChanged(null);
         });
 
         JPanel panel = new JPanel(new GridLayout(1, 1));

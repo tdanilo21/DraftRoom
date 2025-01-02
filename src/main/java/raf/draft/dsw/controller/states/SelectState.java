@@ -1,6 +1,7 @@
 package raf.draft.dsw.controller.states;
 
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
+import raf.draft.dsw.model.structures.room.Geometry;
 import raf.draft.dsw.model.structures.room.SimpleRectangle;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
@@ -9,7 +10,7 @@ import java.awt.geom.Point2D;
 public class SelectState extends AbstractState{
     @Override
     public void mouseClick(double x, double y, VisualElement element, RoomTab roomTab) {
-        if (element != null) roomTab.select(element);
+        if (element != null) roomTab.setSelectionRectangle(Geometry.getRectangleHull(element));
     }
 
     @Override
@@ -20,5 +21,10 @@ public class SelectState extends AbstractState{
     @Override
     public void mouseDragged(double dx, double dy, VisualElement element, RoomTab roomTab) {
         roomTab.scaleSelectionRectangle(dx, dy);
+    }
+
+    @Override
+    void mouseReleased(double x, double y, VisualElement element, RoomTab roomTab) {
+        roomTab.setSelectionRectangle(Geometry.getRectangleHull(roomTab.getSelection()));
     }
 }

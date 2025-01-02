@@ -36,7 +36,6 @@ public class MainFrame extends JFrame implements ISubscriber {
     }
 
     private ActionManager actionManager;
-    private StateManager stateManager;
     private DraftTree repoTreeView;
     private DefaultTreeModel repoTreeModel;
     private RoomViewController roomViewController;
@@ -50,8 +49,6 @@ public class MainFrame extends JFrame implements ISubscriber {
         setTitle("DraftRoom");
 
         actionManager = new ActionManager();
-
-        stateManager = new StateManager();
 
         MyMenuBar menu = new MyMenuBar(actionManager);
         setJMenuBar(menu);

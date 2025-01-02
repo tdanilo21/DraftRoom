@@ -15,6 +15,6 @@ public class ZoomStateAction extends AbstractRoomAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MainFrame.getInstance().getStateManager().changeState(new ZoomState());
+        MainFrame.getInstance().getRoomViewController().getSelectedTab().getStateManager().changeState(new ZoomState());
     }
 }

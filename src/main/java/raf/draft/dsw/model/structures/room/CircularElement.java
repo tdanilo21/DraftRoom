@@ -1,14 +1,8 @@
 package raf.draft.dsw.model.structures.room;
 
-import lombok.Getter;
-import lombok.Setter;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
-import raf.draft.dsw.model.structures.Room;
-import raf.draft.dsw.model.structures.room.curves.Segment;
-import raf.draft.dsw.model.structures.room.curves.Vec;
 import raf.draft.dsw.model.structures.room.interfaces.CircularVisualElement;
 
-import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
@@ -28,12 +22,10 @@ public abstract class CircularElement extends RoomElement implements CircularVis
         super.scale(p, lambda, lambda);
     }
 
-    protected abstract double getR();
-
     @Override
     public void setR(double r) {
         double r0 = getR();
-        pScale(getCurrentLocation(), r/r0, r/r0);
+        pScale(getLocation(), r/r0, r/r0);
         DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 }

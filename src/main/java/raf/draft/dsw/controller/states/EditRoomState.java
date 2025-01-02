@@ -16,8 +16,7 @@ public class EditRoomState extends AbstractState{
         try{
             int[] dims = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width", "Height"}, null);
             if (dims == null) return;
-            Dimension screedDims = roomTab.getScreenDimension();
-            ApplicationFramework.getInstance().getRepository().initializeRoom(roomTab.getRoom().id(), dims[0], dims[1], screedDims.width, screedDims.height);
+            ApplicationFramework.getInstance().getRepository().initializeRoom(roomTab.getRoom().id(), dims[0], dims[1]);
         } catch (NumberFormatException e){
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Dimensions must be numbers", MessageTypes.ERROR);
         }

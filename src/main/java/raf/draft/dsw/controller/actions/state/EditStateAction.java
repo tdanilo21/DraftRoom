@@ -15,6 +15,6 @@ public class EditStateAction extends AbstractRoomAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MainFrame.getInstance().getStateManager().changeState(new EditState());
+        MainFrame.getInstance().getRoomViewController().getSelectedTab().getStateManager().changeState(new EditState());
     }
 }

@@ -5,6 +5,8 @@ import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.CircularElement;
 import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.curves.Curve;
+import raf.draft.dsw.model.structures.room.curves.Segment;
+import raf.draft.dsw.model.structures.room.curves.Vec;
 import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 
 import java.awt.geom.AffineTransform;
@@ -23,6 +25,13 @@ public class Boiler extends CircularElement {
     @Override
     public VisualElementTypes getVisualElementType() {
         return VisualElementTypes.BOILER;
+    }
+
+    @Override
+    public double getR() {
+        Segment s = new Segment(new Point2D.Double(0, 0), new Point2D.Double(0.5, 0));
+        s.transform(transform);
+        return (new Vec(s.getA(), s.getB())).abs();
     }
 
     @Override

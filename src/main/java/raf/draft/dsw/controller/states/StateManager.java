@@ -9,40 +9,42 @@ import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 public class StateManager {
     private AbstractState currentState;
+    private final RoomTab roomTab;
 
-    public StateManager(){
-        currentState = new EditRoomState();
+    public StateManager(RoomTab roomTab){
+        this.roomTab = roomTab;
+        if (ApplicationFramework.getInstance().getRepository().isRoomInitialized(roomTab.getRoom().id()))
+            currentState = new SelectState();
+        else
+            currentState = new EditRoomState();
     }
 
     public void changeState(AbstractState newState){
-        Integer selectedRoomId = MainFrame.getInstance().getRoomViewController().getSelectedTab().getRoom().id();
         ApplicationFramework app = ApplicationFramework.getInstance();
-        if (!app.getRepository().isRoomInitialized(selectedRoomId)){
+        if (!app.getRepository().isRoomInitialized(roomTab.getRoom().id())){
             app.getMessageGenerator().generateMessage("Room must be initialized first", MessageTypes.WARNING);
             return;
         }
-        if (currentState instanceof SelectState) MainFrame.getInstance().getRoomViewController().getSelectedTab().setSelectionRectangle(null);
         currentState = newState;
-        if (currentState instanceof DeleteState) ((DeleteState)currentState).deleteSelection();
     }
 
-    public void mouseClick(double x, double y, VisualElement element, RoomTab roomTab){
+    public void mouseClick(double x, double y, VisualElement element){
         currentState.mouseClick(x, y, element, roomTab);
     }
 
-    public void mouseDragged(double dx, double dy, VisualElement element, RoomTab roomTab){
+    public void mouseDragged(double dx, double dy, VisualElement element){
         currentState.mouseDragged(dx, dy, element, roomTab);
     }
 
-    public void mousePressed(double x, double y, VisualElement element, RoomTab roomTab){
+    public void mousePressed(double x, double y, VisualElement element){
         currentState.mousePressed(x, y, element, roomTab);
     }
 
-    public void mouseReleased(double x, double y, VisualElement element, RoomTab roomTab){
+    public void mouseReleased(double x, double y, VisualElement element){
         currentState.mouseReleased(x, y, element, roomTab);
     }
 
-    public void mouseWheelScrolled(double x, double y, double wheelRotation, RoomTab roomTab){
+    public void mouseWheelScrolled(double x, double y, double wheelRotation){
         currentState.mouseWheelScrolled(x, y, wheelRotation, roomTab);
     }
 }
