@@ -1,9 +1,12 @@
 package raf.draft.dsw.controller;
 
+import raf.draft.dsw.AppCore;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
+import raf.draft.dsw.model.structures.room.curves.Segment;
+import raf.draft.dsw.model.structures.room.curves.Vec;
 import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
 import java.awt.geom.AffineTransform;
@@ -15,8 +18,8 @@ public class PixelSpaceConverter implements ISubscriber {
 
     public PixelSpaceConverter(RoomTab roomTab){
         this.roomTab = roomTab;
-        updateTransform();
-        updateITransform();
+        ApplicationFramework.getInstance().getRepository().addSubscriber(this, EventTypes.VISUAL_ELEMENT_EDITED);
+        updateTransforms();
     }
 
     private record Parameters(double scaleFactor, Point2D location){}
@@ -26,22 +29,18 @@ public class PixelSpaceConverter implements ISubscriber {
         Wall room = ApplicationFramework.getInstance().getRepository().getRoom(roomTab.getRoom().id());
         double roomW = room.getW(), roomH = room.getH();
         double scaleFactor = Math.min(screenW / roomW, screenH / roomH);
-        Point2D location = new Point2D.Double((screenW / scaleFactor - roomW) / 2, (screenH / scaleFactor - roomH) / 2);
+        Point2D location = new Point2D.Double((screenW - roomW * scaleFactor) / 2, (screenH - roomH * scaleFactor) / 2);
         return new Parameters(scaleFactor, location);
     }
 
-    private void updateTransform(){
-        Parameters params = getParameters();
-        transform = new AffineTransform(1, 0, 0, -1, 0, 0);
-        transform.preConcatenate(AffineTransform.getTranslateInstance(params.location.getX(), params.location.getY()));
-        transform.preConcatenate(AffineTransform.getScaleInstance(params.scaleFactor, params.scaleFactor));
-    }
-
-    private void updateITransform(){
-        Parameters params = getParameters();
-        itransform = AffineTransform.getScaleInstance(1 / params.scaleFactor, 1 / params.scaleFactor);
-        itransform.preConcatenate(AffineTransform.getTranslateInstance(-params.location.getX(), -params.location.getY()));
-        itransform.preConcatenate(new AffineTransform(1, 0, 0, -1, 0, 0));
+    public void updateTransforms(){
+        if (ApplicationFramework.getInstance().getRepository().isRoomInitialized(roomTab.getRoom().id())) {
+            Parameters params = getParameters();
+            transform = AffineTransform.getScaleInstance(params.scaleFactor, params.scaleFactor);
+            transform.preConcatenate(AffineTransform.getTranslateInstance(params.location.getX(), params.location.getY()));
+            itransform = AffineTransform.getTranslateInstance(-params.location.getX(), -params.location.getY());
+            itransform.preConcatenate(AffineTransform.getScaleInstance(1 / params.scaleFactor, 1 / params.scaleFactor));
+        }
     }
 
     public double angleToPixelSpace(double alpha){
@@ -53,11 +52,15 @@ public class PixelSpaceConverter implements ISubscriber {
     }
 
     public double lengthToPixelSpace(double x){
-        return x * getParameters().scaleFactor;
+        Segment s = new Segment(new Point2D.Double(0, 0), new Point2D.Double(x, 0));
+        s.transform(transform);
+        return (new Vec(s.getA(), s.getB())).abs() * (x < 0 ? -1 : 1);
     }
 
     public double lengthFromPixelSpace(double x){
-        return x / getParameters().scaleFactor;
+        Segment s = new Segment(new Point2D.Double(0, 0), new Point2D.Double(x, 0));
+        s.transform(itransform);
+        return (new Vec(s.getA(), s.getB())).abs() * (x < 0 ? -1 : 1);
     }
 
     public Point2D pointToPixelSpace(Point2D p){
@@ -80,11 +83,6 @@ public class PixelSpaceConverter implements ISubscriber {
         f1.concatenate(transform);
         f1.preConcatenate(itransform);
         return f1;
-    }
-
-    public void updateTransforms(){
-        updateTransform();
-        updateITransform();
     }
 
     @Override

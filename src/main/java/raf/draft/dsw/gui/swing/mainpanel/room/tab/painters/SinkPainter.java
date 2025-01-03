@@ -1,9 +1,8 @@
 package raf.draft.dsw.gui.swing.mainpanel.room.tab.painters;
 
-import raf.draft.dsw.controller.RealToPixelSpaceConverter;
+import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.curves.Segment;
-import raf.draft.dsw.model.structures.room.elements.Sink;
 import raf.draft.dsw.model.structures.room.interfaces.TriangularVisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
@@ -22,7 +21,7 @@ public class SinkPainter extends AbstractPainter{
     }
 
     @Override
-    public void paint(Graphics g, AffineTransform f, RealToPixelSpaceConverter converter) {
+    public void paint(Graphics g, AffineTransform f, PixelSpaceConverter converter) {
         Graphics2D g2 = (Graphics2D)g;
         g2.setStroke(new BasicStroke(2));
 

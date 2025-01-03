@@ -1,7 +1,7 @@
 package raf.draft.dsw.gui.swing.mainpanel.room.tab.painters;
 
 import lombok.Getter;
-import raf.draft.dsw.controller.RealToPixelSpaceConverter;
+import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import raf.draft.dsw.model.structures.room.curves.Segment;
 import raf.draft.dsw.model.structures.room.interfaces.Wall;
@@ -24,13 +24,11 @@ public class WallPainter extends AbstractPainter{
     }
 
     @Override
-    public void paint(Graphics g, AffineTransform f, RealToPixelSpaceConverter converter) {
+    public void paint(Graphics g, AffineTransform f, PixelSpaceConverter converter) {
         Graphics2D g2 = (Graphics2D)g;
-        g2.setStroke(new BasicStroke(2));
 
         double w = wall.getW(), h = wall.getH();
-        // TODO: Add getLocation
-        Point2D p = new Point2D.Double(0, 0);
+        Point2D p = wall.getLocation();
 
         w = converter.lengthToPixelSpace(w);
         h = converter.lengthToPixelSpace(h);

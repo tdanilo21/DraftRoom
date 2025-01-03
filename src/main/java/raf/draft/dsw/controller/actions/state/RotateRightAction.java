@@ -3,10 +3,12 @@ package raf.draft.dsw.controller.actions.state;
 import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.controller.actions.AbstractRoomAction;
 import raf.draft.dsw.gui.swing.MainFrame;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.geom.Point2D;
 import java.util.Vector;
 
 public class RotateRightAction extends AbstractRoomAction {
@@ -19,9 +21,12 @@ public class RotateRightAction extends AbstractRoomAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Vector<VisualElement> selection = MainFrame.getInstance().getRoomViewController().getSelectedTab().getSelection();
-        PixelSpaceConverter converter = MainFrame.getInstance().getRoomViewController().getSelectedTab().getConverter();
+        RoomTab roomTab = MainFrame.getInstance().getRoomViewController().getSelectedTab();
+        Vector<VisualElement> selection = roomTab.getSelection();
+        Point2D p = roomTab.getSelectionRectangle().getCenter();
+        double alpha = roomTab.getConverter().angleFromPixelSpace(3*Math.PI/2);
         for(VisualElement element : selection)
-            element.rotate(converter.angleFromPixelSpace(3*Math.PI/2));
+            element.rotate(alpha, p);
+        roomTab.rotateSelectionRectangle(alpha);
     }
 }

@@ -89,6 +89,7 @@ public class Geometry {
     }
 
     public static SimpleRectangle getRectangleHull(Vector<VisualElement> v){
+        if (v.isEmpty()) return null;
         SimpleRectangle hull = getRectangleHull(v.getFirst());
         for (int i = 1; i < v.size(); i++)
             hull = merge(hull, getRectangleHull(v.get(i)));

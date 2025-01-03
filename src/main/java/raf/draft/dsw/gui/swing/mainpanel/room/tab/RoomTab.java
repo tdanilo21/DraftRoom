@@ -8,6 +8,8 @@ import raf.draft.dsw.controller.states.StateManager;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.AbstractPainter;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.PainterFactory;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.SelectionPainter;
+import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.structures.room.Geometry;
 import raf.draft.dsw.model.structures.room.SimpleRectangle;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
@@ -72,7 +74,7 @@ public class RoomTab extends JPanel {
         selection.clear();
         if (selectionRectangle == null) return;
         for (int i = 0; i < painters.size(); i++)
-            if (Geometry.contains(selectionRectangle, painters.get(i).getElement()))
+            if (painters.get(i).getElement().getVisualElementType() != VisualElementTypes.WALL && Geometry.contains(selectionRectangle, painters.get(i).getElement()))
                 selection.add(painters.get(i).getElement());
     }
 
@@ -81,6 +83,12 @@ public class RoomTab extends JPanel {
         dy = converter.lengthFromPixelSpace(dy);
         selectionRectangle.setW(selectionRectangle.getW() + dx);
         selectionRectangle.setH(selectionRectangle.getH() + dy);
+        updateSelection();
+        repaint();
+    }
+
+    public void rotateSelectionRectangle(double alpha){
+        selectionRectangle.rotate(converter.angleFromPixelSpace(alpha));
         updateSelection();
         repaint();
     }
@@ -103,24 +111,7 @@ public class RoomTab extends JPanel {
         super.paintComponent(g);
         for (AbstractPainter p : painters)
             p.paint(g, (AffineTransform)f.clone(), converter);
-        if (selectionRectangle != null) paintSelection(g);
-    }
-
-    private void paintSelection(Graphics g){
-        Graphics2D g2 = (Graphics2D)g;
-        Point2D a = selectionRectangle.getLocation();
-        double w = selectionRectangle.getW();
-        double h = selectionRectangle.getH();
-        Point2D b = new Point2D.Double(a.getX()+w, a.getY()+h);
-        f.transform(a, a);
-        f.transform(b, b);
-        int x = (int)Math.round(Math.min(a.getX(), b.getX()));
-        int y = (int)Math.round(Math.min(a.getY(), b.getY()));
-        int w1 = (int)Math.round(Math.abs(b.getX() - a.getX()));
-        int h1 = (int)Math.round(Math.abs(b.getY() - a.getY()));
-        g2.setStroke(new BasicStroke());
-        g2.setColor(Color.blue);
-        g2.drawRect(x, y, w1, h1);
+        if (selectionRectangle != null) (new SelectionPainter(selectionRectangle)).paint(g, (AffineTransform)f.clone(), converter);
     }
 
     @Override

@@ -15,7 +15,9 @@ public class SelectState extends AbstractState{
 
     @Override
     void mousePressed(double x, double y, VisualElement element, RoomTab roomTab) {
-        roomTab.setSelectionRectangle(new SimpleRectangle(roomTab.getRoom().id(), 1, 1, new Point2D.Double(x, y)));
+        Point2D p = roomTab.getConverter().pointFromPixelSpace(new Point2D.Double(x, y));
+        double a = roomTab.getConverter().lengthFromPixelSpace(1);
+        roomTab.setSelectionRectangle(new SimpleRectangle(roomTab.getRoom().id(), a, a, p));
     }
 
     @Override

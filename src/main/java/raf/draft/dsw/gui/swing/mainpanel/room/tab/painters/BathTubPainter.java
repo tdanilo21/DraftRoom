@@ -1,10 +1,8 @@
 package raf.draft.dsw.gui.swing.mainpanel.room.tab.painters;
 
-import raf.draft.dsw.controller.RealToPixelSpaceConverter;
-import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.AbstractPainter;
+import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.curves.Segment;
-import raf.draft.dsw.model.structures.room.elements.BathTub;
 import raf.draft.dsw.model.structures.room.interfaces.RectangularVisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
@@ -22,11 +20,13 @@ public class BathTubPainter extends AbstractPainter {
     }
 
     @Override
-    public void paint(Graphics g, AffineTransform f, RealToPixelSpaceConverter converter) {
+    public void paint(Graphics g, AffineTransform f, PixelSpaceConverter converter) {
         Graphics2D g2 = (Graphics2D)g;
         g2.setStroke(new BasicStroke(2));
 
-        AffineTransform t = converter.transformToPixelSpace(bathTub.getTransform());
+        Point2D o = converter.pointToPixelSpace(new Point2D.Double(0, 0));
+        AffineTransform t = AffineTransform.getTranslateInstance(o.getX(), o.getY());
+        t.preConcatenate(converter.transformToPixelSpace(bathTub.getTransform()));
         t.preConcatenate(f);
 
         Point2D a = new Point2D.Double(0, 0);

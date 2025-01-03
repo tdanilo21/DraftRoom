@@ -1,6 +1,6 @@
 package raf.draft.dsw.gui.swing.mainpanel.room.tab.painters;
 
-import raf.draft.dsw.controller.RealToPixelSpaceConverter;
+import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.curves.Segment;
@@ -63,5 +63,5 @@ public abstract class AbstractPainter{
         g2.drawArc(x, y, w, h, 0, 360);
     }
 
-    public abstract void paint(Graphics g, AffineTransform f, RealToPixelSpaceConverter converter);
+    public abstract void paint(Graphics g, AffineTransform f, PixelSpaceConverter converter);
 }

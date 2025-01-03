@@ -10,6 +10,7 @@ import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.util.Vector;
 
 public class AddState extends AbstractState{
 
@@ -20,8 +21,11 @@ public class AddState extends AbstractState{
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Can not create new element inside another one.", MessageTypes.ERROR);
             return;
         }
+        Vector<VisualElementTypes> values = new Vector<>();
+        for (VisualElementTypes type : VisualElementTypes.values())
+            if (type != VisualElementTypes.WALL) values.add(type);
         VisualElementTypes selectedType = (VisualElementTypes)JOptionPane.showInputDialog(null, "Choose element type",
-                        "Type selection", JOptionPane.QUESTION_MESSAGE, null, VisualElementTypes.values(), null);
+                        "Type selection", JOptionPane.QUESTION_MESSAGE, null, values.toArray(), null);
         double[] dims;
         try{
             if (selectedType == VisualElementTypes.BOILER || selectedType == VisualElementTypes.TOILET
