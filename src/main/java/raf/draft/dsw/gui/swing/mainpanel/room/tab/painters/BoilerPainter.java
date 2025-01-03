@@ -39,19 +39,5 @@ public class BoilerPainter extends AbstractPainter {
         Point2D p3 = new Point2D.Double(p.getX() + 0.5/2, p.getY() - 0.5/2);
         Point2D p4 = new Point2D.Double(p.getX() - 0.5/2, p.getY() + 0.5/2);
         drawLine(new Segment(p3, p4), g2, t);
-
-        /*Point2D p = boiler.getCenterInPixelSpace();
-        double r = boiler.getRInPixelSpace();
-        g2.setStroke(new BasicStroke(2));
-        drawCircularArc(new CircularArc(p, r, 0, 2*Math.PI), g2, f);
-
-        Point2D p1 = new Point2D.Double(p.getX() - r/2, p.getY() - r/2);
-        Point2D p2 = new Point2D.Double(p.getX() + r/2, p.getY() + r/2);
-        drawLine(new Segment(p1, p2), g2, f);
-
-        Point2D p3 = new Point2D.Double(p.getX() + r/2, p.getY() - r/2);
-        Point2D p4 = new Point2D.Double(p.getX() - r/2, p.getY() + r/2);
-        drawLine(new Segment(p3, p4), g2, f);
-         */
     }
 }
