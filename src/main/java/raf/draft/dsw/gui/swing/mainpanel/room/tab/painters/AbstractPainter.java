@@ -51,7 +51,7 @@ public abstract class AbstractPainter{
         int a = (int)Math.round(2*arct.getR());
         int startAngle = (int)Math.round(Math.toDegrees(arct.getStartAngle()));
         int arcAngle = (int)Math.round(Math.toDegrees(arct.getSweepAngle()));
-        g2.drawArc(x, y, a, a, startAngle, arcAngle);
+        g2.drawArc(x, y, a, a, 360 - startAngle, arcAngle);
     }
     protected void drawEllipse(Segment s, Graphics2D g2, AffineTransform f){
         Segment st = (Segment)s.getTransformedInstance(f);

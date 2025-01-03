@@ -15,7 +15,8 @@ import java.util.Vector;
 
 public class Toilet extends CircularElement {
     public Toilet(double r, Point2D location, Integer id){
-        super(r, location, id);
+        super(location, id);
+        pScale(location, 2*r, 2*r);
     }
 
     public Toilet(AffineTransform transform, Integer id){

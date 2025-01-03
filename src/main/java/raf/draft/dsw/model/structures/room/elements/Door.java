@@ -15,7 +15,8 @@ import java.util.Vector;
 
 public class Door extends CircularElement {
     public Door(double r, Point2D location, Integer id){
-        super(r, location, id);
+        super(location, id);
+        pScale(location, r, r);
     }
 
     public Door(AffineTransform transform, Integer id){

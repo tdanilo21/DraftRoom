@@ -15,7 +15,8 @@ import java.util.Vector;
 
 public class Boiler extends CircularElement {
     public Boiler(double r, Point2D location, Integer id){
-        super(r, location, id);
+        super(location, id);
+        pScale(location, 2*r, 2*r);
     }
 
     public Boiler(AffineTransform transform, Integer id){

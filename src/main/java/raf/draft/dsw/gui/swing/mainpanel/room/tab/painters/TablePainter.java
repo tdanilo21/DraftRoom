@@ -25,7 +25,8 @@ public class TablePainter extends AbstractPainter{
         Graphics2D g2 = (Graphics2D)g;
         g2.setStroke(new BasicStroke(2));
 
-        AffineTransform t = converter.transformToPixelSpace(table.getTransform());
+        AffineTransform t = converter.getUnitPixelSpaceTransform();
+        t.preConcatenate(converter.transformToPixelSpace(table.getTransform()));
         t.preConcatenate(f);
 
         Point2D a = new Point2D.Double(0, 0);

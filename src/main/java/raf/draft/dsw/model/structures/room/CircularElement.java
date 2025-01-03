@@ -7,9 +7,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 public abstract class CircularElement extends RoomElement implements CircularVisualElement {
-    public CircularElement(double r, Point2D location, Integer id){
+    public CircularElement(Point2D location, Integer id){
         super(location, id);
-        pScale(location, r, r);
     }
 
     public CircularElement(AffineTransform transform, Integer id){

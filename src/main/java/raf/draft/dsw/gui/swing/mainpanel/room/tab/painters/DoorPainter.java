@@ -24,13 +24,14 @@ public class DoorPainter extends AbstractPainter{
         Graphics2D g2 = (Graphics2D)g;
         g2.setStroke(new BasicStroke(2));
 
-        AffineTransform t = converter.transformToPixelSpace(door.getTransform());
+        AffineTransform t = converter.getUnitPixelSpaceTransform();
+        t.preConcatenate(converter.transformToPixelSpace(door.getTransform()));
         t.preConcatenate(f);
 
         Point2D a = new Point2D.Double(1, 0);
         Point2D b = new Point2D.Double(1, 1);
         drawLine(new Segment(a, b), g2, t);
-        drawCircularArc(new CircularArc(b, 1, Math.PI/2, Math.PI/2), g2, t);
+        drawCircularArc(new CircularArc(b, 1, -Math.PI/2, Math.PI/2), g2, t);
 
         /*Point2D p = door.getLocationInPixelSpace();
         double r = door.getRInPixelSpace();

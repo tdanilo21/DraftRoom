@@ -24,7 +24,8 @@ public class WashingMachinePainter extends AbstractPainter{
         Graphics2D g2 = (Graphics2D)g;
         g2.setStroke(new BasicStroke(2));
 
-        AffineTransform t = converter.transformToPixelSpace(washingMachine.getTransform());
+        AffineTransform t = converter.getUnitPixelSpaceTransform();
+        t.preConcatenate(converter.transformToPixelSpace(washingMachine.getTransform()));
         t.preConcatenate(f);
 
         Point2D a = new Point2D.Double(0, 0);

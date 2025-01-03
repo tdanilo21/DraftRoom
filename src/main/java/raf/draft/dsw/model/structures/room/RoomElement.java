@@ -23,7 +23,7 @@ public abstract class RoomElement extends DraftNode implements Named, VisualElem
 
     public RoomElement(Point2D location, Integer id){
         super(id);
-        transform  = AffineTransform.getTranslateInstance(location.getX(), location.getY());
+        transform = AffineTransform.getTranslateInstance(location.getX(), location.getY());
     }
 
     public RoomElement(AffineTransform transform, Integer id){

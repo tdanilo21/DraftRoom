@@ -13,7 +13,7 @@ import java.awt.geom.Point2D;
 public class ToiletPainter extends AbstractPainter{
     private final CircularVisualElement toilet;
 
-    public ToiletPainter(CircularVisualElement toilet){this.toilet = toilet;};
+    public ToiletPainter(CircularVisualElement toilet){this.toilet = toilet;}
 
     @Override
     public VisualElement getElement() {
@@ -25,7 +25,8 @@ public class ToiletPainter extends AbstractPainter{
         Graphics2D g2 = (Graphics2D)g;
         g2.setStroke(new BasicStroke(2));
 
-        AffineTransform t = converter.transformToPixelSpace(toilet.getTransform());
+        AffineTransform t = converter.getUnitPixelSpaceTransform();
+        t.preConcatenate(converter.transformToPixelSpace(toilet.getTransform()));
         t.preConcatenate(f);
 
         Point2D p = new Point2D.Double(0, 0);

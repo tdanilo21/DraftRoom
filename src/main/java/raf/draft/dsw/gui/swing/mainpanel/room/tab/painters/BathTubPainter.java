@@ -24,8 +24,7 @@ public class BathTubPainter extends AbstractPainter {
         Graphics2D g2 = (Graphics2D)g;
         g2.setStroke(new BasicStroke(2));
 
-        Point2D o = converter.pointToPixelSpace(new Point2D.Double(0, 0));
-        AffineTransform t = AffineTransform.getTranslateInstance(o.getX(), o.getY());
+        AffineTransform t = converter.getUnitPixelSpaceTransform();
         t.preConcatenate(converter.transformToPixelSpace(bathTub.getTransform()));
         t.preConcatenate(f);
 

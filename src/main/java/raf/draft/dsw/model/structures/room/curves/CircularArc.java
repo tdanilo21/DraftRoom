@@ -119,14 +119,14 @@ public class CircularArc implements Curve {
 
     @Override
     public double getMinY() {
-        if ((startAngle < Math.PI/2 && startAngle + sweepAngle > Math.PI/2) || startAngle + sweepAngle > 5*Math.PI/2)
+        if ((startAngle < 3*Math.PI/2 && startAngle + sweepAngle > 3*Math.PI/2) || startAngle + sweepAngle > 7*Math.PI/2)
             return c.getY() - r;
         return Math.min(getStartPoint().getY(), getEndPoint().getY());
     }
 
     @Override
     public double getMaxY() {
-        if ((startAngle < 3*Math.PI/2 && startAngle + sweepAngle > 2*Math.PI/2) || startAngle + sweepAngle > 7*Math.PI/2)
+        if ((startAngle < Math.PI/2 && startAngle + sweepAngle > Math.PI/2) || startAngle + sweepAngle > 5*Math.PI/2)
             return c.getY() + r;
         return Math.max(getStartPoint().getY(), getEndPoint().getY());
     }

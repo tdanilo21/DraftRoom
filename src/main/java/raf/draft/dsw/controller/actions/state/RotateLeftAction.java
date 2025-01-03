@@ -22,11 +22,11 @@ public class RotateLeftAction extends AbstractRoomAction{
     @Override
     public void actionPerformed(ActionEvent e) {
         RoomTab roomTab = MainFrame.getInstance().getRoomViewController().getSelectedTab();
+        if (roomTab.getSelectionRectangle() == null) return;
         Vector<VisualElement> selection = roomTab.getSelection();
-        Point2D p = roomTab.getSelectionRectangle().getCenter();
         double alpha = roomTab.getConverter().angleFromPixelSpace(Math.PI/2);
         for(VisualElement element : selection)
-            element.rotate(alpha, p);
+            element.rotate(alpha, roomTab.getSelectionRectangle().getCenter());
         roomTab.rotateSelectionRectangle(alpha);
     }
 }

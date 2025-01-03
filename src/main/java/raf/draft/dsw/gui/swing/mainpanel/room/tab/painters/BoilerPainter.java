@@ -25,7 +25,8 @@ public class BoilerPainter extends AbstractPainter {
         Graphics2D g2 = (Graphics2D)g;
         g2.setStroke(new BasicStroke(2));
 
-        AffineTransform t = converter.transformToPixelSpace(boiler.getTransform());
+        AffineTransform t = converter.getUnitPixelSpaceTransform();
+        t.preConcatenate(converter.transformToPixelSpace(boiler.getTransform()));
         t.preConcatenate(f);
 
         Point2D p = new Point2D.Double(0.5, 0.5);
