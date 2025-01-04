@@ -68,10 +68,7 @@ public class Segment implements Curve {
         CircularArc cut = new CircularArc((Point2D)arc.getC().clone(), arc.getR(), alpha, 2*(Math.PI - alpha));
         Point2D a = cut.getStartPoint(), b = cut.getEndPoint();
         int cnt = 0;
-        if (!isEdgePoint(a)
-                && !arc.isEdgePoint(a)
-                && contains(a) &&
-                arc.contains(a)) cnt++;
+        if (!isEdgePoint(a) && !arc.isEdgePoint(a) && contains(a) && arc.contains(a)) cnt++;
         if (!isEdgePoint(b) && !arc.isEdgePoint(b) && contains(b) && arc.contains(b)) cnt++;
         return cnt;
     }
@@ -82,5 +79,25 @@ public class Segment implements Curve {
         if (curve instanceof CircularArc) return pCountIntersections((CircularArc)curve);
         System.err.println("Curve c is not a segment or an arc");
         return 0;
+    }
+
+    @Override
+    public double getMinX() {
+        return Math.min(a.getX(), b.getX());
+    }
+
+    @Override
+    public double getMaxX() {
+        return Math.max(a.getX(), b.getX());
+    }
+
+    @Override
+    public double getMinY() {
+        return Math.min(a.getY(), b.getY());
+    }
+
+    @Override
+    public double getMaxY() {
+        return Math.max(a.getY(), b.getY());
     }
 }

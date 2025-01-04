@@ -1,5 +1,6 @@
 package raf.draft.dsw.gui.swing.mainpanel.room.tab.painters;
 
+import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.curves.Segment;
@@ -50,7 +51,7 @@ public abstract class AbstractPainter{
         int a = (int)Math.round(2*arct.getR());
         int startAngle = (int)Math.round(Math.toDegrees(arct.getStartAngle()));
         int arcAngle = (int)Math.round(Math.toDegrees(arct.getSweepAngle()));
-        g2.drawArc(x, y, a, a, startAngle, arcAngle);
+        g2.drawArc(x, y, a, a, 360 - startAngle, arcAngle);
     }
     protected void drawEllipse(Segment s, Graphics2D g2, AffineTransform f){
         Segment st = (Segment)s.getTransformedInstance(f);
@@ -62,5 +63,5 @@ public abstract class AbstractPainter{
         g2.drawArc(x, y, w, h, 0, 360);
     }
 
-    public abstract void paint(Graphics g, AffineTransform f);
+    public abstract void paint(Graphics g, AffineTransform f, PixelSpaceConverter converter);
 }

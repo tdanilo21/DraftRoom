@@ -8,4 +8,9 @@ public interface Curve {
     void transform(AffineTransform f);
     Curve getTransformedInstance(AffineTransform f);
     boolean isEdgePoint(Point2D p);
+
+    double getMinX();
+    double getMaxX();
+    double getMinY();
+    double getMaxY();
 }

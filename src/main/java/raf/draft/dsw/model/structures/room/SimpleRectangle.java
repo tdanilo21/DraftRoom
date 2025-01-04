@@ -6,26 +6,33 @@ import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.curves.Segment;
+import raf.draft.dsw.model.structures.room.curves.Vec;
 import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 import raf.draft.dsw.model.structures.room.interfaces.RectangularVisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
+@Getter
 public class SimpleRectangle implements RectangularVisualElement {
 
-    private final Room room;
-    private final Point2D location;
-    @Getter
+    public static final int DOWN = 1;
+    public static final int RIGHT = 2;
+    public static final int UP = 4;
+    public static final int LEFT = 8;
+
+    private final Integer roomId;
+    private Point2D location;
     private double w, h;
 
-    public SimpleRectangle(Integer roomId, double w, double h, Point2D location){
-        this.room = (Room)DraftRoomRepository.getInstance().getNodeObject(roomId);
-        this.w = room.fromPixelSpace(w);
-        this.h = room.fromPixelSpace(h);
-        this.location = room.fromPixelSpace(location);
+    public SimpleRectangle(Integer roomId, double w, double h, Point2D location) {
+        this.roomId = roomId;
+        this.location = (Point2D) location.clone();
+        this.w = w;
+        this.h = h;
     }
 
     @Override
@@ -39,123 +46,118 @@ public class SimpleRectangle implements RectangularVisualElement {
     }
 
     @Override
-    public Integer getRoomId() {
-        return room.getId();
+    public AffineTransform getTransform() {
+        return null;
+    }
+
+    private boolean containsVertical(double x, double y0, double y1, Point2D p, double margin){
+        SimpleRectangle rect = new SimpleRectangle(roomId, 2*margin, y1-y0 + 2*margin, new Point2D.Double(x-margin, y0-margin));
+        return Geometry.contains(rect, p);
+    }
+
+    private boolean containsHorizontal(double x0, double x1, double y, Point2D p, double margin){
+        SimpleRectangle rect = new SimpleRectangle(roomId, x1-x0 + 2*margin, 2*margin, new Point2D.Double(x0-margin, y-margin));
+        return Geometry.contains(rect, p);
+    }
+
+    public int getEdges(Point2D p, double margin){
+        double x0 = location.getX(), y0 = location.getY();
+        double x1 = x0 + w, y1 = y0 + h;
+        int edges = 0;
+        if (containsHorizontal(x0, x1, y0, p, margin)) edges |= DOWN;
+        if (containsVertical(x1, y0, y1, p, margin)) edges |= RIGHT;
+        if (containsHorizontal(x0, x1, y1, p, margin)) edges |= UP;
+        if (containsVertical(x0, y0, y1, p, margin)) edges |= LEFT;
+        return edges;
+    }
+
+    public Point2D getCenter(){
+        return new Point2D.Double(location.getX() + w/2, location.getY() + h/2);
     }
 
     @Override
-    public Point2D getLocationInPixelSpace() {
-        return room.toPixelSpace(location);
-    }
-
-    @Override
-    public double getAngleInPixelSpace() {
+    public double getAngle() {
         return 0;
     }
 
     @Override
-    public Point2D getCenterInPixelSpace() {
-        return room.toPixelSpace(getCenter());
-    }
-
-    @Override
     public void translate(double dx, double dy) {
-        location.setLocation(location.getX() + room.fromPixelSpace(dx), location.getY() + room.fromPixelSpace(dy));
+        location = new Point2D.Double(location.getX() + dx, location.getY() + dy);
         DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
-    @Override
-    public void rotate(double alpha) {}
-
-    @Override
-    public double getWInPixelSpace() {
-        return room.toPixelSpace(w);
+    private void rotate90(Point2D p){
+        location = new Point2D.Double(location.getX() - p.getX(), location.getY() - p.getY());
+        location = new Point2D.Double(-location.getY()-h, location.getX());
+        double t = w; w = h; h = t;
+        location = new Point2D.Double(location.getX() + p.getX(), location.getY() + p.getY());
     }
 
     @Override
-    public double getHInPixelSpace() {
-        return room.toPixelSpace(h);
+    public void rotate(double alpha) {
+        rotate(alpha, getCenter());
+    }
+
+    @Override
+    public void rotate(double alpha, Point2D p) {
+        double k = 2*alpha / Math.PI;
+        if (k == (int)k){
+            int l = (((int)k % 4) + 4) % 4;
+            while (l > 0){
+                rotate90(p);
+                l--;
+            }
+            DraftRoomRepository.getInstance().visualElementEdited(this);
+        }
+    }
+
+    @Override
+    public void scale(Point2D p, double sx, double sy) {
+        if (p.equals(location)) {
+            w *= sx;
+            h *= sy;
+            DraftRoomRepository.getInstance().visualElementEdited(this);
+        }
+    }
+
+    @Override
+    public Point2D getInternalPoint() {
+        return getCenter();
+    }
+
+    @Override
+    public Vector<Point2D> getVertexes() {
+        Vector<Point2D> vertexes = new Vector<>();
+        vertexes.add(new Point2D.Double(location.getX(), location.getY()));
+        vertexes.add(new Point2D.Double(location.getX()+w, location.getY()));
+        vertexes.add(new Point2D.Double(location.getX()+w, location.getY()+h));
+        vertexes.add(new Point2D.Double(location.getX(), location.getY()+h));
+        return vertexes;
+    }
+
+    @Override
+    public Vector<Curve> getEdgeCurves() {
+        Vector<Point2D> vertexes = getVertexes();
+        Vector<Curve> curves = new Vector<>();
+        for (int i = 0; i < vertexes.size(); i++)
+            curves.add(new Segment((Point2D)vertexes.get(i).clone(), (Point2D)vertexes.get((i+1) % vertexes.size()).clone()));
+        return curves;
     }
 
     @Override
     public void setH(double h) {
-        this.h = room.fromPixelSpace(h);
+        this.h = h;
         DraftRoomRepository.getInstance().visualElementEdited(this);
     }
 
     @Override
     public void setW(double w) {
-        this.w = room.fromPixelSpace(w);
+        this.w = w;
         DraftRoomRepository.getInstance().visualElementEdited(this);
-    }
-
-    @Override
-    public void scaleW(double lambda) {
-        w *= lambda;
-        DraftRoomRepository.getInstance().visualElementEdited(this);
-    }
-
-    @Override
-    public void scaleH(double lambda) {
-        h *= lambda;
-        DraftRoomRepository.getInstance().visualElementEdited(this);
-    }
-
-    private Vector<Curve> getCurves(){
-        Vector<Curve> curves = new Vector<>();
-        curves.add(new Segment(new Point2D.Double(location.getX(), location.getY()), new Point2D.Double(location.getX()+w, location.getY())));
-        curves.add(new Segment(new Point2D.Double(location.getX()+w, location.getY()), new Point2D.Double(location.getX()+w, location.getY()+h)));
-        curves.add(new Segment(new Point2D.Double(location.getX()+w, location.getY()+h), new Point2D.Double(location.getX(), location.getY()+h)));
-        curves.add(new Segment(new Point2D.Double(location.getX(), location.getY()+h), new Point2D.Double(location.getX(), location.getY())));
-        return curves;
-    }
-
-    @Override
-    public boolean overlap(VisualElement element) {
-        if (element instanceof RoomElement) return element.overlap(this);
-        return false;
-    }
-
-    @Override
-    public boolean intersect(Curve curve) {
-        Vector<Curve> curves = getCurves();
-        for (Curve c : curves)
-            if (curve.countIntersections(c) > 0)
-                return true;
-        return false;
-    }
-
-    @Override
-    public boolean contains(Point2D p) {
-        double x1 = Math.min(location.getX(), location.getX()+w);
-        double x2 = Math.max(location.getX(), location.getX()+w);
-        double y1 = Math.min(location.getY(), location.getY()+h);
-        double y2 = Math.max(location.getY(), location.getY()+h);
-        return p.getX() > x1 && p.getX() < x2 && p.getY() > y1 && p.getY() < y2;
-    }
-
-    @Override
-    public boolean containsInPixelSpace(Point2D p) {
-        return contains(room.fromPixelSpace(p));
-    }
-
-    @Override
-    public Point2D getCenter() {
-        return new Point2D.Double(location.getX() + w / 2, location.getY() + h / 2);
-    }
-
-    public boolean contains(VisualElement element){
-        Vector<Curve> curves = getCurves();
-        for (Curve curve : curves)
-            if (element.intersect(curve))
-                return false;
-        Point2D p = element.getCenter();
-        if (element instanceof Wall wall) p = (Point2D)room.fromPixelSpace(wall.getLocationInPixelSpace()).clone();
-        return contains(p);
     }
 
     @Override
     public Prototype clone() {
-        return new SimpleRectangle(room.getId(), room.toPixelSpace(w), room.toPixelSpace(h), room.toPixelSpace(location));
+        return new SimpleRectangle(roomId, w, h, location);
     }
 }

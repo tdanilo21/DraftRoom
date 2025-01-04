@@ -5,14 +5,22 @@ import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.CircularElement;
 import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.curves.Curve;
+import raf.draft.dsw.model.structures.room.curves.Segment;
+import raf.draft.dsw.model.structures.room.curves.Vec;
 import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
 public class Boiler extends CircularElement {
-    public Boiler(Room room, double r, Point2D location, double angle, Integer id){
-        super(room, r, location, angle, id);
+    public Boiler(double r, Point2D location, Integer id){
+        super(location, id);
+        pScale(location, 2*r, 2*r);
+    }
+
+    public Boiler(AffineTransform transform, Integer id){
+        super(transform, id);
     }
 
     @Override
@@ -21,13 +29,10 @@ public class Boiler extends CircularElement {
     }
 
     @Override
-    public Point2D getCenterInPixelSpace() {
-        return getRoom().toPixelSpace(getCenter());
-    }
-
-    @Override
-    public Point2D getCenter() {
-        return new Point2D.Double(location.getX() + r, location.getY() + r);
+    public double getR() {
+        Segment s = new Segment(new Point2D.Double(0, 0), new Point2D.Double(0.5, 0));
+        s.transform(transform);
+        return (new Vec(s.getA(), s.getB())).abs();
     }
 
     @Override
@@ -37,15 +42,15 @@ public class Boiler extends CircularElement {
 
 
     @Override
-    protected Vector<Curve> getEdgeCurves() {
+    public Vector<Curve> getEdgeCurves() {
         Vector<Curve> curves = new Vector<>();
-        curves.add(new CircularArc(getCenter(), r, 0, 2*Math.PI));
-        curves.getFirst().transform(getRotation());
+        curves.add(new CircularArc(new Point2D.Double(0.5, 0.5), 0.5, 0, 2*Math.PI));
+        curves.getFirst().transform(transform);
         return curves;
     }
 
     @Override
     public Prototype clone(Integer id) {
-        return new Boiler(getRoom(), r, getRoom().toPixelSpace(location), angle, id);
+        return new Boiler(transform, id);
     }
 }

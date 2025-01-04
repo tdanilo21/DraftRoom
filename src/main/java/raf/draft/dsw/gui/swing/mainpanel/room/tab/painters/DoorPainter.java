@@ -1,5 +1,6 @@
 package raf.draft.dsw.gui.swing.mainpanel.room.tab.painters;
 
+import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.curves.Segment;
 import raf.draft.dsw.model.structures.room.interfaces.CircularVisualElement;
@@ -19,20 +20,17 @@ public class DoorPainter extends AbstractPainter{
     }
 
     @Override
-    public void paint(Graphics g, AffineTransform f) {
+    public void paint(Graphics g, AffineTransform f, PixelSpaceConverter converter) {
         Graphics2D g2 = (Graphics2D)g;
-        Point2D p = door.getLocationInPixelSpace();
-        double r = door.getRInPixelSpace();
-        Point2D center = door.getCenterInPixelSpace();
-        double angle = door.getAngleInPixelSpace();
-        f.concatenate(AffineTransform.getRotateInstance(-angle, center.getX(), center.getY()));
         g2.setStroke(new BasicStroke(2));
 
-        Point2D c = new Point2D.Double(p.getX() + r, p.getY() + r);
-        drawCircularArc(new CircularArc(c, r, Math.PI/2 + 2*angle, Math.PI/2), g2, f);
+        AffineTransform t = converter.getUnitPixelSpaceTransform();
+        t.preConcatenate(converter.transformToPixelSpace(door.getTransform()));
+        t.preConcatenate(f);
 
-        Point2D a = new Point2D.Double(p.getX() + r, p.getY());
-        Point2D b = new Point2D.Double(p.getX() + r, p.getY() + r);
-        drawLine(new Segment(a, b), g2, f);
+        Point2D a = new Point2D.Double(1, 0);
+        Point2D b = new Point2D.Double(1, 1);
+        drawLine(new Segment(a, b), g2, t);
+        drawCircularArc(new CircularArc(b, 1, -Math.PI/2, Math.PI/2), g2, t);
     }
 }

@@ -5,11 +5,16 @@ import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 import raf.draft.dsw.model.structures.room.RectangularElement;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 public class Bed extends RectangularElement {
-    public Bed(Room room, double w, double h, Point2D location, double angle, Integer id){
-        super(room, w, h, location, angle, id);
+    public Bed(double w, double h, Point2D location, Integer id){
+        super(w, h, location, id);
+    }
+
+    public Bed(AffineTransform transform, Integer id){
+        super(transform, id);
     }
 
     @Override
@@ -19,6 +24,6 @@ public class Bed extends RectangularElement {
 
     @Override
     public Prototype clone(Integer id) {
-        return new Bed(getRoom(), w, h, getRoom().toPixelSpace(location), angle, id);
+        return new Bed(transform, id);
     }
 }

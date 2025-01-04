@@ -2,15 +2,16 @@ package raf.draft.dsw.gui.swing.mainpanel.room.tab;
 
 import lombok.Getter;
 import lombok.Setter;
+import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
-import raf.draft.dsw.controller.states.DeleteState;
+import raf.draft.dsw.controller.states.StateManager;
 import raf.draft.dsw.core.ApplicationFramework;
-import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.AbstractPainter;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.PainterFactory;
-import raf.draft.dsw.model.structures.Room;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.SelectionPainter;
+import raf.draft.dsw.model.enums.VisualElementTypes;
+import raf.draft.dsw.model.structures.room.Geometry;
 import raf.draft.dsw.model.structures.room.SimpleRectangle;
-import raf.draft.dsw.model.structures.room.curves.CircularArc;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import javax.swing.*;
@@ -33,6 +34,10 @@ public class RoomTab extends JPanel {
     private final AffineTransform f;
     @Getter @Setter
     private double zoomFactor;
+    @Getter
+    private final PixelSpaceConverter converter;
+    @Getter
+    private final StateManager stateManager;
 
     public RoomTab(DraftNodeDTO room){
         this.room = room;
@@ -40,6 +45,8 @@ public class RoomTab extends JPanel {
         selection = new Vector<>();
         f = AffineTransform.getTranslateInstance(padding, padding);
         zoomFactor = 1;
+        converter = new PixelSpaceConverter(this);
+        stateManager = new StateManager(this);
         updateElements();
         setBackground(Color.WHITE);
     }
@@ -54,7 +61,7 @@ public class RoomTab extends JPanel {
 
     public VisualElement getElementAt(Point2D p){
         for (int i = 0; i < painters.size(); i++)
-            if (painters.get(i).getElement().containsInPixelSpace(p))
+            if (Geometry.contains(painters.get(i).getElement(), converter.pointFromPixelSpace(p)))
                 return painters.get(i).getElement();
         return null;
     }
@@ -63,21 +70,19 @@ public class RoomTab extends JPanel {
         return new Dimension(getWidth() - 2*padding, getHeight() - 2*padding);
     }
 
-    public void select(VisualElement element){
-        selection = new Vector<>(){{add(element);}};
-    }
-
     private void updateSelection(){
         selection.clear();
         if (selectionRectangle == null) return;
         for (int i = 0; i < painters.size(); i++)
-            if (selectionRectangle.contains(painters.get(i).getElement()))
+            if (painters.get(i).getElement().getVisualElementType() != VisualElementTypes.WALL && Geometry.contains(selectionRectangle, painters.get(i).getElement()))
                 selection.add(painters.get(i).getElement());
     }
 
     public void scaleSelectionRectangle(double dx, double dy){
-        selectionRectangle.setW(selectionRectangle.getWInPixelSpace() + dx);
-        selectionRectangle.setH(selectionRectangle.getHInPixelSpace() + dy);
+        dx = converter.lengthFromPixelSpace(dx);
+        dy = converter.lengthFromPixelSpace(dy);
+        selectionRectangle.setW(selectionRectangle.getW() + dx);
+        selectionRectangle.setH(selectionRectangle.getH() + dy);
         updateSelection();
         repaint();
     }
@@ -90,7 +95,7 @@ public class RoomTab extends JPanel {
 
     public boolean overlaps(VisualElement element){
         for (int i = 0; i < painters.size(); i++)
-            if (!painters.get(i).getElement().getId().equals(element.getId()) && painters.get(i).getElement().overlap(element))
+            if (!painters.get(i).getElement().getId().equals(element.getId()) && Geometry.overlaps(painters.get(i).getElement(), element))
                 return true;
         return false;
     }
@@ -98,26 +103,11 @@ public class RoomTab extends JPanel {
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        for (AbstractPainter p : painters)
-            p.paint(g, (AffineTransform) f.clone());
-        if (selectionRectangle != null) paintSelection(g);
-    }
-
-    private void paintSelection(Graphics g){
-        Graphics2D g2 = (Graphics2D)g;
-        Point2D a = selectionRectangle.getLocationInPixelSpace();
-        double w = selectionRectangle.getWInPixelSpace();
-        double h = selectionRectangle.getHInPixelSpace();
-        Point2D b = new Point2D.Double(a.getX()+w, a.getY()+h);
-        f.transform(a, a);
-        f.transform(b, b);
-        int x = (int)Math.round(Math.min(a.getX(), b.getX()));
-        int y = (int)Math.round(Math.min(a.getY(), b.getY()));
-        int w1 = (int)Math.round(Math.abs(b.getX() - a.getX()));
-        int h1 = (int)Math.round(Math.abs(b.getY() - a.getY()));
-        g2.setStroke(new BasicStroke());
-        g2.setColor(Color.blue);
-        g2.drawRect(x, y, w1, h1);
+        for (AbstractPainter p : painters) {
+            g.setColor(overlaps(p.getElement()) ? Color.red : Color.black);
+            p.paint(g, (AffineTransform) f.clone(), converter);
+        }
+        if (selectionRectangle != null) (new SelectionPainter(selectionRectangle)).paint(g, (AffineTransform)f.clone(), converter);
     }
 
     @Override

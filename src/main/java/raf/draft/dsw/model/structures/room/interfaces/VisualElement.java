@@ -4,20 +4,24 @@ import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.Vector;
 
 public interface VisualElement extends Prototype {
     VisualElementTypes getVisualElementType();
     Integer getId();
     Integer getRoomId();
-    Point2D getLocationInPixelSpace();
-    double getAngleInPixelSpace();
-    Point2D getCenterInPixelSpace();
+
+    AffineTransform getTransform();
+    double getAngle();
+    Point2D getLocation();
     void translate(double dx, double dy);
     void rotate(double alpha);
-    boolean overlap(VisualElement element);
-    boolean intersect(Curve curve);
-    boolean contains(Point2D p);
-    boolean containsInPixelSpace(Point2D p);
-    Point2D getCenter();
+    void rotate(double alpha, Point2D p);
+    void scale(Point2D p, double sx, double sy);
+
+    Point2D getInternalPoint();
+    Vector<Curve> getEdgeCurves();
+    Vector<Point2D> getVertexes();
 }
