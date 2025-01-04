@@ -118,6 +118,16 @@ public class DraftRoomRepository implements IPublisher {
                 subscriber.notify(type, state);
     }
 
+    public void addSubscriber(Integer id, ISubscriber subscriber, EventTypes ...types){
+        DraftNode node = nodes.get(id);
+        if (node != null) node.addSubscriber(subscriber, types);
+    }
+
+    public void removeSubscriber(Integer id, ISubscriber subscriber, EventTypes ...types){
+        DraftNode node = nodes.get(id);
+        if (node != null) node.removeSubscriber(subscriber, types);
+    }
+
     public boolean hasChildWithName(Integer parentId, String name){
         DraftNode node = nodes.get(parentId);
         return node instanceof DraftNodeComposite parent && parent.hasChildWithName(name);
@@ -149,10 +159,10 @@ public class DraftRoomRepository implements IPublisher {
         if (node == null) return null;
         if (node instanceof Named namedNode && node.getParent() != null && hasChildWithName(node.getParent().getId(), namedNode.getName()))
             return null;
-        DraftNode parent = nodes.get(parentId);
-        if (parent instanceof DraftNodeComposite composite) composite.addChild(node);
         K++;
         nodes.put(node.getId(), node);
+        DraftNode parent = nodes.get(parentId);
+        if (parent instanceof DraftNodeComposite composite) composite.addChild(node);
         notifySubscribers(EventTypes.NODE_CREATED, node.getDTO());
         return node.getDTO();
     }
@@ -163,10 +173,8 @@ public class DraftRoomRepository implements IPublisher {
 
     public void addChild(Integer parentId, Integer id){
         DraftNode parent = nodes.get(parentId), child = nodes.get(id);
-        if (parent instanceof DraftNodeComposite composite) {
+        if (parent instanceof DraftNodeComposite composite)
             composite.addChild(child);
-            notifySubscribers(EventTypes.NODE_EDITED, child.getDTO());
-        }
     }
 
     public DraftNodeDTO getNode(Integer id){
@@ -227,17 +235,14 @@ public class DraftRoomRepository implements IPublisher {
             System.err.println("Node is read-only");
             return;
         }
-        Integer parentId = (node.getParent() != null ? node.getParent().getId() : null);
         removeNode(node);
-        deleteNode(node);
         notifySubscribers(EventTypes.NODE_DELETED, node.getDTO());
-        if (node instanceof VisualElement)
-            notifySubscribers(EventTypes.VISUAL_ELEMENT_DELETED, parentId);
+        deleteNode(node);
     }
 
     public void renameNode(Integer id, String newName){
         DraftNode node = nodes.get(id);
-        if (node instanceof Named namedNode && hasSiblingWithName(id, newName)){
+        if (node instanceof Named namedNode && !hasSiblingWithName(id, newName)) {
             namedNode.setName(newName);
             notifySubscribers(EventTypes.NODE_EDITED, node.getDTO());
         }
@@ -298,7 +303,6 @@ public class DraftRoomRepository implements IPublisher {
                 nodes.put(roomElement.getId(), roomElement);
                 room.addChild(roomElement);
                 notifySubscribers(EventTypes.NODE_CREATED, roomElement.getDTO());
-                notifySubscribers(EventTypes.VISUAL_ELEMENT_CREATED, room.getId());
                 return roomElement;
             }
         }
@@ -319,7 +323,6 @@ public class DraftRoomRepository implements IPublisher {
                 nodes.put(clone.getId(), clone);
                 ((Room)nodes.get(roomElement.getRoomId())).addChild(clone);
                 notifySubscribers(EventTypes.NODE_CREATED, clone.getDTO());
-                notifySubscribers(EventTypes.VISUAL_ELEMENT_CREATED, clone.getRoomId());
                 return clone;
             }
             return null;
@@ -342,9 +345,5 @@ public class DraftRoomRepository implements IPublisher {
         DraftNode node = nodes.get(roomId);
         if (node instanceof Room) return (Wall)node;
         return null;
-    }
-
-    public void visualElementEdited(VisualElement element){
-        notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, element.getRoomId());
     }
 }

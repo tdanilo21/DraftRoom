@@ -3,6 +3,7 @@ package raf.draft.dsw.model.structures.room;
 import lombok.Getter;
 import lombok.Setter;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.Named;
@@ -17,7 +18,6 @@ import java.awt.geom.Point2D;
 
 @Getter
 public abstract class RoomElement extends DraftNode implements Named, VisualElement {
-    @Setter
     protected String name;
     protected AffineTransform transform;
 
@@ -29,6 +29,12 @@ public abstract class RoomElement extends DraftNode implements Named, VisualElem
     public RoomElement(AffineTransform transform, Integer id){
         super(id);
         this.transform = (AffineTransform)transform.clone();
+    }
+
+    @Override
+    public void setName(String newName) {
+        name = newName;
+        notifySubscribers(EventTypes.NODE_EDITED, getDTO());
     }
 
     @Override
@@ -85,7 +91,7 @@ public abstract class RoomElement extends DraftNode implements Named, VisualElem
     @Override
     public void translate(double dx, double dy){
         pTranslate(dx, dy);
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+        if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     @Override
@@ -96,13 +102,13 @@ public abstract class RoomElement extends DraftNode implements Named, VisualElem
     @Override
     public void rotate(double alpha, Point2D p) {
         pRotate(alpha, p);
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+        if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     @Override
     public void scale(Point2D p, double sx, double sy) {
         pScale(p, sx, sy);
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+        if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     public abstract Prototype clone(Integer id);

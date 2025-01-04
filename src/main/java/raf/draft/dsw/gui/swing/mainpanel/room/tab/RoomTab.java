@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.controller.observer.EventTypes;
+import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.controller.states.StateManager;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.painters.AbstractPainter;
@@ -20,14 +22,14 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
-public class RoomTab extends JPanel {
+public class RoomTab extends JPanel implements ISubscriber {
 
     private static final int padding = 10;
     @Getter
     private final DraftNodeDTO room;
     private final Vector<AbstractPainter> painters;
     @Getter
-    private Vector<VisualElement> selection;
+    private final Vector<VisualElement> selection;
     @Getter
     private SimpleRectangle selectionRectangle;
     @Getter
@@ -47,6 +49,7 @@ public class RoomTab extends JPanel {
         zoomFactor = 1;
         converter = new PixelSpaceConverter(this);
         stateManager = new StateManager(this);
+        ApplicationFramework.getInstance().getRepository().addSubscriber(room.id(), this, EventTypes.CHILD_ADDED, EventTypes.CHILD_REMOVED, EventTypes.VISUAL_ELEMENT_EDITED);
         updateElements();
         setBackground(Color.WHITE);
     }
@@ -108,6 +111,11 @@ public class RoomTab extends JPanel {
             p.paint(g, (AffineTransform) f.clone(), converter);
         }
         if (selectionRectangle != null) (new SelectionPainter(selectionRectangle)).paint(g, (AffineTransform)f.clone(), converter);
+    }
+
+    @Override
+    public void notify(EventTypes type, Object state) {
+        updateElements();
     }
 
     @Override

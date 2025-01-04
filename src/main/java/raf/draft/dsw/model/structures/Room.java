@@ -3,6 +3,7 @@ package raf.draft.dsw.model.structures;
 import lombok.Getter;
 import lombok.Setter;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.nodes.DraftNode;
@@ -25,13 +26,19 @@ import java.util.HashMap;
 import java.util.Vector;
 
 public class Room extends DraftNodeComposite implements Named, Wall {
-    @Getter @Setter
+    @Getter
     private String name;
 
     public Room(Integer id, String name){
         super(id);
         this.name = name;
         this.initialized = false;
+    }
+
+    @Override
+    public void setName(String newName) {
+        name = newName;
+        notifySubscribers(EventTypes.NODE_EDITED, getDTO());
     }
 
     @Override
@@ -66,7 +73,6 @@ public class Room extends DraftNodeComposite implements Named, Wall {
 
     @Override
     public void addChild(DraftNode child){
-        super.addChild(child);
         if (child instanceof RoomElement roomElement) {
             VisualElementTypes type = roomElement.getVisualElementType();
             nameCounters.putIfAbsent(type, 1);
@@ -74,6 +80,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
             nameCounters.replace(type, index+1);
             roomElement.setName(STR."\{type.toString()} \{index}");
         }
+        super.addChild(child);
     }
 
     public void initialize(double w, double h){
@@ -82,7 +89,8 @@ public class Room extends DraftNodeComposite implements Named, Wall {
         rect2 = new SimpleRectangle(id, w - 2*wallWidth, h - 2*wallWidth, new Point2D.Double(wallWidth, wallWidth));
         nameCounters = new HashMap<>();
         initialized = true;
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+        notifySubscribers(EventTypes.ROOM_DIMENSIONS_CHANGED, null);
+        notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     public Vector<VisualElement> getVisualElements(){
@@ -176,16 +184,18 @@ public class Room extends DraftNodeComposite implements Named, Wall {
 
     @Override
     public void setH(double h) {
-        rect1.setH(h);
-        rect2.setH(h - 2*wallWidth);
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+        rect1.setH(h + 2*wallWidth);
+        rect2.setH(h);
+        notifySubscribers(EventTypes.ROOM_DIMENSIONS_CHANGED, null);
+        notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     @Override
     public void setW(double w) {
-        rect1.setW(w);
-        rect2.setW(w - 2*wallWidth);
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+        rect1.setW(w + 2*wallWidth);
+        rect2.setW(w);
+        notifySubscribers(EventTypes.ROOM_DIMENSIONS_CHANGED, null);
+        notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     @Override

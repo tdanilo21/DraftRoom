@@ -2,6 +2,7 @@ package raf.draft.dsw.model.nodes;
 
 import lombok.Getter;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.controller.observer.EventTypes;
 
 import java.util.Arrays;
 import java.util.Vector;
@@ -32,11 +33,13 @@ public abstract class DraftNodeComposite extends DraftNode{
         if (oldParent != null) oldParent.removeChild(child);
         child.parent = this;
         children.add(child);
+        notifySubscribers(EventTypes.CHILD_ADDED, child.getDTO());
     }
 
     public void removeChild(DraftNode child){
         children.remove(child);
         child.setParent(null);
+        notifySubscribers(EventTypes.CHILD_REMOVED, child.getDTO());
     }
 
     public boolean hasChildWithName(String name){
