@@ -12,8 +12,8 @@ import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 public class TreeMouseListener extends MouseAdapter implements IPublisher {
-    private Vector<ISubscriber> subscribers;
-    private DraftTree tree;
+    private final Vector<ISubscriber> subscribers;
+    private final DraftTree tree;
 
     public TreeMouseListener(DraftTree tree){
         this.tree = tree;

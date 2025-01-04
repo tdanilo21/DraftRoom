@@ -38,8 +38,6 @@ public class RenameNodeAction extends AbstractRoomAction {
                 return;
             }
             repository.renameNode(selectedNode.getData().id(), newName);
-            selectedNode.setName(newName);
-            MainFrame.getInstance().getRepoTreeModel().reload(selectedNode);
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has been renamed.", MessageTypes.NOTIFICATION);
         }
     }

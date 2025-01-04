@@ -1,6 +1,7 @@
 package raf.draft.dsw.model.structures.room;
 
 import lombok.Getter;
+import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.Room;
@@ -83,7 +84,7 @@ public class SimpleRectangle implements RectangularVisualElement {
     @Override
     public void translate(double dx, double dy) {
         location = new Point2D.Double(location.getX() + dx, location.getY() + dy);
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+        DraftRoomRepository.getInstance().getNodeObject(roomId).notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     private void rotate90(Point2D p){
@@ -107,7 +108,7 @@ public class SimpleRectangle implements RectangularVisualElement {
                 rotate90(p);
                 l--;
             }
-            DraftRoomRepository.getInstance().visualElementEdited(this);
+            DraftRoomRepository.getInstance().getNodeObject(roomId).notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
         }
     }
 
@@ -116,7 +117,7 @@ public class SimpleRectangle implements RectangularVisualElement {
         if (p.equals(location)) {
             w *= sx;
             h *= sy;
-            DraftRoomRepository.getInstance().visualElementEdited(this);
+            DraftRoomRepository.getInstance().getNodeObject(roomId).notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
         }
     }
 
@@ -147,13 +148,13 @@ public class SimpleRectangle implements RectangularVisualElement {
     @Override
     public void setH(double h) {
         this.h = h;
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+        DraftRoomRepository.getInstance().getNodeObject(roomId).notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     @Override
     public void setW(double w) {
         this.w = w;
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+        DraftRoomRepository.getInstance().getNodeObject(roomId).notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     @Override

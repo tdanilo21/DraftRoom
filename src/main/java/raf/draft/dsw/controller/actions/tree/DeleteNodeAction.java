@@ -38,7 +38,6 @@ public class DeleteNodeAction extends AbstractRoomAction {
             );
         if (choice == JOptionPane.YES_OPTION){
             repository.deleteNode(selectedNode.getData().id());
-            MainFrame.getInstance().getRepoTreeModel().removeNodeFromParent(selectedNode);
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has been deleted.", MessageTypes.NOTIFICATION);
         }
     }

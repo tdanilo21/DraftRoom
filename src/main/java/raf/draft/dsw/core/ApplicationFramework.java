@@ -30,8 +30,7 @@ public class ApplicationFramework {
         MainFrame mainFrame = MainFrame.getInstance();
         mainFrame.setVisible(true);
 
-        repository.addSubscriber(mainFrame.getRoomViewController(), EventTypes.NODE_CREATED, EventTypes.NODE_DELETED, EventTypes.NODE_EDITED,
-                EventTypes.VISUAL_ELEMENT_CREATED, EventTypes.VISUAL_ELEMENT_DELETED, EventTypes.VISUAL_ELEMENT_EDITED);
+        repository.addSubscriber(mainFrame.getRoomViewController(), EventTypes.NODE_CREATED, EventTypes.NODE_DELETED, EventTypes.NODE_EDITED);
         repository.addSubscriber(mainFrame.getProjectViewController(), EventTypes.NODE_EDITED);
 
         Logger consoleLogger = LoggerFactory.createLogger(LoggerFactory.CONSOLE);

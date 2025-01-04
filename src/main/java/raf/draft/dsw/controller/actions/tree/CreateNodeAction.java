@@ -26,19 +26,11 @@ public class CreateNodeAction extends AbstractRoomAction {
 
     private void insertNode(DraftTreeNode parent, DraftNodeTypes type, String... parameters){
         DraftRoomRepository repository = ApplicationFramework.getInstance().getRepository();
-
         if (repository.hasChildWithName(parent.getData().id(), parameters[0])){
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object with the same name already exists at the same path.", MessageTypes.WARNING);
             return;
         }
-
-        DraftNodeDTO node = repository.createNode(type, parent.getData().id(), parameters);
-
-        DraftTreeNode child = new DraftTreeNode(node);
-        MainFrame.getInstance().getRepoTreeModel().insertNodeInto(child, parent, parent.getChildCount());
-        DraftTree repoTreeView = MainFrame.getInstance().getRepoTreeView();
-        repoTreeView.expandPath(repoTreeView.getSelectionPath());
-
+        repository.createNode(type, parent.getData().id(), parameters);
         ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has been created.", MessageTypes.NOTIFICATION);
     }
 

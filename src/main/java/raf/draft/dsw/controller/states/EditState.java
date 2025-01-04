@@ -4,10 +4,7 @@ import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.dialogs.RequestDimensionsPane;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.model.messages.MessageTypes;
-import raf.draft.dsw.model.structures.room.interfaces.CircularVisualElement;
-import raf.draft.dsw.model.structures.room.interfaces.RectangularVisualElement;
-import raf.draft.dsw.model.structures.room.interfaces.TriangularVisualElement;
-import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
+import raf.draft.dsw.model.structures.room.interfaces.*;
 
 public class EditState extends AbstractState{
     @Override
@@ -23,8 +20,13 @@ public class EditState extends AbstractState{
                 if (results == null) return;
                 tElement.setA(results[0]);
             } else if (element instanceof RectangularVisualElement rElement){
+                double w = rElement.getW(), h = rElement.getH();
+                if (rElement instanceof Wall wall){
+                    w -= 2*wall.getWallWidth();
+                    h -= 2*wall.getWallWidth();
+                }
                 int[] results = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width", "Height"},
-                                new int[]{(int)Math.round(rElement.getW()), (int)Math.round(rElement.getH())});
+                                new int[]{(int)Math.round(w), (int)Math.round(h)});
                 if (results == null) return;
                 rElement.setW(results[0]);
                 rElement.setH(results[1]);

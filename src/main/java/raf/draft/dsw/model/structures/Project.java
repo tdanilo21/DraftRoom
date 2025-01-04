@@ -3,13 +3,14 @@ package raf.draft.dsw.model.structures;
 import lombok.Getter;
 import lombok.Setter;
 import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
 import raf.draft.dsw.model.nodes.Named;
 
 import java.util.Vector;
 
-@Getter @Setter
+@Getter
 public class Project extends DraftNodeComposite implements Named {
     private String name;
     private String author;
@@ -20,6 +21,22 @@ public class Project extends DraftNodeComposite implements Named {
         this.name = name;
         this.author = author;
         this.path = path;
+    }
+
+    @Override
+    public void setName(String newName) {
+        name = newName;
+        notifySubscribers(EventTypes.NODE_EDITED, getDTO());
+    }
+
+    public void setAuthor(String newAuthor) {
+        author = newAuthor;
+        notifySubscribers(EventTypes.NODE_EDITED, getDTO());
+    }
+
+    public void setPath(String newPath) {
+        path = newPath;
+        notifySubscribers(EventTypes.NODE_EDITED, getDTO());
     }
 
     @Override

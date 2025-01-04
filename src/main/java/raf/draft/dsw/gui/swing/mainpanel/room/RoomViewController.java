@@ -58,11 +58,6 @@ public class RoomViewController implements ISubscriber {
                 case EventTypes.NODE_EDITED -> updateTabs(node);
             }
         }
-        if (state instanceof Integer roomId){
-            RoomTab selectedTab = getSelectedTab();
-            if (roomId.equals(selectedTab.getRoom().id()))
-                selectedTab.updateElements();
-        }
     }
 
     public RoomTab getSelectedTab(){
