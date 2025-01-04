@@ -87,12 +87,6 @@ public class RoomTab extends JPanel {
         repaint();
     }
 
-    public void rotateSelectionRectangle(double alpha){
-        selectionRectangle.rotate(converter.angleFromPixelSpace(alpha));
-        updateSelection();
-        repaint();
-    }
-
     public void setSelectionRectangle(SimpleRectangle selectionRectangle){
         this.selectionRectangle = selectionRectangle;
         updateSelection();
@@ -109,8 +103,10 @@ public class RoomTab extends JPanel {
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        for (AbstractPainter p : painters)
-            p.paint(g, (AffineTransform)f.clone(), converter);
+        for (AbstractPainter p : painters) {
+            g.setColor(overlaps(p.getElement()) ? Color.red : Color.black);
+            p.paint(g, (AffineTransform) f.clone(), converter);
+        }
         if (selectionRectangle != null) (new SelectionPainter(selectionRectangle)).paint(g, (AffineTransform)f.clone(), converter);
     }
 

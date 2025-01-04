@@ -47,7 +47,7 @@ public class MoveState extends AbstractState{
     void mouseReleased(double x, double y, VisualElement element, RoomTab roomTab) {
         boolean succ = true;
         for (VisualElement e : elements)
-            if (roomTab.overlaps(e))
+            if (e.getVisualElementType() != null && roomTab.overlaps(e))
                 succ = false;
         if (!succ)
             for (VisualElement e : elements)

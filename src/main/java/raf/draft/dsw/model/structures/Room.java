@@ -77,6 +77,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     public void initialize(double w, double h){
+        w += 2*wallWidth; h += 2*wallWidth;
         rect1 = new SimpleRectangle(id, w, h, new Point2D.Double(0, 0));
         rect2 = new SimpleRectangle(id, w - 2*wallWidth, h - 2*wallWidth, new Point2D.Double(wallWidth, wallWidth));
         nameCounters = new HashMap<>();
