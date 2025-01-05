@@ -4,6 +4,7 @@ import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.controller.actions.AbstractRoomAction;
 import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
+import raf.draft.dsw.model.structures.room.Geometry;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import javax.swing.*;
@@ -27,6 +28,6 @@ public class RotateRightAction extends AbstractRoomAction {
         double alpha = roomTab.getConverter().angleFromPixelSpace(3*Math.PI/2);
         for(VisualElement element : selection)
             element.rotate(alpha, roomTab.getSelectionRectangle().getCenter());
-        roomTab.rotateSelectionRectangle(alpha);
+        roomTab.setSelectionRectangle(Geometry.getRectangleHull(roomTab.getSelection()));
     }
 }

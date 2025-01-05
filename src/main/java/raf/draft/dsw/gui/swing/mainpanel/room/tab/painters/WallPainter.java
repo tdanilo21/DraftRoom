@@ -26,15 +26,17 @@ public class WallPainter extends AbstractPainter{
     @Override
     public void paint(Graphics g, AffineTransform f, PixelSpaceConverter converter) {
         Graphics2D g2 = (Graphics2D)g;
+        g2.setColor(Color.black);
 
         double w = wall.getW(), h = wall.getH();
         Point2D p = wall.getLocation();
+        double s = wall.getWallWidth();
 
         w = converter.lengthToPixelSpace(w);
         h = converter.lengthToPixelSpace(h);
         p = converter.pointToPixelSpace(p);
+        s = converter.lengthToPixelSpace(s);
 
-        double s = wall.getWallWidth();
         Point2D a = new Point2D.Double(p.getX() + s/2, p.getY() + s/2);
         Point2D b = new Point2D.Double(p.getX() + w - s/2, p.getY() + h - s/2);
         g2.setStroke(new BasicStroke((float)s));

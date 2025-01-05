@@ -13,6 +13,7 @@ import java.util.Vector;
 public class Geometry {
 
     public static boolean contains(VisualElement a, Point2D p){
+        if (a == null || p == null) return false;
         Vector<Curve> curves = a.getEdgeCurves();
         double alpha = 0;
         Vector<Point2D> vertexes = a.getVertexes();
@@ -41,6 +42,7 @@ public class Geometry {
     }
 
     private static boolean intersects(VisualElement a, Curve curve){
+        if (a == null || curve == null) return false;
         Vector<Curve> curves = a.getEdgeCurves();
         for (Curve c : curves)
             if (curve.countIntersections(c) > 0)
@@ -49,6 +51,7 @@ public class Geometry {
     }
 
     private static boolean intersects(VisualElement a, VisualElement b){
+        if (a == null || b == null) return false;
         Vector<Curve> curves = a.getEdgeCurves();
         for (Curve c : curves)
             if (intersects(b, c))
@@ -57,14 +60,15 @@ public class Geometry {
     }
 
     public static boolean contains(VisualElement a, VisualElement b){
-        return !intersects(a, b) && contains(a, b.getInternalPoint()) && getRectangleHull(a).getW() >= getRectangleHull(b).getW();
+        return a != null && b != null && !intersects(a, b) && contains(a, b.getInternalPoint()) && getRectangleHull(a).getW() >= getRectangleHull(b).getW();
     }
 
     public static boolean overlaps(VisualElement a, VisualElement b){
-        return intersects(a, b) || contains(a, b.getInternalPoint()) || contains(b, a.getInternalPoint());
+        return a != null && b != null && (intersects(a, b) || contains(a, b.getInternalPoint()) || contains(b, a.getInternalPoint()));
     }
 
     private static SimpleRectangle merge(SimpleRectangle a, SimpleRectangle b){
+        if (a == null) return b; if (b == null) return a;
         Vector<Point2D> va = a.getVertexes(), vb = b.getVertexes();
         double x0 = Math.min(va.getFirst().getX(), vb.getFirst().getX());
         double y0 = Math.min(va.getFirst().getY(), vb.getFirst().getY());
@@ -74,6 +78,7 @@ public class Geometry {
     }
 
     public static SimpleRectangle getRectangleHull(VisualElement a){
+        if (a == null) return null;
         Vector<Curve> curves = a.getEdgeCurves();
         double x0 = curves.getFirst().getMinX();
         double y0 = curves.getFirst().getMinY();

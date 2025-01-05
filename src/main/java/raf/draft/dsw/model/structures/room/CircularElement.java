@@ -1,5 +1,6 @@
 package raf.draft.dsw.model.structures.room;
 
+import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.room.interfaces.CircularVisualElement;
 
@@ -25,6 +26,6 @@ public abstract class CircularElement extends RoomElement implements CircularVis
     public void setR(double r) {
         double r0 = getR();
         pScale(getLocation(), r/r0, r/r0);
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+        if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 }

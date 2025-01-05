@@ -1,5 +1,6 @@
 package raf.draft.dsw.model.structures.room.elements;
 
+import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.room.curves.Curve;
@@ -46,7 +47,7 @@ public class Sink extends RoomElement implements TriangularVisualElement {
     public void setA(double a) {
         double a0 = getA();
         pScale(getLocation(), a/a0, a/a0);
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+        if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     @Override

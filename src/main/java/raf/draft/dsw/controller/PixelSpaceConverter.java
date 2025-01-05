@@ -20,7 +20,7 @@ public class PixelSpaceConverter implements ISubscriber {
 
     public PixelSpaceConverter(RoomTab roomTab){
         this.roomTab = roomTab;
-        ApplicationFramework.getInstance().getRepository().addSubscriber(this, EventTypes.VISUAL_ELEMENT_EDITED);
+        ApplicationFramework.getInstance().getRepository().addSubscriber(roomTab.getRoom().id(), this, EventTypes.ROOM_DIMENSIONS_CHANGED);
         updateTransforms();
     }
 
@@ -82,7 +82,7 @@ public class PixelSpaceConverter implements ISubscriber {
 
     @Override
     public void notify(EventTypes type, Object state) {
-        if (type == EventTypes.VISUAL_ELEMENT_EDITED && state instanceof Integer roomId && roomId.equals(roomTab.getRoom().id()))
+        if (type == EventTypes.ROOM_DIMENSIONS_CHANGED)
             updateTransforms();
     }
 }

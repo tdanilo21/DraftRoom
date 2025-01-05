@@ -25,7 +25,7 @@ public class SelectionPainter extends AbstractPainter{
     public void paint(Graphics g, AffineTransform f, PixelSpaceConverter converter) {
         Graphics2D g2 = (Graphics2D)g;
         g2.setStroke(new BasicStroke(1));
-        g2.setColor(Color.BLUE);
+        g2.setColor(Color.blue);
 
         double w = selection.getW(), h = selection.getH();
         Point2D a = selection.getLocation();

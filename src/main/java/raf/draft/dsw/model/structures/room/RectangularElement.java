@@ -1,5 +1,6 @@
 package raf.draft.dsw.model.structures.room;
 
+import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.curves.Segment;
@@ -42,6 +43,7 @@ public abstract class RectangularElement extends RoomElement implements Rectangu
         pRotate(-alpha, p);
         pScale(p,w/w0,1);
         pRotate(alpha, p);
+        if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     @Override
@@ -52,7 +54,7 @@ public abstract class RectangularElement extends RoomElement implements Rectangu
         pRotate(-alpha, p);
         pScale(p, 1, h/h0);
         pRotate(alpha, p);
-        DraftRoomRepository.getInstance().visualElementEdited(this);
+        if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     @Override

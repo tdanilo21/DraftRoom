@@ -59,8 +59,6 @@ public class DraftTreeCellEditor extends DefaultTreeCellEditor implements Action
             }
             stopCellEditing();
             repository.renameNode(draftTreeNode.getData().id(), newName);
-            draftTreeNode.setName(newName);
-            MainFrame.getInstance().getRepoTreeModel().reload(draftTreeNode);
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Object has been renamed.", MessageTypes.NOTIFICATION);
         }
     }

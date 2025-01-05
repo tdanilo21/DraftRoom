@@ -39,8 +39,10 @@ public class RoomView extends JTabbedPane {
 
     public void updateTab(DraftNodeDTO room){
         int i = getTabIndex(room);
-        RoomTabComponent tabComponent = (RoomTabComponent) getTabComponentAt(i);
-        tabComponent.setTitle(room.name());
-        setBackgroundAt(i, room.color());
+        if (i != -1) {
+            RoomTabComponent tabComponent = (RoomTabComponent) getTabComponentAt(i);
+            tabComponent.setTitle(room.name());
+            setBackgroundAt(i, room.color());
+        }
     }
 }
