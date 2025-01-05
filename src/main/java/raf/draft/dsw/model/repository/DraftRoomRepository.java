@@ -346,4 +346,8 @@ public class DraftRoomRepository implements IPublisher {
         if (node instanceof Room) return (Wall)node;
         return null;
     }
+
+    public void createBatchSpiral(Integer roomId, int n, double[] w, double[] h, VisualElementTypes[] types){
+
+    }
 }
