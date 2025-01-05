@@ -347,4 +347,8 @@ public class DraftRoomRepository implements IPublisher {
     public void visualElementEdited(VisualElement element){
         notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, element.getRoomId());
     }
+
+    public void createBatchSpiral(Integer roomId, int n, double[] w, double[] h, VisualElementTypes[] types){
+
+    }
 }

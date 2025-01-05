@@ -8,6 +8,7 @@ import raf.draft.dsw.controller.actions.tree.*;
 public class ActionManager {
     private final ExitAction exitAction;
     private final AboutUsAction aboutUsAction;
+    private final OrganizeMyRoomAction organizeMyRoomAction;
 
     private final CreateNodeAction createNodeAction;
     private final DeleteNodeAction deleteNodeAction;
@@ -30,6 +31,7 @@ public class ActionManager {
     public ActionManager(){
         exitAction = new ExitAction();
         aboutUsAction = new AboutUsAction();
+        organizeMyRoomAction = new OrganizeMyRoomAction();
 
         createNodeAction = new CreateNodeAction();
         deleteNodeAction = new DeleteNodeAction();
