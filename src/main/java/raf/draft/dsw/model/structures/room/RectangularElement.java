@@ -12,6 +12,10 @@ import java.awt.geom.Point2D;
 import java.util.Vector;
 
 public abstract class RectangularElement extends RoomElement implements RectangularVisualElement {
+    public RectangularElement(AffineTransform transform, String name){
+        super(transform, name);
+    }
+
     public RectangularElement(double w, double h, Point2D location, Integer id){
         super(location, id);
         pScale(location, w, h);
@@ -43,6 +47,7 @@ public abstract class RectangularElement extends RoomElement implements Rectangu
         pRotate(-alpha, p);
         pScale(p,w/w0,1);
         pRotate(alpha, p);
+        changed();
         if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
@@ -54,6 +59,7 @@ public abstract class RectangularElement extends RoomElement implements Rectangu
         pRotate(-alpha, p);
         pScale(p, 1, h/h0);
         pRotate(alpha, p);
+        changed();
         if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 

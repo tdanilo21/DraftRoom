@@ -1,6 +1,10 @@
 package raf.draft.dsw.model.repository;
 
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
+import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.controller.observer.EventTypes;
@@ -8,19 +12,28 @@ import raf.draft.dsw.controller.observer.IPublisher;
 import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
+import raf.draft.dsw.model.nodes.DraftNodeSubType;
 import raf.draft.dsw.model.nodes.Named;
+import raf.draft.dsw.model.repository.jacksonmodules.AffineTransformModule;
+import raf.draft.dsw.model.repository.jacksonmodules.Point2DModule;
 import raf.draft.dsw.model.structures.Building;
 import raf.draft.dsw.model.structures.Project;
 import raf.draft.dsw.model.structures.ProjectExplorer;
 import raf.draft.dsw.model.structures.Room;
+import raf.draft.dsw.model.structures.room.Geometry;
 import raf.draft.dsw.model.structures.room.RoomElement;
 import raf.draft.dsw.model.structures.room.elements.*;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
 import java.awt.geom.Point2D;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
+
+import org.reflections.Reflections;
 
 class ProjectExplorerFactory implements DraftNodeFactory{
     @Override
@@ -73,6 +86,22 @@ public class DraftRoomRepository implements IPublisher {
         if (instance == null) instance = new DraftRoomRepository();
         return instance;
     }
+
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    static {
+        Reflections reflections = new Reflections("raf.draft.dsw.model.structures");
+        Set<Class<?> > subTypes = reflections.getTypesAnnotatedWith(DraftNodeSubType.class);
+        for (Class<?> subType : subTypes){
+            DraftNodeSubType annotation = subType.getAnnotation(DraftNodeSubType.class);
+            if (annotation != null) mapper.registerSubtypes(new NamedType(subType, annotation.value()));
+        }
+        mapper.disable(MapperFeature.AUTO_DETECT_FIELDS, MapperFeature.AUTO_DETECT_GETTERS, MapperFeature.AUTO_DETECT_IS_GETTERS);
+        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        mapper.registerModule(new Point2DModule());
+        mapper.registerModule(new AffineTransformModule());
+    }
+
     private final HashMap<Integer, DraftNode> nodes;
     private Integer K;
     private final ProjectExplorerFactory projectExplorerFactory;
@@ -80,7 +109,6 @@ public class DraftRoomRepository implements IPublisher {
     private final BuildingFactory buildingFactory;
     private final RoomFactory roomFactory;
     private final HashMap<EventTypes, Vector<ISubscriber> > subscribers;
-
 
     private DraftRoomRepository(){
         nodes = new HashMap<>();
@@ -199,6 +227,11 @@ public class DraftRoomRepository implements IPublisher {
 
     public boolean cannotChangePath(Integer id){
         return !(nodes.get(id) instanceof Project);
+    }
+
+    public boolean hasPath(Integer id){
+        DraftNode node = nodes.get(id);
+        return node instanceof Project project && project.getPath() != null;
     }
 
     private void removeNode(DraftNode node){
@@ -345,5 +378,81 @@ public class DraftRoomRepository implements IPublisher {
         DraftNode node = nodes.get(roomId);
         if (node instanceof Room) return (Wall)node;
         return null;
+    }
+
+    private void overlaps(DraftNode node, Vector<DraftNodeDTO> rooms){
+        if (node instanceof Room room){
+            if (room.overlaps()) rooms.add(room.getDTO());
+            return;
+        }
+        if (node instanceof DraftNodeComposite composite)
+            for (DraftNode child : composite.getChildren())
+                overlaps(child, rooms);
+    }
+
+    public Vector<DraftNodeDTO> overlaps(Integer id){
+        Vector<DraftNodeDTO> rooms = new Vector<>();
+        overlaps(nodes.get(id), rooms);
+        return rooms;
+    }
+
+    public boolean saveProjectAs(File file, Integer id){
+        DraftNode node = nodes.get(id);
+        if (!(node instanceof Project)) return false;
+        try{
+            if (!file.createNewFile())
+                return false;
+        } catch (IOException exception){
+            System.err.println(exception.getMessage());
+            return false;
+        }
+        ((Project)node).setPath(file.getAbsolutePath());
+        if (saveProject(id)) return true;
+        file.delete();
+        return false;
+    }
+
+    public boolean saveProject(Integer id){
+        DraftNode node = nodes.get(id);
+        if (!(node instanceof Project)) return false;
+        File file = new File(((Project)node).getPath());
+        try {
+            mapper.writerWithDefaultPrettyPrinter().writeValue(file, node);
+        } catch (IOException exception){
+            System.err.println(exception.getMessage());
+            return false;
+        }
+        node.save();
+        return true;
+    }
+
+    private void loadTree(DraftNode node, DraftNodeComposite parent){
+        node.load(K);
+        K++;
+        nodes.put(node.getId(), node);
+        parent.reconnect(node);
+        notifySubscribers(EventTypes.NODE_CREATED, node.getDTO());
+        if (node instanceof DraftNodeComposite composite) {
+            Vector<DraftNode> children = new Vector<>(composite.getChildren());
+            for (DraftNode child : children)
+                loadTree(child, composite);
+        }
+    }
+
+    public boolean openProject(File file){
+        if (!file.isFile()) return false;
+        DraftNode node;
+        try {
+            node = mapper.readValue(file, DraftNode.class);
+        } catch (IOException exception){
+            System.err.println(exception.getMessage());
+            return false;
+        }
+        if (!(node instanceof Project)) return false;
+        if (hasChildWithName(0, ((Project)node).getName())) return false;
+        ((Project)node).setPath(file.getAbsolutePath());
+        node.save();
+        loadTree(node, (DraftNodeComposite)nodes.get(0));
+        return true;
     }
 }

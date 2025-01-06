@@ -1,33 +1,52 @@
 package raf.draft.dsw.model.structures;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.Setter;
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
+import raf.draft.dsw.model.nodes.DraftNodeSubType;
 import raf.draft.dsw.model.nodes.Named;
-import raf.draft.dsw.model.repository.DraftRoomRepository;
+import raf.draft.dsw.model.structures.room.Geometry;
 import raf.draft.dsw.model.structures.room.RoomElement;
 import raf.draft.dsw.model.structures.room.SimpleRectangle;
 import raf.draft.dsw.model.structures.room.curves.Curve;
-import raf.draft.dsw.model.structures.room.elements.Table;
 import raf.draft.dsw.model.structures.room.interfaces.Prototype;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Vector;
 
+@Getter @DraftNodeSubType("Room")
 public class Room extends DraftNodeComposite implements Named, Wall {
-    @Getter
+    @JsonProperty("name")
     private String name;
+
+    @JsonCreator
+    public Room(
+            @JsonProperty("name") String name,
+            @JsonProperty("nameCounters") HashMap<VisualElementTypes, Integer> nameCounters,
+            @JsonProperty("rect1") SimpleRectangle rect1,
+            @JsonProperty("rect2") SimpleRectangle rect2,
+            @JsonProperty("initialized") boolean initialized,
+            @JsonProperty("children") Vector<DraftNode> children
+    ) {
+        super(children);
+        this.name = name;
+        this.nameCounters = nameCounters;
+        this.rect1 = rect1;
+        this.rect2 = rect2;
+        this.initialized = initialized;
+    }
 
     public Room(Integer id, String name){
         super(id);
@@ -36,8 +55,16 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     }
 
     @Override
+    public void load(Integer id) {
+        super.load(id);
+        rect1.setRoomId(id);
+        rect2.setRoomId(id);
+    }
+
+    @Override
     public void setName(String newName) {
         name = newName;
+        changed();
         notifySubscribers(EventTypes.NODE_EDITED, getDTO());
     }
 
@@ -62,13 +89,17 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     @Override
     public DraftNodeDTO getDTO() {
         Integer parentId = (parent == null ? null : parent.getId());
-        return new DraftNodeDTO(id, DraftNodeTypes.ROOM, name, null, getColor(), parentId);
+        return new DraftNodeDTO(id, DraftNodeTypes.ROOM, name, null, getColor(), saved, parentId);
     }
 
     private static final double wallWidth = 10;
+    @JsonProperty("nameCounters")
     private HashMap<VisualElementTypes, Integer> nameCounters;
-    private SimpleRectangle rect1, rect2;
-    @Getter
+    @JsonProperty("rect1")
+    private SimpleRectangle rect1;
+    @JsonProperty("rect2")
+    private SimpleRectangle rect2;
+    @JsonProperty("initialized")
     private boolean initialized;
 
     @Override
@@ -89,6 +120,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
         rect2 = new SimpleRectangle(id, w - 2*wallWidth, h - 2*wallWidth, new Point2D.Double(wallWidth, wallWidth));
         nameCounters = new HashMap<>();
         initialized = true;
+        changed();
         notifySubscribers(EventTypes.ROOM_DIMENSIONS_CHANGED, null);
         notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
@@ -97,9 +129,18 @@ public class Room extends DraftNodeComposite implements Named, Wall {
         Vector<VisualElement> visualElements = new Vector<>();
         if (initialized) visualElements.add(this);
         for (DraftNode child : children)
-            if (child instanceof VisualElement e)
+            if (child instanceof VisualElement e && child.getId() != null)
                 visualElements.add(e);
         return visualElements;
+    }
+
+    public boolean overlaps(){
+        Vector<VisualElement> elements = getVisualElements();
+        for (int i = 0; i < elements.size(); i++)
+            for (int j = i+1; j < elements.size(); j++)
+                if (Geometry.overlaps(elements.get(i), elements.get(j)))
+                    return true;
+        return false;
     }
 
     @Override
@@ -186,6 +227,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     public void setH(double h) {
         rect1.setH(h + 2*wallWidth);
         rect2.setH(h);
+        changed();
         notifySubscribers(EventTypes.ROOM_DIMENSIONS_CHANGED, null);
         notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
@@ -194,6 +236,7 @@ public class Room extends DraftNodeComposite implements Named, Wall {
     public void setW(double w) {
         rect1.setW(w + 2*wallWidth);
         rect2.setW(w);
+        changed();
         notifySubscribers(EventTypes.ROOM_DIMENSIONS_CHANGED, null);
         notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }

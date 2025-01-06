@@ -1,11 +1,9 @@
 package raf.draft.dsw.controller.actions.tree;
 
 import raf.draft.dsw.controller.actions.AbstractRoomAction;
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.dialogs.CreateNodePane;
-import raf.draft.dsw.gui.swing.tree.DraftTree;
 import raf.draft.dsw.gui.swing.tree.DraftTreeNode;
 import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.model.messages.MessageTypes;
@@ -39,7 +37,7 @@ public class CreateNodeAction extends AbstractRoomAction {
         switch(type){
             case DraftNodeTypes.PROJECT:
                 result = CreateNodePane.showDialog("New project", new String[]{"name", "author"});
-                if (result != null) insertNode(selectedNode, DraftNodeTypes.PROJECT, result[0], result[1], "");
+                if (result != null) insertNode(selectedNode, DraftNodeTypes.PROJECT, result[0], result[1], null);
                 break;
             case DraftNodeTypes.BUILDING:
                 result = CreateNodePane.showDialog("New Building", new String[]{"name"});

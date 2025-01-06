@@ -1,7 +1,10 @@
 package raf.draft.dsw.model.structures.room.elements;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.model.enums.VisualElementTypes;
+import raf.draft.dsw.model.nodes.DraftNodeSubType;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.room.curves.Curve;
 import raf.draft.dsw.model.structures.room.curves.Segment;
@@ -14,7 +17,12 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
+@DraftNodeSubType("Sink")
 public class Sink extends RoomElement implements TriangularVisualElement {
+    @JsonCreator
+    public Sink(@JsonProperty("transform") AffineTransform transform, @JsonProperty("name") String name){
+        super(transform, name);
+    }
 
     public Sink(double a, Point2D location, Integer id){
         super(location, id);
@@ -47,6 +55,7 @@ public class Sink extends RoomElement implements TriangularVisualElement {
     public void setA(double a) {
         double a0 = getA();
         pScale(getLocation(), a/a0, a/a0);
+        changed();
         if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 

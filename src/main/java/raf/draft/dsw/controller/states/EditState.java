@@ -25,8 +25,7 @@ public class EditState extends AbstractState{
                     w -= 2*wall.getWallWidth();
                     h -= 2*wall.getWallWidth();
                 }
-                int[] results = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width", "Height"},
-                                new int[]{(int)Math.round(w), (int)Math.round(h)});
+                int[] results = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width", "Height"}, new int[]{(int)Math.round(w), (int)Math.round(h)});
                 if (results == null) return;
                 rElement.setW(results[0]);
                 rElement.setH(results[1]);

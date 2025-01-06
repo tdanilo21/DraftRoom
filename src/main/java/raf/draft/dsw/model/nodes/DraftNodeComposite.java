@@ -1,22 +1,33 @@
 package raf.draft.dsw.model.nodes;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.observer.EventTypes;
+import raf.draft.dsw.model.structures.Project;
 
-import java.util.Arrays;
 import java.util.Vector;
 
 @Getter
 public abstract class DraftNodeComposite extends DraftNode{
+    @JsonProperty("children")
     protected Vector<DraftNode> children;
+
+    public DraftNodeComposite(Vector<DraftNode> children){
+        this.children = children;
+    }
 
     public DraftNodeComposite(Integer id) {
         super(id);
         children = new Vector<>();
     }
 
-    public void addChild(DraftNode child){
+    public void reconnect(DraftNode child){
+        children.remove(child);
+        addChild(child, false);
+    }
+
+    protected void addChild(DraftNode child, boolean change){
         if (child == null){
             System.err.println("Child is null");
             return;
@@ -33,12 +44,18 @@ public abstract class DraftNodeComposite extends DraftNode{
         if (oldParent != null) oldParent.removeChild(child);
         child.parent = this;
         children.add(child);
+        if (change) changed();
         notifySubscribers(EventTypes.CHILD_ADDED, child.getDTO());
+    }
+
+    public void addChild(DraftNode child){
+        addChild(child, true);
     }
 
     public void removeChild(DraftNode child){
         children.remove(child);
         child.setParent(null);
+        changed();
         notifySubscribers(EventTypes.CHILD_REMOVED, child.getDTO());
     }
 
@@ -51,8 +68,15 @@ public abstract class DraftNodeComposite extends DraftNode{
 
     @Override
     public void getSubtree(Vector<DraftNodeDTO> subtree) {
-        subtree.add(getDTO());
+        super.getSubtree(subtree);
         for (DraftNode child : children)
             child.getSubtree(subtree);
+    }
+
+    @Override
+    public void save() {
+        super.save();
+        for (DraftNode child : children)
+            child.save();
     }
 }
