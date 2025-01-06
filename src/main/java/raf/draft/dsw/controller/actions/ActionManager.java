@@ -1,6 +1,10 @@
 package raf.draft.dsw.controller.actions;
 
 import lombok.Getter;
+import raf.draft.dsw.controller.actions.file.CloseProjectAction;
+import raf.draft.dsw.controller.actions.file.OpenProjectAction;
+import raf.draft.dsw.controller.actions.file.SaveProjectAction;
+import raf.draft.dsw.controller.actions.file.SaveProjectAsAction;
 import raf.draft.dsw.controller.actions.state.*;
 import raf.draft.dsw.controller.actions.tree.*;
 
@@ -9,6 +13,11 @@ public class ActionManager {
     private final ExitAction exitAction;
     private final AboutUsAction aboutUsAction;
     private final OrganizeMyRoomAction organizeMyRoomAction;
+
+    private final OpenProjectAction openProjectAction;
+    private final CloseProjectAction closeProjectAction;
+    private final SaveProjectAction saveProjectAction;
+    private final SaveProjectAsAction saveProjectAsAction;
 
     private final CreateNodeAction createNodeAction;
     private final DeleteNodeAction deleteNodeAction;
@@ -32,6 +41,11 @@ public class ActionManager {
         exitAction = new ExitAction();
         aboutUsAction = new AboutUsAction();
         organizeMyRoomAction = new OrganizeMyRoomAction();
+
+        openProjectAction = new OpenProjectAction();
+        closeProjectAction = new CloseProjectAction();
+        saveProjectAction = new SaveProjectAction();
+        saveProjectAsAction = new SaveProjectAsAction();
 
         createNodeAction = new CreateNodeAction();
         deleteNodeAction = new DeleteNodeAction();

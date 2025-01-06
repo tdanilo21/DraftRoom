@@ -21,7 +21,6 @@ public class PixelSpaceConverter implements ISubscriber {
     public PixelSpaceConverter(RoomTab roomTab){
         this.roomTab = roomTab;
         ApplicationFramework.getInstance().getRepository().addSubscriber(roomTab.getRoom().id(), this, EventTypes.ROOM_DIMENSIONS_CHANGED);
-        updateTransforms();
     }
 
     private void updateParameters(){

@@ -8,6 +8,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 public abstract class CircularElement extends RoomElement implements CircularVisualElement {
+    public CircularElement(AffineTransform transform, String name){
+        super(transform, name);
+    }
+
     public CircularElement(Point2D location, Integer id){
         super(location, id);
     }
@@ -26,6 +30,7 @@ public abstract class CircularElement extends RoomElement implements CircularVis
     public void setR(double r) {
         double r0 = getR();
         pScale(getLocation(), r/r0, r/r0);
+        changed();
         if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 }

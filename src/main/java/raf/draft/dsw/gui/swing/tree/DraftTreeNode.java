@@ -1,10 +1,7 @@
 package raf.draft.dsw.gui.swing.tree;
 
-import com.sun.tools.javac.Main;
 import lombok.Getter;
-import lombok.Setter;
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
-import raf.draft.dsw.controller.messagegenerator.MessageGenerator;
+import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.core.ApplicationFramework;
@@ -19,7 +16,9 @@ public class DraftTreeNode extends DefaultMutableTreeNode implements ISubscriber
     public DraftTreeNode(DraftNodeDTO data){
         super(data.name());
         this.data = data;
-        ApplicationFramework.getInstance().getRepository().addSubscriber(data.id(), this, EventTypes.NODE_EDITED, EventTypes.CHILD_REMOVED, EventTypes.CHILD_ADDED);
+        ApplicationFramework.getInstance().getRepository().addSubscriber(
+                data.id(), this, EventTypes.NODE_EDITED, EventTypes.CHILD_REMOVED, EventTypes.CHILD_ADDED, EventTypes.NODE_SAVED_CHANGED
+        );
     }
 
     @Override
@@ -44,6 +43,8 @@ public class DraftTreeNode extends DefaultMutableTreeNode implements ISubscriber
                 setUserObject(data.name());
                 treeModel.reload(this);
                 break;
+            case EventTypes.NODE_SAVED_CHANGED:
+                data = (DraftNodeDTO)state;
         }
     }
 }

@@ -1,11 +1,13 @@
 package raf.draft.dsw.model.structures;
 
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
+import raf.draft.dsw.model.nodes.DraftNodeSubType;
 
 import java.util.Vector;
 
+@DraftNodeSubType("ProjectExplorer")
 public class ProjectExplorer extends DraftNodeComposite {
 
     public ProjectExplorer(Integer id){
@@ -31,6 +33,6 @@ public class ProjectExplorer extends DraftNodeComposite {
 
     @Override
     public DraftNodeDTO getDTO() {
-        return new DraftNodeDTO(id, DraftNodeTypes.PROJECT_EXPLORER, "Project explorer", null, null, null);
+        return new DraftNodeDTO(id, DraftNodeTypes.PROJECT_EXPLORER, "Project explorer", null, null, saved, null);
     }
 }

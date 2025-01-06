@@ -3,7 +3,7 @@ package raf.draft.dsw.gui.swing.mainpanel.room.tab;
 import lombok.Getter;
 import lombok.Setter;
 import raf.draft.dsw.controller.PixelSpaceConverter;
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.controller.states.StateManager;
@@ -57,8 +57,9 @@ public class RoomTab extends JPanel implements ISubscriber {
     public void updateElements(){
         Vector<VisualElement> elements = ApplicationFramework.getInstance().getRepository().getVisualElements(room.id());
         painters.clear();
-        for (VisualElement e : elements)
-            painters.add(PainterFactory.createPainter(e));
+        if (elements != null)
+            for (VisualElement e : elements)
+                painters.add(PainterFactory.createPainter(e));
         repaint();
     }
 

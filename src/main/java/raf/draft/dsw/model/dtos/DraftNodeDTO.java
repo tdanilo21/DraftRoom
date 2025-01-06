@@ -1,4 +1,4 @@
-package raf.draft.dsw.controller.dtos;
+package raf.draft.dsw.model.dtos;
 
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 
@@ -10,6 +10,7 @@ public record DraftNodeDTO(
         String name,
         String author,
         Color color,
+        boolean saved,
         Integer parent
 ){
     @Override
