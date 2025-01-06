@@ -16,6 +16,9 @@ public class MyToolBar extends JToolBar {
         add(actionManager.getCloseProjectAction());
         add(actionManager.getSaveProjectAction());
         add(actionManager.getSaveProjectAsAction());
+        add(actionManager.getLoadPatternAction());
+        add(actionManager.getSaveAsPatternAction());
+        add(actionManager.getImportPatternAction());
 
         addSeparator();
 

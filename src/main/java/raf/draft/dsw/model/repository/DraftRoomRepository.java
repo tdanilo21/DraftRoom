@@ -21,6 +21,7 @@ import raf.draft.dsw.model.structures.Project;
 import raf.draft.dsw.model.structures.ProjectExplorer;
 import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.Geometry;
+import raf.draft.dsw.model.structures.room.Pattern;
 import raf.draft.dsw.model.structures.room.RoomElement;
 import raf.draft.dsw.model.structures.room.elements.*;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
@@ -29,6 +30,7 @@ import raf.draft.dsw.model.structures.room.interfaces.Wall;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
@@ -454,6 +456,58 @@ public class DraftRoomRepository implements IPublisher {
         node.save();
         loadTree(node, (DraftNodeComposite)nodes.get(0));
         return true;
+    }
+
+    private boolean savePattern(Pattern pattern, String name){
+        String path = STR."\{Paths.get("").toAbsolutePath()}\\src\\main\\resources\\patterns\\\{name}.json";
+        File file = new File(path);
+        try {
+            if (!file.createNewFile()) return false;
+            mapper.writerWithDefaultPrettyPrinter().writeValue(file, pattern);
+        } catch (IOException exception){
+            System.err.println(exception.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public boolean saveAsPattern(Integer id){
+        DraftNode node = nodes.get(id);
+        if (node instanceof Room room) return savePattern(new Pattern(room), room.getName());
+        return false;
+    }
+
+    private Pattern readPattern(File file){
+        Pattern pattern;
+        try{
+            pattern = mapper.readValue(file, Pattern.class);
+        } catch (IOException exception){
+            System.err.println(exception.getMessage());
+            return null;
+        }
+        return pattern;
+    }
+
+    public boolean loadPattern(File file, Integer id){
+        DraftNode node = nodes.get(id);
+        if (!(node instanceof Room room)) return false;
+        Pattern pattern = readPattern(file);
+        if (pattern == null) return false;
+        room.initialize(pattern.getW(), pattern.getH());
+        room.removeChildren();
+        for (DraftNode child : pattern.getChildren()) {
+            child.load(K);
+            K++;
+            nodes.put(child.getId(), child);
+            room.addChild(child);
+        }
+        return true;
+    }
+
+    public boolean importPattern(File file){
+        Pattern pattern = readPattern(file);
+        if (pattern == null) return false;
+        return savePattern(pattern, file.getName());
     }
 
     public void createBatchSpiral(Integer roomId, int n, double[] w, double[] h, VisualElementTypes[] types){

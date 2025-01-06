@@ -59,6 +59,12 @@ public abstract class DraftNodeComposite extends DraftNode{
         notifySubscribers(EventTypes.CHILD_REMOVED, child.getDTO());
     }
 
+    public void removeChildren(){
+        Vector<DraftNode> children = new Vector<>(this.children);
+        for (DraftNode child : children)
+            removeChild(child);
+    }
+
     public boolean hasChildWithName(String name){
         for (DraftNode child : children)
             if (child instanceof Named named && named.getName().equals(name))
