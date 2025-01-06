@@ -455,4 +455,8 @@ public class DraftRoomRepository implements IPublisher {
         loadTree(node, (DraftNodeComposite)nodes.get(0));
         return true;
     }
+
+    public void createBatchSpiral(Integer roomId, int n, double[] w, double[] h, VisualElementTypes[] types){
+
+    }
 }

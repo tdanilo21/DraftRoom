@@ -40,6 +40,12 @@ public class MyToolBar extends JToolBar {
 
         addSeparator();
 
+        add(actionManager.getOrganizeMyRoomAction());
+
+        addSeparator();
+
         add(actionManager.getAboutUsAction());
+
+        addSeparator();
     }
 }
