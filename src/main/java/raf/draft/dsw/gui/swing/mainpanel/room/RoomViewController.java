@@ -1,14 +1,17 @@
 package raf.draft.dsw.gui.swing.mainpanel.room;
 
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.core.ApplicationFramework;
+import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import javax.swing.event.ChangeEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Vector;
 
 public class RoomViewController implements ISubscriber {
@@ -33,20 +36,32 @@ public class RoomViewController implements ISubscriber {
 
     private void addTabs(DraftNodeDTO node){
         Vector<DraftNodeDTO> rooms = getRoomsInSubtree(node);
-        for (int i = 0; i < rooms.size(); i++)
-            roomView.addTab(rooms.get(i));
+        for (DraftNodeDTO room : rooms) {
+            roomView.addTab(room);
+            ApplicationFramework.getInstance().getRepository().addSubscriber(room.id(), this, EventTypes.NODE_SAVED_CHANGED);
+        }
     }
 
     private void removeTabs(DraftNodeDTO node){
         Vector<DraftNodeDTO> rooms = getRoomsInSubtree(node);
-        for (DraftNodeDTO room : rooms)
+        for (DraftNodeDTO room : rooms) {
             roomView.removeTab(room);
+            ApplicationFramework.getInstance().getRepository().removeSubscriber(room.id(), this, EventTypes.NODE_SAVED_CHANGED);
+        }
     }
 
     private void updateTabs(DraftNodeDTO node){
         Vector<DraftNodeDTO> rooms = getRoomsInSubtree(node);
         for (DraftNodeDTO room : rooms)
             roomView.updateTab(room);
+    }
+
+    public Vector<VisualElement> getClipboard(){
+        return roomView.getClipboard();
+    }
+
+    public void setClipboard(Vector<VisualElement> clipboard){
+        roomView.setClipboard(new Vector<>(clipboard));
     }
 
     @Override
@@ -56,6 +71,9 @@ public class RoomViewController implements ISubscriber {
                 case EventTypes.NODE_DOUBLE_CLICK, EventTypes.NODE_CREATED -> addTabs(node);
                 case EventTypes.NODE_DELETED -> removeTabs(node);
                 case EventTypes.NODE_EDITED -> updateTabs(node);
+                case EventTypes.NODE_SAVED_CHANGED -> {
+                    if (node.type() == DraftNodeTypes.ROOM) updateTabs(node);
+                }
             }
         }
     }

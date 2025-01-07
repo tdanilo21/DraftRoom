@@ -1,8 +1,12 @@
 package raf.draft.dsw.model.structures.room;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.Setter;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.model.enums.VisualElementTypes;
+import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
 import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.curves.Curve;
@@ -25,9 +29,21 @@ public class SimpleRectangle implements RectangularVisualElement {
     public static final int UP = 4;
     public static final int LEFT = 8;
 
-    private final Integer roomId;
+    @Setter
+    private Integer roomId;
+    @JsonProperty("location")
     private Point2D location;
-    private double w, h;
+    @JsonProperty("w")
+    private double w;
+    @JsonProperty("h")
+    private double h;
+
+    @JsonCreator
+    public SimpleRectangle(@JsonProperty("location") Point2D location, @JsonProperty("w") double w, @JsonProperty("h") double h){
+        this.location = location;
+        this.w = w;
+        this.h = h;
+    }
 
     public SimpleRectangle(Integer roomId, double w, double h, Point2D location) {
         this.roomId = roomId;

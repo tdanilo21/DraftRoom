@@ -1,8 +1,10 @@
 package raf.draft.dsw.model.nodes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.Setter;
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.IPublisher;
 import raf.draft.dsw.controller.observer.ISubscriber;
@@ -14,16 +16,30 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Vector;
 
-@Getter
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY;
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME;
+
+@Getter @JsonTypeInfo(use = NAME, include = PROPERTY)
 public abstract class DraftNode implements IPublisher {
     protected Integer id;
     @Setter
     protected DraftNodeComposite parent;
     protected HashMap<EventTypes, Vector<ISubscriber> > subscribers;
+    protected boolean saved;
+
+    public DraftNode(){
+        subscribers = new HashMap<>();
+        saved = true;
+    }
 
     public DraftNode(Integer id){
         this.id = id;
         subscribers = new HashMap<>();
+        saved = false;
+    }
+
+    public void load(Integer id){
+        this.id = id;
     }
 
     public abstract DraftNodeTypes getNodeType();
@@ -56,7 +72,7 @@ public abstract class DraftNode implements IPublisher {
     public abstract DraftNodeDTO getDTO();
 
     public void getSubtree(Vector<DraftNodeDTO> subtree){
-        subtree.add(getDTO());
+        if (id != null) subtree.add(getDTO());
     }
 
     public Project getProject(){
@@ -67,6 +83,18 @@ public abstract class DraftNode implements IPublisher {
     public Building getBuilding(){
         if (parent == null) return null;
         return parent.getBuilding();
+    }
+
+    public void changed(){
+        saved = false;
+        notifySubscribers(EventTypes.NODE_SAVED_CHANGED, getDTO());
+        if (!(this instanceof Project) && parent != null)
+            parent.changed();
+    }
+
+    public void save(){
+        saved = true;
+        notifySubscribers(EventTypes.NODE_SAVED_CHANGED, getDTO());
     }
 
     @Override

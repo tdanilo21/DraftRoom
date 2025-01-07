@@ -1,6 +1,11 @@
 package raf.draft.dsw.model.repository;
 
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
+import lombok.Getter;
+import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.controller.observer.EventTypes;
@@ -8,11 +13,15 @@ import raf.draft.dsw.controller.observer.IPublisher;
 import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.DraftNodeComposite;
+import raf.draft.dsw.model.nodes.DraftNodeSubType;
 import raf.draft.dsw.model.nodes.Named;
+import raf.draft.dsw.model.repository.jacksonmodules.AffineTransformModule;
+import raf.draft.dsw.model.repository.jacksonmodules.Point2DModule;
 import raf.draft.dsw.model.structures.Building;
 import raf.draft.dsw.model.structures.Project;
 import raf.draft.dsw.model.structures.ProjectExplorer;
 import raf.draft.dsw.model.structures.Room;
+import raf.draft.dsw.model.structures.room.Pattern;
 import raf.draft.dsw.model.structures.room.RoomElement;
 import raf.draft.dsw.model.structures.room.elements.*;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
@@ -22,7 +31,15 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
+
+import org.reflections.Reflections;
 
 class ProjectExplorerFactory implements DraftNodeFactory{
     @Override
@@ -75,6 +92,7 @@ public class DraftRoomRepository implements IPublisher {
         if (instance == null) instance = new DraftRoomRepository();
         return instance;
     }
+
     private final HashMap<Integer, DraftNode> nodes;
     private Integer K;
     private final ProjectExplorerFactory projectExplorerFactory;
@@ -82,7 +100,8 @@ public class DraftRoomRepository implements IPublisher {
     private final BuildingFactory buildingFactory;
     private final RoomFactory roomFactory;
     private final HashMap<EventTypes, Vector<ISubscriber> > subscribers;
-
+    @Getter
+    private final FileIO fileIO;
 
     private DraftRoomRepository(){
         nodes = new HashMap<>();
@@ -94,6 +113,8 @@ public class DraftRoomRepository implements IPublisher {
         roomFactory = new RoomFactory();
 
         subscribers = new HashMap<>();
+
+        fileIO = new FileIO();
 
         createNode(DraftNodeTypes.PROJECT_EXPLORER, null);
     }
@@ -201,6 +222,11 @@ public class DraftRoomRepository implements IPublisher {
 
     public boolean cannotChangePath(Integer id){
         return !(nodes.get(id) instanceof Project);
+    }
+
+    public boolean hasPath(Integer id){
+        DraftNode node = nodes.get(id);
+        return node instanceof Project project && project.getPath() != null;
     }
 
     private void removeNode(DraftNode node){
@@ -343,10 +369,26 @@ public class DraftRoomRepository implements IPublisher {
         return null;
     }
 
-    public Wall getRoom(Integer roomId){
+    public Wall getWall(Integer roomId){
         DraftNode node = nodes.get(roomId);
         if (node instanceof Room) return (Wall)node;
         return null;
+    }
+
+    private void overlaps(DraftNode node, Vector<DraftNodeDTO> rooms){
+        if (node instanceof Room room){
+            if (room.overlaps()) rooms.add(room.getDTO());
+            return;
+        }
+        if (node instanceof DraftNodeComposite composite)
+            for (DraftNode child : composite.getChildren())
+                overlaps(child, rooms);
+    }
+
+    public Vector<DraftNodeDTO> overlaps(Integer id){
+        Vector<DraftNodeDTO> rooms = new Vector<>();
+        overlaps(nodes.get(id), rooms);
+        return rooms;
     }
 
     public boolean createBatchSpiral(Integer roomId, int k, double[] w, double[] h, VisualElementTypes[] types){
@@ -402,5 +444,156 @@ public class DraftRoomRepository implements IPublisher {
             }
         }
         return true;
+    }
+
+    public class FileIO {
+        private static final ObjectMapper mapper = new ObjectMapper();
+
+        static {
+            Reflections reflections = new Reflections("raf.draft.dsw.model.structures");
+            Set<Class<?> > subTypes = reflections.getTypesAnnotatedWith(DraftNodeSubType.class);
+            for (Class<?> subType : subTypes){
+                DraftNodeSubType annotation = subType.getAnnotation(DraftNodeSubType.class);
+                if (annotation != null) mapper.registerSubtypes(new NamedType(subType, annotation.value()));
+            }
+            mapper.disable(MapperFeature.AUTO_DETECT_FIELDS, MapperFeature.AUTO_DETECT_GETTERS, MapperFeature.AUTO_DETECT_IS_GETTERS);
+            mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+            mapper.registerModule(new Point2DModule());
+            mapper.registerModule(new AffineTransformModule());
+        }
+        private static final Path patternsPath = Paths.get(STR."\{Paths.get("").toAbsolutePath()}\\src\\main\\resources\\patterns\\");
+
+        public static final int OK = 0;
+        public static final int FAIL = 1;
+        public static final int FILE_EXISTS = 2;
+        public static final int NODE_EXISTS = 3;
+        public static final int INVALID_FILE_TYPE = 4;
+        public static final int INVALID_NODE_TYPE = 5;
+        public static final int INVALID_FILE_FORMAT = 6;
+
+        public int saveProjectAs(File file, Integer id, boolean force) {
+            if (!file.isDirectory()) return INVALID_FILE_TYPE;
+            DraftNode node = nodes.get(id);
+            if (!(node instanceof Project project)) return INVALID_NODE_TYPE;
+            File projectFile = new File(STR."\{file.getAbsolutePath()}\\\{project.getName()}.json");
+            if (!projectFile.exists()) {
+                try {
+                    if (!projectFile.createNewFile()) return FAIL;
+                } catch (IOException exception) {
+                    System.err.println(exception.getMessage());
+                    return FAIL;
+                }
+            } else if (!force) return FILE_EXISTS;
+            project.setPath(projectFile.getAbsolutePath());
+            int result = saveProject(id);
+            if (result != OK) projectFile.delete();
+            return result;
+        }
+
+        public int saveProject(Integer id) {
+            DraftNode node = nodes.get(id);
+            if (!(node instanceof Project)) return INVALID_NODE_TYPE;
+            File file = new File(((Project) node).getPath());
+            try {
+                mapper.writerWithDefaultPrettyPrinter().writeValue(file, node);
+            } catch (IOException exception) {
+                System.err.println(exception.getMessage());
+                return FAIL;
+            }
+            node.save();
+            return OK;
+        }
+
+        private void loadTree(DraftNode node, DraftNodeComposite parent) {
+            node.load(K);
+            K++;
+            nodes.put(node.getId(), node);
+            parent.reconnect(node);
+            notifySubscribers(EventTypes.NODE_CREATED, node.getDTO());
+            if (node instanceof DraftNodeComposite composite) {
+                Vector<DraftNode> children = new Vector<>(composite.getChildren());
+                for (DraftNode child : children)
+                    loadTree(child, composite);
+            }
+        }
+
+        public int openProject(File file) {
+            if (!file.isFile()) return INVALID_FILE_TYPE;
+            DraftNode node;
+            try {
+                node = mapper.readValue(file, DraftNode.class);
+            } catch (IOException exception) {
+                System.err.println(exception.getMessage());
+                return FAIL;
+            }
+            if (!(node instanceof Project project)) return INVALID_FILE_FORMAT;
+            if (hasChildWithName(0, project.getName())) return NODE_EXISTS;
+            project.setPath(file.getAbsolutePath());
+            node.save();
+            loadTree(node, (DraftNodeComposite) nodes.get(0));
+            return OK;
+        }
+
+        public void createPatternFolder(){
+            File directory = new File(patternsPath.toString());
+            if (directory.exists()) return;
+            directory.mkdir();
+        }
+
+        private int savePattern(Pattern pattern, String name, boolean force) {
+            createPatternFolder();
+            File file = new File(STR."\{patternsPath}\\\{name}");
+            try {
+                if (!file.exists()) {
+                    if (!file.createNewFile()) return FAIL;
+                } else if (!force) return FILE_EXISTS;
+                mapper.writerWithDefaultPrettyPrinter().writeValue(file, pattern);
+            } catch (IOException exception) {
+                System.err.println(exception.getMessage());
+                return FAIL;
+            }
+            return OK;
+        }
+
+        public int saveAsPattern(Integer id, boolean force) {
+            DraftNode node = nodes.get(id);
+            if (node instanceof Room room) return savePattern(new Pattern(room), STR."\{room.getName()}.json", force);
+            return INVALID_NODE_TYPE;
+        }
+
+        private Pattern readPattern(File file) {
+            Pattern pattern;
+            try {
+                pattern = mapper.readValue(file, Pattern.class);
+            } catch (IOException exception) {
+                System.err.println(exception.getMessage());
+                return null;
+            }
+            return pattern;
+        }
+
+        public int loadPattern(File file, Integer id) {
+            if (!file.isFile()) return INVALID_FILE_TYPE;
+            DraftNode node = nodes.get(id);
+            if (!(node instanceof Room room)) return INVALID_NODE_TYPE;
+            Pattern pattern = readPattern(file);
+            if (pattern == null) return INVALID_FILE_FORMAT;
+            room.initialize(pattern.getW(), pattern.getH());
+            room.removeChildren();
+            for (DraftNode child : pattern.getChildren()) {
+                child.load(K);
+                K++;
+                nodes.put(child.getId(), child);
+                room.addChild(child);
+            }
+            return OK;
+        }
+
+        public int importPattern(File file, boolean force) {
+            if (!file.isFile()) return INVALID_FILE_TYPE;
+            Pattern pattern = readPattern(file);
+            if (pattern == null) return INVALID_FILE_FORMAT;
+            return savePattern(pattern, file.getName(), force);
+        }
     }
 }

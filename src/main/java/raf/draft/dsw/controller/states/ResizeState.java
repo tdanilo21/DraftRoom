@@ -1,5 +1,7 @@
 package raf.draft.dsw.controller.states;
 
+import raf.draft.dsw.controller.commands.AbstractCommand;
+import raf.draft.dsw.controller.commands.ScaleCommand;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.model.structures.room.CircularElement;
 import raf.draft.dsw.model.structures.room.Geometry;
@@ -15,6 +17,7 @@ public class ResizeState extends AbstractState{
     private Point2D p;
     private int cx, cy;
     private boolean uniformly;
+    private double sx, sy;
 
     @Override
     void mousePressed(double x, double y, VisualElement element, RoomTab roomTab) {
@@ -37,6 +40,7 @@ public class ResizeState extends AbstractState{
             }
         }
         if (uniformly && cx*cy == 0) cx = cy = 0;
+        sx = sy = 1;
     }
 
     @Override
@@ -48,8 +52,15 @@ public class ResizeState extends AbstractState{
         if ((w <= 1 && dx < 0) || (h <= 1 && dy < 0)) return;
         double sx = 1 + dx / w, sy = 1 + dy / h;
         if (uniformly) sx = sy = Math.max(sx, sy);
-        for (VisualElement e : roomTab.getSelection())
-            e.scale(p, sx, sy);
+        AbstractCommand command = new ScaleCommand(roomTab.getSelection(), p, sx, sy);
+        command.doCommand();
         roomTab.setSelectionRectangle(Geometry.getRectangleHull(roomTab.getSelection()));
+        this.sx *= sx; this.sy *= sy;
+    }
+
+    @Override
+    void mouseReleased(double x, double y, VisualElement element, RoomTab roomTab) {
+        AbstractCommand command = new ScaleCommand(roomTab.getSelection(), p, sx, sy);
+        roomTab.getCommandManager().addCommand(command);
     }
 }

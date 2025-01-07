@@ -14,7 +14,7 @@ public class EditRoomState extends AbstractState{
     @Override
     public void mouseClick(double x, double y, VisualElement element, RoomTab roomTab) {
         try{
-            int[] dims = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width", "Height"}, null);
+            double[] dims = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width", "Height"}, null);
             if (dims == null) return;
             ApplicationFramework.getInstance().getRepository().initializeRoom(roomTab.getRoom().id(), dims[0], dims[1]);
         } catch (NumberFormatException e){

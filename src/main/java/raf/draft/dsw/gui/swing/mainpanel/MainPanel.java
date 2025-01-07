@@ -8,7 +8,6 @@ import raf.draft.dsw.gui.swing.mainpanel.room.RoomView;
 import raf.draft.dsw.gui.swing.mainpanel.room.RoomViewController;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import java.awt.*;
 
 @Getter

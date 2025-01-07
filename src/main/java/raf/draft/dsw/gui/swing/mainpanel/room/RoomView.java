@@ -1,13 +1,20 @@
 package raf.draft.dsw.gui.swing.mainpanel.room;
 
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import lombok.Getter;
+import lombok.Setter;
+import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTabComponent;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTabMouseListener;
+import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import javax.swing.*;
+import java.util.Vector;
 
+@Getter @Setter
 public class RoomView extends JTabbedPane {
+    private Vector<VisualElement> clipboard;
+
     public RoomView(){
         super(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
     }
@@ -26,7 +33,8 @@ public class RoomView extends JTabbedPane {
         newTab.addMouseMotionListener(newTabMouseListener);
         newTab.addMouseWheelListener(newTabMouseListener);
         add(newTab);
-        RoomTabComponent newTabComponent = new RoomTabComponent(this, room.name());
+        newTab.getConverter().updateTransforms();
+        RoomTabComponent newTabComponent = new RoomTabComponent(this, room.name() + (room.saved() ? "" : "*"));
         int i = indexOfComponent(newTab);
         setTabComponentAt(i, newTabComponent);
         setBackgroundAt(i, room.color());
@@ -41,7 +49,7 @@ public class RoomView extends JTabbedPane {
         int i = getTabIndex(room);
         if (i != -1) {
             RoomTabComponent tabComponent = (RoomTabComponent) getTabComponentAt(i);
-            tabComponent.setTitle(room.name());
+            tabComponent.setTitle(room.name() + (room.saved() ? "" : "*"));
             setBackgroundAt(i, room.color());
         }
     }

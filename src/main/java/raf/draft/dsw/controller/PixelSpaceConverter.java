@@ -1,12 +1,9 @@
 package raf.draft.dsw.controller;
 
-import raf.draft.dsw.AppCore;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
-import raf.draft.dsw.model.structures.room.curves.Segment;
-import raf.draft.dsw.model.structures.room.curves.Vec;
 import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
 import java.awt.geom.AffineTransform;
@@ -21,12 +18,11 @@ public class PixelSpaceConverter implements ISubscriber {
     public PixelSpaceConverter(RoomTab roomTab){
         this.roomTab = roomTab;
         ApplicationFramework.getInstance().getRepository().addSubscriber(roomTab.getRoom().id(), this, EventTypes.ROOM_DIMENSIONS_CHANGED);
-        updateTransforms();
     }
 
     private void updateParameters(){
         double screenW = roomTab.getScreenDimension().width, screenH = roomTab.getScreenDimension().height;
-        Wall room = ApplicationFramework.getInstance().getRepository().getRoom(roomTab.getRoom().id());
+        Wall room = ApplicationFramework.getInstance().getRepository().getWall(roomTab.getRoom().id());
         double roomW = room.getW(), roomH = room.getH();
         scaleFactor = Math.min(screenW / roomW, screenH / roomH);
         location = new Point2D.Double((screenW - roomW * scaleFactor) / 2, (screenH - roomH * scaleFactor) / 2);

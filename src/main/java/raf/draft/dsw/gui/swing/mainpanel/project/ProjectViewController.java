@@ -1,6 +1,6 @@
 package raf.draft.dsw.gui.swing.mainpanel.project;
 
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.core.ApplicationFramework;

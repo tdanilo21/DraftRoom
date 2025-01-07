@@ -1,13 +1,15 @@
 package raf.draft.dsw.model.structures.room;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.Setter;
-import raf.draft.dsw.controller.dtos.DraftNodeDTO;
+import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
 import raf.draft.dsw.model.nodes.DraftNode;
 import raf.draft.dsw.model.nodes.Named;
 import raf.draft.dsw.model.repository.DraftRoomRepository;
+import raf.draft.dsw.model.structures.Project;
 import raf.draft.dsw.model.structures.room.curves.Segment;
 import raf.draft.dsw.model.structures.room.curves.Vec;
 import raf.draft.dsw.model.structures.room.interfaces.Prototype;
@@ -18,8 +20,15 @@ import java.awt.geom.Point2D;
 
 @Getter
 public abstract class RoomElement extends DraftNode implements Named, VisualElement {
+    @JsonProperty("name")
     protected String name;
+    @JsonProperty("transform")
     protected AffineTransform transform;
+
+    public RoomElement(AffineTransform transform, String name){
+        this.transform = transform;
+        this.name = name;
+    }
 
     public RoomElement(Point2D location, Integer id){
         super(id);
@@ -34,6 +43,7 @@ public abstract class RoomElement extends DraftNode implements Named, VisualElem
     @Override
     public void setName(String newName) {
         name = newName;
+        changed();
         notifySubscribers(EventTypes.NODE_EDITED, getDTO());
     }
 
@@ -44,13 +54,13 @@ public abstract class RoomElement extends DraftNode implements Named, VisualElem
 
     @Override
     public Integer getRoomId() {
-        return parent.getId();
+        return (parent == null ? null : parent.getId());
     }
 
     @Override
     public DraftNodeDTO getDTO() {
         Integer parentId = (parent == null ? null : parent.getId());
-        return new DraftNodeDTO(id, DraftNodeTypes.ROOM_ELEMENT, name, null, null, parentId);
+        return new DraftNodeDTO(id, DraftNodeTypes.ROOM_ELEMENT, name, null, null, saved, parentId);
     }
 
     protected Point2D getCenter(){
@@ -91,6 +101,7 @@ public abstract class RoomElement extends DraftNode implements Named, VisualElem
     @Override
     public void translate(double dx, double dy){
         pTranslate(dx, dy);
+        changed();
         if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
@@ -102,12 +113,14 @@ public abstract class RoomElement extends DraftNode implements Named, VisualElem
     @Override
     public void rotate(double alpha, Point2D p) {
         pRotate(alpha, p);
+        changed();
         if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 
     @Override
     public void scale(Point2D p, double sx, double sy) {
         pScale(p, sx, sy);
+        changed();
         if (parent != null) parent.notifySubscribers(EventTypes.VISUAL_ELEMENT_EDITED, null);
     }
 

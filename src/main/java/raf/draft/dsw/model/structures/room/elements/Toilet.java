@@ -1,6 +1,9 @@
 package raf.draft.dsw.model.structures.room.elements;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import raf.draft.dsw.model.enums.VisualElementTypes;
+import raf.draft.dsw.model.nodes.DraftNodeSubType;
 import raf.draft.dsw.model.structures.Room;
 import raf.draft.dsw.model.structures.room.CircularElement;
 import raf.draft.dsw.model.structures.room.curves.CircularArc;
@@ -13,7 +16,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
+@DraftNodeSubType("Toilet")
 public class Toilet extends CircularElement {
+    @JsonCreator
+    public Toilet(@JsonProperty("transform") AffineTransform transform, @JsonProperty("name") String name){
+        super(transform, name);
+    }
+
     public Toilet(double r, Point2D location, Integer id){
         super(location, id);
         pScale(location, 2*r, 2*r);

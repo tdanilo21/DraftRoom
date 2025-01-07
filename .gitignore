@@ -40,3 +40,4 @@ build/
 
 ### Us ###
 src/main/resources/log.txt
+src/main/resources/patterns/
