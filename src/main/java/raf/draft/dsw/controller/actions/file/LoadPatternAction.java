@@ -22,6 +22,7 @@ public class LoadPatternAction extends AbstractRoomAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (MainFrame.getInstance().getRoomViewController().getSelectedTab() == null) return;
+        ApplicationFramework.getInstance().getRepository().getFileIO().createPatternFolder();
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);

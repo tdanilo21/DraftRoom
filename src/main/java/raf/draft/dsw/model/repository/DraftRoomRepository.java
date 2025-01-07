@@ -480,7 +480,14 @@ public class DraftRoomRepository implements IPublisher {
             return OK;
         }
 
+        public void createPatternFolder(){
+            File directory = new File(patternsPath.toString());
+            if (directory.exists()) return;
+            directory.mkdir();
+        }
+
         private int savePattern(Pattern pattern, String name, boolean force) {
+            createPatternFolder();
             File file = new File(STR."\{patternsPath}\\\{name}");
             try {
                 if (!file.exists()) {
