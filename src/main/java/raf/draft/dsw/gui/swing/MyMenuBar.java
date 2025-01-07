@@ -14,25 +14,31 @@ public class MyMenuBar extends JMenuBar {
         fileMenu.add(actionManager.getCloseProjectAction());
         fileMenu.add(actionManager.getSaveProjectAction());
         fileMenu.add(actionManager.getSaveProjectAsAction());
-        fileMenu.add(actionManager.getCreateNodeAction());
-        fileMenu.add(actionManager.getRenameNodeAction());
-        fileMenu.add(actionManager.getChangeAuthorAction());
-        fileMenu.add(actionManager.getChangePathAction());
-        fileMenu.add(actionManager.getDeleteNodeAction());
+        fileMenu.add(actionManager.getLoadPatternAction());
+        fileMenu.add(actionManager.getSaveAsPatternAction());
+        fileMenu.add(actionManager.getImportPatternAction());
         add(fileMenu);
 
         JMenu editMenu = new JMenu("Edit");
-        editMenu.add(actionManager.getSelectStateAction());
-        editMenu.add(actionManager.getAddStateAction());
-        editMenu.add(actionManager.getDeleteStateAction());
-        editMenu.add(actionManager.getMoveStateAction());
-        editMenu.add(actionManager.getEditStateAction());
-        editMenu.add(actionManager.getResizeStateAction());
-        editMenu.add(actionManager.getZoomStateAction());
-        editMenu.add(actionManager.getRotateLeftAction());
-        editMenu.add(actionManager.getRotateRightAction());
-        editMenu.add(actionManager.getCopyPasteAction());
+        editMenu.add(actionManager.getCreateNodeAction());
+        editMenu.add(actionManager.getRenameNodeAction());
+        editMenu.add(actionManager.getChangeAuthorAction());
+        editMenu.add(actionManager.getChangePathAction());
+        editMenu.add(actionManager.getDeleteNodeAction());
         add(editMenu);
+
+        JMenu toolsMenu = new JMenu("Tools");
+        toolsMenu.add(actionManager.getSelectStateAction());
+        toolsMenu.add(actionManager.getAddStateAction());
+        toolsMenu.add(actionManager.getDeleteStateAction());
+        toolsMenu.add(actionManager.getMoveStateAction());
+        toolsMenu.add(actionManager.getEditStateAction());
+        toolsMenu.add(actionManager.getResizeStateAction());
+        toolsMenu.add(actionManager.getZoomStateAction());
+        toolsMenu.add(actionManager.getRotateLeftAction());
+        toolsMenu.add(actionManager.getRotateRightAction());
+        toolsMenu.add(actionManager.getCopyPasteAction());
+        add(toolsMenu);
 
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic(KeyEvent.VK_H);
