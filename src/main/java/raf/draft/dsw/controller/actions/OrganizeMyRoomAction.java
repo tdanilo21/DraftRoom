@@ -16,7 +16,7 @@ public class OrganizeMyRoomAction extends AbstractRoomAction{
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (MainFrame.getInstance().getRoomViewController().getSelectedTab() == null && false){
+        if (MainFrame.getInstance().getRoomViewController().getSelectedTab() == null){
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Open a room", MessageTypes.WARNING);
             return;
         }

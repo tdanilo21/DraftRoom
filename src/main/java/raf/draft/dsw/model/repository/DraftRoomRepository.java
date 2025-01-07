@@ -19,7 +19,9 @@ import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import raf.draft.dsw.model.structures.room.interfaces.Wall;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Vector;
 
 class ProjectExplorerFactory implements DraftNodeFactory{
@@ -347,7 +349,58 @@ public class DraftRoomRepository implements IPublisher {
         return null;
     }
 
-    public void createBatchSpiral(Integer roomId, int n, double[] w, double[] h, VisualElementTypes[] types){
+    public boolean createBatchSpiral(Integer roomId, int k, double[] w, double[] h, VisualElementTypes[] types){
+        double maxW = 0;
+        double maxH = 0;
+        for(int i = 0; i < k; i++) {
+            maxW = Math.max(w[i], maxW);
+            maxH = Math.max(h[i], maxH);
+        }
 
+        DraftNode node = nodes.get(roomId);
+        if(!(node instanceof Room room)) return false;
+
+        int m = (int)Math.floor((room.getW() - 2*room.getWallWidth()) / maxW);
+        int n = (int)Math.floor((room.getH() - 2*room.getWallWidth()) / maxH);
+        if(n*m < k) return false;
+
+        int[] rnd = new int[k];
+        for(int i = 0; i < k; i++) rnd[i] = i;
+        Random random = new Random();
+        for (int i = k-1; i > 0; i--){
+            int j = random.nextInt(i+1);
+            rnd[i] ^= rnd[j]; rnd[j] ^= rnd[i]; rnd[i] ^= rnd[j];
+        }
+
+        int idx = 0;
+        for (int t = 0; t < Math.min(n, m) / 2; t++){
+            int[][] dir = new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+            int i = t, j = t;
+            for (int p = 0; p < 4; p++){
+                int di = dir[p][0], dj = dir[p][1];
+                int l = ((p&1) == 0 ? m : n) - 1 - 2*t;
+                for(int u = 0; u < l; u++, idx++, i += di, j += dj){
+                    int ridx = rnd[idx];
+                    double x = j * maxW + room.getWallWidth();
+                    double y = i * maxH + room.getWallWidth();
+                    if(j == m - 1) x = room.getW() - w[ridx] - room.getWallWidth();
+                    if(i == n - 1) y = room.getH() - h[ridx] - room.getWallWidth();
+                    createRoomElement(types[ridx], roomId, new Point2D.Double(x, y), w[ridx], h[ridx]);
+                }
+            }
+        }
+        if ((Math.min(n, m)&1) == 1){
+            int t = Math.min(n, m) / 2;
+            int di = (n > m ? 1 : 0), dj = (n < m ? 1 : 0);
+            for (int u = 0, i = t, j = t; u < Math.max(n, m) - 2*t; u++, idx++, i += di, j += dj){
+                int ridx = rnd[idx];
+                double x = j * maxW + room.getWallWidth();
+                double y = i * maxH + room.getWallWidth();
+                if(j == m - 1) x = room.getW() - w[ridx] - room.getWallWidth();
+                if(i == n - 1) y = room.getH() - h[ridx] - room.getWallWidth();
+                createRoomElement(types[ridx], roomId, new Point2D.Double(x, y), w[ridx], h[ridx]);
+            }
+        }
+        return true;
     }
 }
