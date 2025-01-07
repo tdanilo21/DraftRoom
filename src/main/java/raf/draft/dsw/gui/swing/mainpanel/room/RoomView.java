@@ -11,10 +11,7 @@ import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 import javax.swing.*;
 import java.util.Vector;
 
-@Getter @Setter
 public class RoomView extends JTabbedPane {
-    private Vector<VisualElement> clipboard;
-
     public RoomView(){
         super(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
     }
