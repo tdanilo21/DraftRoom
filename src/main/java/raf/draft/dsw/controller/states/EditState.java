@@ -1,5 +1,7 @@
 package raf.draft.dsw.controller.states;
 
+import raf.draft.dsw.controller.commands.AbstractCommand;
+import raf.draft.dsw.controller.commands.EditCommand;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.dialogs.RequestDimensionsPane;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
@@ -11,25 +13,23 @@ public class EditState extends AbstractState{
     void mouseClick(double x, double y, VisualElement element, RoomTab roomTab) {
         super.mouseClick(x, y, element, roomTab);
         try{
-            if (element instanceof CircularVisualElement cElement){
-                int[] results = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width"}, new int[]{(int)Math.round(cElement.getR())});
-                if (results == null) return;
-                cElement.setR(results[0]);
-            } else if (element instanceof TriangularVisualElement tElement){
-                int[] results = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width"}, new int[]{(int)Math.round(tElement.getA())});
-                if (results == null) return;
-                tElement.setA(results[0]);
-            } else if (element instanceof RectangularVisualElement rElement){
+            double[] results = new double[]{};
+            if (element instanceof CircularVisualElement cElement)
+                results = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width"}, new double[]{Math.round(cElement.getR())});
+            else if (element instanceof TriangularVisualElement tElement)
+                results = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width"}, new double[]{Math.round(tElement.getA())});
+            else if (element instanceof RectangularVisualElement rElement){
                 double w = rElement.getW(), h = rElement.getH();
                 if (rElement instanceof Wall wall){
                     w -= 2*wall.getWallWidth();
                     h -= 2*wall.getWallWidth();
                 }
-                int[] results = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width", "Height"}, new int[]{(int)Math.round(w), (int)Math.round(h)});
-                if (results == null) return;
-                rElement.setW(results[0]);
-                rElement.setH(results[1]);
+                results = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width", "Height"}, new double[]{Math.round(w), Math.round(h)});
             }
+            if (results == null) return;
+            AbstractCommand command = EditCommand.getCommand(element, results);
+            command.doCommand();
+            roomTab.getCommandManager().addCommand(command);
         } catch (NumberFormatException e){
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Dimensions must be numbers", MessageTypes.ERROR);
         }

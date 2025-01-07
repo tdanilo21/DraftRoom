@@ -1,13 +1,20 @@
 package raf.draft.dsw.gui.swing.mainpanel.room;
 
+import lombok.Getter;
+import lombok.Setter;
 import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTabComponent;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTabMouseListener;
+import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import javax.swing.*;
+import java.util.Vector;
 
+@Getter @Setter
 public class RoomView extends JTabbedPane {
+    private Vector<VisualElement> clipboard;
+
     public RoomView(){
         super(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
     }

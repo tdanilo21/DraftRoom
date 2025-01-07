@@ -1,6 +1,8 @@
 package raf.draft.dsw.controller.actions.state;
 
 import raf.draft.dsw.controller.actions.AbstractRoomAction;
+import raf.draft.dsw.controller.commands.AbstractCommand;
+import raf.draft.dsw.controller.commands.DeleteCommand;
 import raf.draft.dsw.controller.states.DeleteState;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.MainFrame;
@@ -21,10 +23,12 @@ public class DeleteStateAction extends AbstractRoomAction {
     public void actionPerformed(ActionEvent e) {
         RoomTab roomTab = MainFrame.getInstance().getRoomViewController().getSelectedTab();
         Vector<VisualElement> selection = roomTab.getSelection();
-        for (VisualElement element : selection)
-            ApplicationFramework.getInstance().getRepository().deleteNode(element.getId());
-        selection.clear();
-        roomTab.setSelectionRectangle(null);
+        if (!selection.isEmpty()){
+            AbstractCommand command = new DeleteCommand(selection, roomTab.getRoom().id());
+            command.doCommand();
+            roomTab.getCommandManager().addCommand(command);
+            roomTab.setSelectionRectangle(null);
+        }
         roomTab.getStateManager().changeState(new DeleteState());
     }
 }
