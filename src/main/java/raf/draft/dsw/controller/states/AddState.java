@@ -1,6 +1,8 @@
 package raf.draft.dsw.controller.states;
 
 
+import raf.draft.dsw.controller.commands.AbstractCommand;
+import raf.draft.dsw.controller.commands.AddCommand;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.dialogs.RequestDimensionsPane;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
@@ -32,13 +34,11 @@ public class AddState extends AbstractState{
         try{
             if (selectedType == VisualElementTypes.BOILER || selectedType == VisualElementTypes.TOILET
                     || selectedType == VisualElementTypes.DOOR || selectedType == VisualElementTypes.SINK){
-                int[] result = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width"}, null);
-                if (result == null) return;
-                dims = new double[]{result[0]};
+                dims = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width"}, null);
+                if (dims == null) return;
             } else {
-                int[] result = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width", "Height"}, null);
-                if (result == null) return;
-                dims = new double[]{result[0], result[1]};
+                dims = RequestDimensionsPane.showDialog("Insert dimensions", new String[]{"Width", "Height"}, null);
+                if (dims == null) return;
             }
         } catch(NumberFormatException e){
             ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Dimensions must be numbers", MessageTypes.ERROR);
@@ -54,5 +54,7 @@ public class AddState extends AbstractState{
         }
         VisualElement newElement = ApplicationFramework.getInstance().getRepository().createRoomElement(selectedType, roomTab.getRoom().id(), location, dims);
         if (swapped) newElement.rotate(roomTab.getConverter().angleFromPixelSpace(Math.PI/2), new Point2D.Double(location.getX() + dims[0] / 2, location.getY() + dims[0] / 2));
+        AbstractCommand command = new AddCommand(new Vector<>(){{add(newElement);}}, roomTab.getRoom().id());
+        roomTab.getCommandManager().addCommand(command);
     }
 }

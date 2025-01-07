@@ -1,10 +1,10 @@
 package raf.draft.dsw.controller.actions.state;
 
-import com.sun.java.accessibility.util.Translator;
-import com.sun.tools.javac.Main;
-import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.controller.actions.AbstractRoomAction;
+import raf.draft.dsw.controller.commands.AbstractCommand;
+import raf.draft.dsw.controller.commands.AddCommand;
 import raf.draft.dsw.gui.swing.MainFrame;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import java.awt.event.ActionEvent;
@@ -19,11 +19,15 @@ public class CopyPasteAction extends AbstractRoomAction {
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        Vector<VisualElement> selection = MainFrame.getInstance().getRoomViewController().getSelectedTab().getSelection();
-        PixelSpaceConverter converter = MainFrame.getInstance().getRoomViewController().getSelectedTab().getConverter();
-        for(VisualElement element : selection){
+        RoomTab roomTab = MainFrame.getInstance().getRoomViewController().getSelectedTab();
+        if (roomTab == null) return;
+        Vector<VisualElement> v = new Vector<>();
+        for(VisualElement element : roomTab.getSelection()){
             VisualElement clone = (VisualElement)element.clone();
-            clone.translate(converter.lengthFromPixelSpace(20), 0);
+            clone.translate(roomTab.getConverter().lengthFromPixelSpace(20), 0);
+            v.add(clone);
         }
+        AbstractCommand command = new AddCommand(v, roomTab.getRoom().id());
+        roomTab.getCommandManager().addCommand(command);
     }
 }

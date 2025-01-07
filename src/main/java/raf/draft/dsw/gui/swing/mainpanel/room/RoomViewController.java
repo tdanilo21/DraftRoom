@@ -7,8 +7,11 @@ import raf.draft.dsw.controller.observer.EventTypes;
 import raf.draft.dsw.controller.observer.ISubscriber;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.model.enums.VisualElementTypes;
+import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import javax.swing.event.ChangeEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Vector;
 
 public class RoomViewController implements ISubscriber {
@@ -51,6 +54,14 @@ public class RoomViewController implements ISubscriber {
         Vector<DraftNodeDTO> rooms = getRoomsInSubtree(node);
         for (DraftNodeDTO room : rooms)
             roomView.updateTab(room);
+    }
+
+    public Vector<VisualElement> getClipboard(){
+        return roomView.getClipboard();
+    }
+
+    public void setClipboard(Vector<VisualElement> clipboard){
+        roomView.setClipboard(new Vector<>(clipboard));
     }
 
     @Override

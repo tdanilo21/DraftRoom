@@ -1,5 +1,7 @@
 package raf.draft.dsw.controller.states;
 
+import raf.draft.dsw.controller.commands.AbstractCommand;
+import raf.draft.dsw.controller.commands.MoveCommand;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.model.structures.room.Geometry;
 import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
@@ -32,8 +34,8 @@ public class MoveState extends AbstractState{
         if (!elements.isEmpty()){
             dx = roomTab.getConverter().lengthFromPixelSpace(dx);
             dy = roomTab.getConverter().lengthFromPixelSpace(dy);
-            for (VisualElement e : elements)
-                e.translate(dx, dy);
+            AbstractCommand command = new MoveCommand(elements, dx, dy);
+            command.doCommand();
             xx += dx; yy += dy;
         }
         else{
@@ -49,8 +51,10 @@ public class MoveState extends AbstractState{
         for (VisualElement e : elements)
             if (e.getVisualElementType() != null && roomTab.overlaps(e))
                 succ = false;
-        if (!succ)
-            for (VisualElement e : elements)
-                e.translate(-xx, -yy);
+        if (succ) roomTab.getCommandManager().addCommand(new MoveCommand(elements, xx, yy));
+        else {
+            AbstractCommand command = new MoveCommand(elements, -xx, -yy);
+            command.doCommand();
+        }
     }
 }

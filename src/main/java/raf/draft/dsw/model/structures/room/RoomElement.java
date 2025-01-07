@@ -54,7 +54,7 @@ public abstract class RoomElement extends DraftNode implements Named, VisualElem
 
     @Override
     public Integer getRoomId() {
-        return parent.getId();
+        return (parent == null ? null : parent.getId());
     }
 
     @Override
