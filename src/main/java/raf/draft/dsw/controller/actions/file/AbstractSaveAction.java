@@ -5,39 +5,13 @@ import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.model.messages.MessageTypes;
+import raf.draft.dsw.model.repository.DraftRoomRepository;
 
 import javax.swing.*;
 import java.io.File;
 import java.util.Vector;
 
 public abstract class AbstractSaveAction extends AbstractRoomAction {
-    public AbstractSaveAction(){
-        putValue(SMALL_ICON, loadIcon("/images/info.png"));
-    }
-
-    protected void saveAs(){
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
-        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            ApplicationFramework app = ApplicationFramework.getInstance();
-            if (!file.isDirectory()){
-                app.getMessageGenerator().generateMessage(STR."\{file.getAbsolutePath()} is not a directory", MessageTypes.WARNING);
-                return;
-            }
-            DraftNodeDTO room = MainFrame.getInstance().getRoomViewController().getSelectedTab().getRoom();
-            DraftNodeDTO project = app.getRepository().getProject(room.id());
-            File newFile = new File(STR."\{file.getAbsolutePath()}/\{project.name()}.json");
-            if (newFile.exists()){
-                int choice = JOptionPane.showConfirmDialog(null, "File with given path already exists. Do you want to replace it?", "Warning", JOptionPane.YES_NO_OPTION);
-                if (choice == JOptionPane.NO_OPTION) return;
-                newFile.delete();
-            }
-            if (!app.getRepository().saveProjectAs(newFile, project.id()))
-                app.getMessageGenerator().generateMessage("Something went wrong. File couldn't be saved", MessageTypes.WARNING);
-        }
-    }
 
     protected boolean canSave(){
         if (MainFrame.getInstance().getRoomViewController().getSelectedTab() == null) return false;
@@ -51,7 +25,7 @@ public abstract class AbstractSaveAction extends AbstractRoomAction {
             builder.append(rooms.get(i).name());
             if (i < rooms.size()-1) builder.append(", ");
         }
-        builder.append("\nMove overlapping elements before saving");
+        builder.append(". Move overlapping elements before saving");
         app.getMessageGenerator().generateMessage(builder.toString(), MessageTypes.WARNING);
         return false;
     }

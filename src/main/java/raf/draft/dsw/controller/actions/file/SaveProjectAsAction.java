@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
-public class SaveProjectAsAction extends AbstractSaveAction{
+public class SaveProjectAsAction extends AbstractSaveProjectAction{
     public SaveProjectAsAction(){
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK));
         putValue(NAME, "Save Project As");

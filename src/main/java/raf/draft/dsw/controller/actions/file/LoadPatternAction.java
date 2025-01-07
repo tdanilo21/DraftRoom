@@ -4,6 +4,8 @@ import raf.draft.dsw.controller.actions.AbstractRoomAction;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.model.dtos.DraftNodeDTO;
+import raf.draft.dsw.model.messages.MessageTypes;
+import raf.draft.dsw.model.repository.DraftRoomRepository;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -28,7 +30,8 @@ public class LoadPatternAction extends AbstractRoomAction {
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             DraftNodeDTO room = MainFrame.getInstance().getRoomViewController().getSelectedTab().getRoom();
-            ApplicationFramework.getInstance().getRepository().loadPattern(file, room.id());
+            int result = ApplicationFramework.getInstance().getRepository().getFileIO().loadPattern(file, room.id());
+            if (result != DraftRoomRepository.FileIO.OK) ApplicationFramework.getInstance().getMessageGenerator().generateMessage("Something went wrong, file couldn't be opened", MessageTypes.WARNING);
         }
     }
 }
