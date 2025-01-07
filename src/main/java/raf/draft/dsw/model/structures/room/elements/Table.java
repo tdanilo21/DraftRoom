@@ -19,7 +19,8 @@ public class Table extends RectangularElement {
     }
 
     public Table(double w, double h, Point2D location, Integer id){
-        super(w, h, location, id);
+        super(Math.min(w, h), Math.max(w, h), location, id);
+        if (w > h) pRotate(-Math.PI/2, new Point2D.Double(location.getX()+h/2, location.getY()+h/2));
     }
 
     public Table(AffineTransform transform, Integer id){

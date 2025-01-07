@@ -22,6 +22,7 @@ public class DeleteStateAction extends AbstractRoomAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         RoomTab roomTab = MainFrame.getInstance().getRoomViewController().getSelectedTab();
+        if (roomTab == null) return;
         Vector<VisualElement> selection = roomTab.getSelection();
         if (!selection.isEmpty()){
             AbstractCommand command = new DeleteCommand(selection, roomTab.getRoom().id());

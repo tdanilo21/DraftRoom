@@ -20,7 +20,8 @@ public class BathTub extends RectangularElement {
     }
 
     public BathTub(double w, double h, Point2D location, Integer id){
-        super(w, h, location, id);
+        super(Math.min(w, h), Math.max(w, h), location, id);
+        if (w > h) pRotate(-Math.PI/2, new Point2D.Double(location.getX()+h/2, location.getY()+h/2));
     }
 
     public BathTub(AffineTransform transform, Integer id){

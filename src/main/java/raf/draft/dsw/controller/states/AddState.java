@@ -45,15 +45,8 @@ public class AddState extends AbstractState{
             return;
         }
         Point2D location = roomTab.getConverter().pointFromPixelSpace(new Point2D.Double(x, y));
-        if (selectedType == VisualElementTypes.BOILER || selectedType == VisualElementTypes.TOILET)
-            dims[0] /= 2;
-        boolean swapped = false;
-        if (selectedType == VisualElementTypes.BATH_TUB && dims[0] > dims[1]){
-            double t = dims[0]; dims[0] = dims[1]; dims[1] = t;
-            swapped = true;
-        }
+        if (selectedType == VisualElementTypes.BOILER || selectedType == VisualElementTypes.TOILET) dims[0] /= 2;
         VisualElement newElement = ApplicationFramework.getInstance().getRepository().createRoomElement(selectedType, roomTab.getRoom().id(), location, dims);
-        if (swapped) newElement.rotate(roomTab.getConverter().angleFromPixelSpace(Math.PI/2), new Point2D.Double(location.getX() + dims[0] / 2, location.getY() + dims[0] / 2));
         AbstractCommand command = new AddCommand(new Vector<>(){{add(newElement);}}, roomTab.getRoom().id());
         roomTab.getCommandManager().addCommand(command);
     }

@@ -391,7 +391,7 @@ public class DraftRoomRepository implements IPublisher {
         return rooms;
     }
 
-    public boolean createBatchSpiral(Integer roomId, int k, double[] w, double[] h, VisualElementTypes[] types){
+    public Vector<VisualElement> createBatchSpiral(Integer roomId, int k, double[] w, double[] h, VisualElementTypes[] types){
         double maxW = 0;
         double maxH = 0;
         for(int i = 0; i < k; i++) {
@@ -400,50 +400,55 @@ public class DraftRoomRepository implements IPublisher {
         }
 
         DraftNode node = nodes.get(roomId);
-        if(!(node instanceof Room room)) return false;
+        if(!(node instanceof Room room)) return null;
 
         int m = (int)Math.floor((room.getW() - 2*room.getWallWidth()) / maxW);
         int n = (int)Math.floor((room.getH() - 2*room.getWallWidth()) / maxH);
-        if(n*m < k) return false;
+        if(n*m < k) return null;
 
         int[] rnd = new int[k];
         for(int i = 0; i < k; i++) rnd[i] = i;
         Random random = new Random();
         for (int i = k-1; i > 0; i--){
             int j = random.nextInt(i+1);
-            rnd[i] ^= rnd[j]; rnd[j] ^= rnd[i]; rnd[i] ^= rnd[j];
+            int t = rnd[i];
+            rnd[i] = rnd[j];
+            rnd[j] = t;
         }
 
+        Vector<VisualElement> elements = new Vector<>();
         int idx = 0;
-        for (int t = 0; t < Math.min(n, m) / 2; t++){
+        for (int t = 0; t < Math.min(n, m) / 2 && idx < k; t++){
             int[][] dir = new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
             int i = t, j = t;
-            for (int p = 0; p < 4; p++){
+            for (int p = 0; p < 4 && idx < k; p++){
                 int di = dir[p][0], dj = dir[p][1];
                 int l = ((p&1) == 0 ? m : n) - 1 - 2*t;
-                for(int u = 0; u < l; u++, idx++, i += di, j += dj){
+                for(int u = 0; u < l && idx < k; u++, idx++, i += di, j += dj){
                     int ridx = rnd[idx];
                     double x = j * maxW + room.getWallWidth();
                     double y = i * maxH + room.getWallWidth();
                     if(j == m - 1) x = room.getW() - w[ridx] - room.getWallWidth();
                     if(i == n - 1) y = room.getH() - h[ridx] - room.getWallWidth();
-                    createRoomElement(types[ridx], roomId, new Point2D.Double(x, y), w[ridx], h[ridx]);
+                    if (types[ridx] == VisualElementTypes.BOILER || types[ridx] == VisualElementTypes.TOILET) w[ridx] /= 2;
+                    elements.add(createRoomElement(types[ridx], roomId, new Point2D.Double(x, y), w[ridx], h[ridx]));
                 }
             }
         }
         if ((Math.min(n, m)&1) == 1){
             int t = Math.min(n, m) / 2;
             int di = (n > m ? 1 : 0), dj = (n < m ? 1 : 0);
-            for (int u = 0, i = t, j = t; u < Math.max(n, m) - 2*t; u++, idx++, i += di, j += dj){
+            for (int u = 0, i = t, j = t; u < Math.max(n, m) - 2*t && idx < k; u++, idx++, i += di, j += dj){
                 int ridx = rnd[idx];
                 double x = j * maxW + room.getWallWidth();
                 double y = i * maxH + room.getWallWidth();
                 if(j == m - 1) x = room.getW() - w[ridx] - room.getWallWidth();
                 if(i == n - 1) y = room.getH() - h[ridx] - room.getWallWidth();
-                createRoomElement(types[ridx], roomId, new Point2D.Double(x, y), w[ridx], h[ridx]);
+                if (types[ridx] == VisualElementTypes.BOILER || types[ridx] == VisualElementTypes.TOILET) w[ridx] /= 2;
+                elements.add(createRoomElement(types[ridx], roomId, new Point2D.Double(x, y), w[ridx], h[ridx]));
             }
         }
-        return true;
+        return elements;
     }
 
     public class FileIO {

@@ -1,12 +1,17 @@
 package raf.draft.dsw.gui.swing.organizemyroom;
 
+import raf.draft.dsw.controller.commands.AbstractCommand;
+import raf.draft.dsw.controller.commands.AddCommand;
 import raf.draft.dsw.core.ApplicationFramework;
 import raf.draft.dsw.gui.swing.MainFrame;
+import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.messages.MessageTypes;
+import raf.draft.dsw.model.structures.room.interfaces.VisualElement;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.lang.foreign.PaddingLayout;
 import java.util.Vector;
 
@@ -104,11 +109,16 @@ public class OrganizeMyRoomFrame extends JFrame {
                 h[i] = elements.get(i).h();
                 types[i] = elements.get(i).type();
             }
-            Integer roomId = MainFrame.getInstance().getRoomViewController().getSelectedTab().getRoom().id();
+            RoomTab roomTab = MainFrame.getInstance().getRoomViewController().getSelectedTab();
             ApplicationFramework app = ApplicationFramework.getInstance();
-            if (!app.getRepository().createBatchSpiral(roomId, n, w, h, types))
+            Vector<VisualElement> createdElements = app.getRepository().createBatchSpiral(roomTab.getRoom().id(), n, w, h, types);
+            if (createdElements == null) {
                 app.getMessageGenerator().generateMessage("Not enough space inside the room", MessageTypes.WARNING);
-            else dispose();
+                return;
+            }
+            AbstractCommand command = new AddCommand(createdElements, roomTab.getRoom().id());
+            roomTab.getCommandManager().addCommand(command);
+            dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         });
         panel.add(scrollPane);
         panel.add(button);

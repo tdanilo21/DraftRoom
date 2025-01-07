@@ -15,6 +15,7 @@ public class SelectStateAction extends AbstractRoomAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (MainFrame.getInstance().getRoomViewController().getSelectedTab() == null) return;
         MainFrame.getInstance().getRoomViewController().getSelectedTab().getStateManager().changeState(new SelectState());
     }
 }

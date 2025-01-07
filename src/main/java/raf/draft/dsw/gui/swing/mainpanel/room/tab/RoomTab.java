@@ -6,7 +6,6 @@ import raf.draft.dsw.controller.PixelSpaceConverter;
 import raf.draft.dsw.controller.commands.AbstractCommand;
 import raf.draft.dsw.controller.commands.AddCommand;
 import raf.draft.dsw.controller.commands.CommandManager;
-import raf.draft.dsw.controller.commands.DeleteCommand;
 import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.controller.observer.EventTypes;

@@ -1,5 +1,6 @@
 package raf.draft.dsw.gui.swing.mainpanel.room;
 
+import lombok.Getter;
 import raf.draft.dsw.model.dtos.DraftNodeDTO;
 import raf.draft.dsw.gui.swing.mainpanel.room.tab.RoomTab;
 import raf.draft.dsw.model.enums.DraftNodeTypes;
@@ -16,6 +17,8 @@ import java.util.Vector;
 
 public class RoomViewController implements ISubscriber {
     private final RoomView roomView;
+    @Getter
+    private Vector<VisualElement> clipboard;
 
     public RoomViewController(RoomView roomView){
         this.roomView = roomView;
@@ -56,12 +59,8 @@ public class RoomViewController implements ISubscriber {
             roomView.updateTab(room);
     }
 
-    public Vector<VisualElement> getClipboard(){
-        return roomView.getClipboard();
-    }
-
     public void setClipboard(Vector<VisualElement> clipboard){
-        roomView.setClipboard(new Vector<>(clipboard));
+        this.clipboard = new Vector<>(clipboard);
     }
 
     @Override
