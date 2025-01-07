@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 
 public class LoadPatternAction extends AbstractRoomAction {
     public LoadPatternAction(){
-        putValue(SMALL_ICON, loadIcon("/images/info.png"));
+        putValue(SMALL_ICON, loadIcon("/images/load.png"));
         putValue(NAME, "Load pattern");
         putValue(SHORT_DESCRIPTION, "Load pattern");
     }

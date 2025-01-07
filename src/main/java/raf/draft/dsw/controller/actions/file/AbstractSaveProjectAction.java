@@ -10,10 +10,6 @@ import javax.swing.*;
 import java.io.File;
 
 public abstract class AbstractSaveProjectAction extends AbstractSaveAction{
-    public AbstractSaveProjectAction(){
-        putValue(SMALL_ICON, loadIcon("/images/info.png"));
-    }
-
     protected DraftNodeDTO getProject(){
         ApplicationFramework app = ApplicationFramework.getInstance();
         if (MainFrame.getInstance().getRoomViewController().getSelectedTab() != null) {

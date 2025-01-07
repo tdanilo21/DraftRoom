@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 
 public class SaveAsPatternAction extends AbstractSaveAction {
     public SaveAsPatternAction(){
-        putValue(SMALL_ICON, loadIcon("/images/info.png"));
+        putValue(SMALL_ICON, loadIcon("/images/savePattern.png"));
         putValue(NAME, "Save as pattern");
         putValue(SHORT_DESCRIPTION, "Save as pattern");
     }

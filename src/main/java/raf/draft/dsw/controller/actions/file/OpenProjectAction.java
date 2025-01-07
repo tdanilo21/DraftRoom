@@ -14,7 +14,7 @@ import java.io.File;
 public class OpenProjectAction extends AbstractRoomAction {
     public OpenProjectAction(){
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
-        putValue(SMALL_ICON, loadIcon("/images/info.png"));
+        putValue(SMALL_ICON, loadIcon("/images/open.png"));
         putValue(NAME, "Open Project");
         putValue(SHORT_DESCRIPTION, "Open Project");
     }
