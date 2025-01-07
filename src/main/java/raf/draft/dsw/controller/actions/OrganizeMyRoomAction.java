@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 
 public class OrganizeMyRoomAction extends AbstractRoomAction{
     public OrganizeMyRoomAction(){
-        putValue(SMALL_ICON, loadIcon("/images/exit.png"));
+        putValue(SMALL_ICON, loadIcon("/images/organize.png"));
         putValue(NAME, "Organize my room");
         putValue(SHORT_DESCRIPTION, "Organize my room");
     }

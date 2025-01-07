@@ -12,7 +12,7 @@ import java.awt.event.ActionEvent;
 
 public class CloseProjectAction extends AbstractRoomAction {
     public CloseProjectAction(){
-        putValue(SMALL_ICON, loadIcon("/images/info.png"));
+        putValue(SMALL_ICON, loadIcon("/images/exit.png"));
         putValue(NAME, "Close Project");
         putValue(SHORT_DESCRIPTION, "Close Project");
     }
