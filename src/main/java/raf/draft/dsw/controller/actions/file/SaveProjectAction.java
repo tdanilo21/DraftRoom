@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 public class SaveProjectAction extends AbstractSaveProjectAction {
     public SaveProjectAction(){
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
+        putValue(SMALL_ICON, loadIcon("/images/save.png"));
         putValue(NAME, "Save Project");
         putValue(SHORT_DESCRIPTION, "Save Project");
     }

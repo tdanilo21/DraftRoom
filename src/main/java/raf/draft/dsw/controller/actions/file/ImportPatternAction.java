@@ -11,7 +11,7 @@ import java.io.File;
 
 public class ImportPatternAction extends AbstractRoomAction {
     public ImportPatternAction(){
-        putValue(SMALL_ICON, loadIcon("/images/info.png"));
+        putValue(SMALL_ICON, loadIcon("/images/import.png"));
         putValue(NAME, "Import pattern");
         putValue(SHORT_DESCRIPTION, "Import pattern");
     }
