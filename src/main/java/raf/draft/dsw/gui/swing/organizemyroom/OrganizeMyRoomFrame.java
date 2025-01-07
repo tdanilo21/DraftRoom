@@ -1,11 +1,14 @@
 package raf.draft.dsw.gui.swing.organizemyroom;
 
 import raf.draft.dsw.core.ApplicationFramework;
+import raf.draft.dsw.gui.swing.MainFrame;
 import raf.draft.dsw.model.enums.VisualElementTypes;
 import raf.draft.dsw.model.messages.MessageTypes;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.foreign.PaddingLayout;
+import java.util.Vector;
 
 public class OrganizeMyRoomFrame extends JFrame {
     private JTextField widthField, heightField;
@@ -24,26 +27,30 @@ public class OrganizeMyRoomFrame extends JFrame {
         setLocationRelativeTo(null);
         setTitle("OrganizeMyRoom");
 
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 80, 5));
-
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.add(createLeft());
+        panel.add(Box.createRigidArea(new Dimension(10,0)));
         panel.add(createCenter());
+        panel.add(Box.createRigidArea(new Dimension(20,0)));
         panel.add(createRight());
-
         add(panel);
     }
 
     private JPanel createLeft() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 80, 5));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         JPanel panel1 = new JPanel(), panel2 = new JPanel();
 
         panel1.add(new JLabel("Width:"));
-        widthField = new JTextField(10);
+        widthField = new JTextField(6);
         panel1.add(widthField);
 
         panel2.add(new JLabel("Height:"));
-        heightField = new JTextField(10);
+        heightField = new JTextField(6);
         panel2.add(heightField);
+
+        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         panel.add(panel1);
         panel.add(panel2);
@@ -51,7 +58,8 @@ public class OrganizeMyRoomFrame extends JFrame {
     }
 
     private JPanel createCenter() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 80, 5));
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(9, 1, 5, 10));
         for (VisualElementTypes type : VisualElementTypes.values()) {
             if (type != VisualElementTypes.WALL){
                 JButton button = new JButton(type.toString());
@@ -70,19 +78,39 @@ public class OrganizeMyRoomFrame extends JFrame {
                     elementsList.addElement(new Element(w, h, type));
                 });
                 panel.add(button);
+                button.setAlignmentX(Component.CENTER_ALIGNMENT);
+                button.setAlignmentY(0);
             }
         }
         return panel;
     }
 
     private JPanel createRight() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 80, 5));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         elementsList = new ElementsList();
+        elementsList.setLayout(new BoxLayout(elementsList, BoxLayout.Y_AXIS));
+        elementsList.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JScrollPane scrollPane = new JScrollPane(elementsList);
         JButton button = new JButton("Enter");
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.addActionListener(_ -> {
-            // TODO
+            Vector<Element> elements = elementsList.getElements();
+            int n = elements.size();
+            double[] w = new double[n], h = new double[n];
+            VisualElementTypes[] types = new VisualElementTypes[n];
+            for (int i = 0; i < n; i++){
+                w[i] = elements.get(i).w();
+                h[i] = elements.get(i).h();
+                types[i] = elements.get(i).type();
+            }
+            Integer roomId = MainFrame.getInstance().getRoomViewController().getSelectedTab().getRoom().id();
+            ApplicationFramework app = ApplicationFramework.getInstance();
+            if (!app.getRepository().createBatchSpiral(roomId, n, w, h, types))
+                app.getMessageGenerator().generateMessage("Not enough space inside the room", MessageTypes.WARNING);
+            else dispose();
         });
-        panel.add(elementsList);
+        panel.add(scrollPane);
         panel.add(button);
         return panel;
     }
